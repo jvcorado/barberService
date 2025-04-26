@@ -40,7 +40,7 @@ export default function Home() {
           <Search />
         </div>
 
-        {/* teste   */}
+        {/* teste  sdsd */}
 
         {/* BUSCA RÁPIDA */}
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
