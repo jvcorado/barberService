@@ -1,24 +1,25 @@
-/* import Header from "./_components/header";
-import { Button } from "./_components/ui/button";
-import Image from "next/image";
-import { db } from "./_lib/prisma"; */
-/* import BarbershopItem from "./_components/barbershop-item";
-import { quickSearchOptions } from "./_constants/search"; */
-/* import BookingItem from "./_components/booking-item";
-import Search from "./_components/search"; */
-import Link from "next/link";
-/* import { getServerSession } from "next-auth";
-import { authOptions } from "./_lib/auth"; */
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Image from "next/image";
 import Search from "../components/search";
+import { db } from "../lib/prisma";
+import BarbershopItem from "../components/barbershop-item";
+import { Button } from "../components/ui/button";
+import Link from "next/link";
+import { quickSearchOptions } from "../constants/search";
+import Header from "../components/header";
 
-/* import { getConfirmedBookings } from "./_data/get-confirmed-bookings"; */
+export default async function Home() {
+  const barbershops = await db.barberShop.findMany({});
+  const popularBarbershops = await db.barberShop.findMany({
+    orderBy: {
+      name: "desc",
+    },
+  });
 
-export default function Home() {
   return (
     <div>
+      <Header />
       <div className="p-5">
         {/* TEXTO */}
         <h2 className="text-xl font-bold">
@@ -44,7 +45,7 @@ export default function Home() {
 
         {/* BUSCA RÁPIDA */}
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
-          {/*     {quickSearchOptions.map((option) => (
+          {quickSearchOptions.map((option) => (
             <Button
               className="gap-2"
               variant="secondary"
@@ -61,7 +62,7 @@ export default function Home() {
                 {option.title}
               </Link>
             </Button>
-          ))} */}
+          ))}
         </div>
 
         {/* IMAGEM */}
@@ -91,23 +92,24 @@ export default function Home() {
           </>
         )}
  */}
+
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>
-        {/* <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
           {barbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
-        </div> */}
+        </div>
 
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Populares
         </h2>
-        {/*   <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
+        <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
           {popularBarbershops.map((barbershop) => (
             <BarbershopItem key={barbershop.id} barbershop={barbershop} />
           ))}
-        </div> */}
+        </div>
       </div>
     </div>
   );

@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Header from "../components/header";
-
+import Footer from "../components/footer";
+/* import Footer from "./_components/footer";
+import AuthProvider from "./_providers/auth";
+ */
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,11 +21,12 @@ export default function RootLayout({
   return (
     <html lang="en" className="!dark">
       <body className={inter.className}>
-        <Header />
-        <div className="flex h-full flex-col gap-4 mt-4 container mx-auto">
+        {/*   <AuthProvider> */}
+        <div className="flex h-full flex-col">
           <div className="flex-1">{children}</div>
+          <Footer />
         </div>
-
+        {/* </AuthProvider> */}
         <Toaster />
       </body>
     </html>
