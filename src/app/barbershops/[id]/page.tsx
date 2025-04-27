@@ -1,9 +1,9 @@
-import PhoneItem from "@/src/components/phone-item";
-import ServiceItem from "@/src/components/service-item";
-import SidebarSheet from "@/src/components/sidebar-sheet";
-import { Button } from "@/src/components/ui/button";
-import { Sheet, SheetTrigger } from "@/src/components/ui/sheet";
-import { db } from "@/src/lib/prisma";
+import PhoneItem from "@/components/phone-item";
+import ServiceItem from "@/components/service-item";
+import SidebarSheet from "@/components/sidebar-sheet";
+import { Button } from "@/components/ui/button";
+import { Sheet, SheetTrigger } from "@/components/ui/sheet";
+import { db } from "@/lib/prisma";
 import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -11,7 +11,7 @@ import { notFound } from "next/navigation";
 
 interface BarbershopPageProps {
   params: {
-    id: string;
+    id: string | any;
   };
 }
 
@@ -45,7 +45,7 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
         <Button
           size="icon"
           variant="secondary"
-          className="absolute left-4 top-4"
+          className="absolute left-4 top-4 "
           asChild
         >
           <Link href="/">
@@ -68,7 +68,7 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
       </div>
 
       {/* TÍTULO */}
-      <div className="border-b border-solid p-5">
+      <div className="border-b border-solid p-5  container md:mx-auto">
         <h1 className="mb-3 text-xl font-bold">{barbershop.name}</h1>
         <div className="mb-2 flex items-center gap-2">
           <MapPinIcon className="text-primary" size={18} />
@@ -82,13 +82,13 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
       </div>
 
       {/* DESCRIÇÃO */}
-      <div className="space-y-2 border-b border-solid p-5">
+      <div className="space-y-2 border-b border-solid p-5  container md:mx-auto">
         <h2 className="text-xs font-bold uppercase text-gray-400">Sobre nós</h2>
         <p className="text-justify text-sm">{barbershop?.description}</p>
       </div>
 
       {/* SERVIÇOS */}
-      <div className="space-y-3 border-b border-solid p-5">
+      <div className="space-y-3 border-b border-solid p-5  container md:mx-auto">
         <h2 className="text-xs font-bold uppercase text-gray-400">Serviços</h2>
         <div className="space-y-3">
           {barbershop.services.map((service) => (
@@ -102,7 +102,7 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
       </div>
 
       {/* CONTATO */}
-      <div className="space-y-3 p-5">
+      <div className="space-y-3 p-5  container md:mx-auto">
         {barbershop.phones.map((phone) => (
           <PhoneItem key={phone} phone={phone} />
         ))}

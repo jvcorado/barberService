@@ -1,30 +1,36 @@
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import Image from "next/image";
-import Search from "../components/search";
-import { db } from "../lib/prisma";
-import BarbershopItem from "../components/barbershop-item";
-import { Button } from "../components/ui/button";
 import Link from "next/link";
 import { quickSearchOptions } from "../constants/search";
-import Header from "../components/header";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { db } from "@/lib/prisma";
+import Header from "@/components/header";
+import BarbershopItem from "@/components/barbershop-item";
+import BookingItem from "@/components/booking-item";
+import Search from "@/components/search";
+import { Button } from "@/components/ui/button";
+import { getConfirmedBookings } from "../data/get-confirmed-bookings";
 
 export default async function Home() {
-  const barbershops = await db.barberShop.findMany({});
-  const popularBarbershops = await db.barberShop.findMany({
-    orderBy: {
-      name: "desc",
+  const session = await getServerSession(authOptions);
+  const barbershops = await db.barberShop.findMany({
+    where: {
+      isPremium: true,
     },
   });
+  const popularBarbershops = await db.barberShop.findMany({});
+  const confirmedBookings = await getConfirmedBookings();
 
   return (
     <div>
       <Header />
-      <div className="p-5">
+      <div className="p-5 container md:mx-auto">
         {/* TEXTO */}
         <h2 className="text-xl font-bold">
-          Olá, João Victor
-          {/* {session?.user ? session.user.name : "bem vindo"} */}!
+          {session?.user ? `Olá ${session.user.name} ` : "Seja Bem Vindo"} !
         </h2>
         <p>
           <span className="capitalize">
@@ -75,12 +81,13 @@ export default async function Home() {
           />
         </div>
 
-        {/*         {confirmedBookings.length > 0 && (
+        {confirmedBookings.length > 0 && (
           <>
             <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
               Agendamentos
             </h2>
 
+            {/* AGENDAMENTO */}
             <div className="flex gap-3 overflow-x-auto [&::-webkit-scrollbar]:hidden">
               {confirmedBookings.map((booking) => (
                 <BookingItem
@@ -91,8 +98,6 @@ export default async function Home() {
             </div>
           </>
         )}
- */}
-
         <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
           Recomendados
         </h2>

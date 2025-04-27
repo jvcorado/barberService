@@ -8,18 +8,21 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String      @id @default(cuid())
   name          String?
-  email         String    @unique
+  email         String      @unique
   emailVerified DateTime?
   image         String?
+  admin         Boolean     @default(false)
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  barbershop    BarberShop? @relation("UserBarbershop")
 }
 
+//GOOGLE PROVIDER
 model Account {
   userId            String
   type              String
@@ -40,6 +43,7 @@ model Account {
   @@id([provider, providerAccountId])
 }
 
+//GOOGLE PROVIDER
 model Session {
   sessionToken String   @unique
   userId       String
@@ -50,6 +54,7 @@ model Session {
   updatedAt DateTime @updatedAt
 }
 
+//GOOGLE PROVIDER
 model VerificationToken {
   identifier String
   token      String
@@ -65,10 +70,15 @@ model BarberShop {
   phones      String[]
   description String
   imageUrl    String
+  isPremium   Boolean             @default(false)
   createdAt   DateTime            @default(now())
   updatedAt   DateTime            @updatedAt
   services    BarbershopService[]
   Booking     Booking[]
+
+  // RELAÇÃO COM USER (ADMIN)
+  ownerId String? @unique
+  owner   User?   @relation("UserBarbershop", fields: [ownerId], references: [id])
 }
 
 model BarbershopService {

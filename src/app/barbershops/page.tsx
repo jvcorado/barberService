@@ -1,7 +1,7 @@
-import BarbershopItem from "@/src/components/barbershop-item";
-import Header from "@/src/components/header";
-import Search from "@/src/components/search";
-import { db } from "@/src/lib/prisma";
+import BarbershopItem from "@/components/barbershop-item";
+import Header from "@/components/header";
+import Search from "@/components/search";
+import { db } from "@/lib/prisma";
 
 interface BarbershopsPageProps {
   searchParams: {
