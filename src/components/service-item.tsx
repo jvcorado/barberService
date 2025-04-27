@@ -14,12 +14,12 @@ import {
 import { ptBR } from "date-fns/locale";
 import { useEffect, useMemo, useState } from "react";
 import { isPast, isToday, set } from "date-fns";
-import { toast } from "sonner";
 
 import { Dialog, DialogContent } from "./ui/dialog";
 
 import { useRouter } from "next/navigation";
 import { Calendar } from "./ui/calendar";
+import { useSession } from "next-auth/react";
 
 interface ServiceItemProps {
   service: BarbershopService;
@@ -78,7 +78,7 @@ const getTimeList = ({ bookings, selectedDay }: GetTimeListProps) => {
 };
 
 const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
-  /* const { data } = useSession(); */
+  const { data } = useSession();
   const router = useRouter();
   const [signInDialogIsOpen, setSignInDialogIsOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
@@ -109,9 +109,9 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
   }, [selectedDay, selectedTime]);
 
   const handleBookingClick = () => {
-    /*  if (data?.user) {
+    if (data?.user) {
       return setBookingSheetIsOpen(true);
-    } */
+    }
     return setSignInDialogIsOpen(true);
   };
 

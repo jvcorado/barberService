@@ -9,18 +9,12 @@ import Image from "next/image";
 import { Avatar, AvatarImage } from "./ui/avatar";
 import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog";
 import { quickSearchOptions } from "../constants/search";
+import SignInDialog from "./sign-in-dialog";
+import { signOut, useSession } from "next-auth/react";
 
 const SidebarSheet = () => {
-  /*   const { data } = useSession();
-  const handleLogoutClick = () => signOut(); */
-
-  const data = {
-    user: {
-      name: "João Victor",
-      email: "teste@gmail.com",
-      image: "fdfdf.com",
-    },
-  };
+  const { data } = useSession();
+  const handleLogoutClick = () => signOut();
 
   return (
     <SheetContent className="overflow-y-auto">
@@ -50,7 +44,7 @@ const SidebarSheet = () => {
                 </Button>
               </DialogTrigger>
               <DialogContent className="w-[90%]">
-                {/*     <SignInDialog /> */}
+                <SignInDialog />
               </DialogContent>
             </Dialog>
           </>
@@ -97,7 +91,7 @@ const SidebarSheet = () => {
           <Button
             variant="ghost"
             className="justify-start gap-2"
-            /*    onClick={handleLogoutClick} */
+            onClick={handleLogoutClick}
           >
             <LogOutIcon size={18} />
             Sair da conta
