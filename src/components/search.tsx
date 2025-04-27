@@ -31,7 +31,16 @@ const Search = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2">
+      <form
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            form.handleSubmit(handleSubmit)();
+          }
+        }}
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="flex gap-2"
+      >
         <FormField
           control={form.control}
           name="title"
