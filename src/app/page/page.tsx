@@ -67,7 +67,7 @@ const LP = () => {
 
         {/* Mobile Nav */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-barber-dark/90 backdrop-blur-sm absolute w-full py-4 animate-fade-in">
+          <div className="lg:hidden bg-black/90 backdrop-blur-sm absolute w-full py-4 animate-fade-in">
             <nav className="flex flex-col gap-4 px-4">
               <a
                 href="#features"
