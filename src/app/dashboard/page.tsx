@@ -1,45 +1,59 @@
-// app/dashboard/page.tsx
+import { ChartAreaInteractive } from "@/components/chart-area-interactive";
+import { DataTable } from "@/components/data-table";
+import { SectionCards } from "@/components/section-cards";
 
-import BookingsTable from "@/components/booking-table";
-import { DashboardRevenueCards } from "@/components/dashboard-revenue-cards";
-import Header from "@/components/header";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import Link from "next/link";
+import { redirect } from "next/dist/server/api-utils";
 
-const Dashboard = async () => {
+export default async function Page() {
   const session = await getServerSession(authOptions);
   const now = new Date();
 
-  if (!session) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-lg text-gray-700">Faça login para acessar</p>
-      </div>
-    );
-  }
-
-  if (!session.user.admin) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-lg text-red-600">
-          Você não tem permissão para acessar esta página.
-        </p>
-      </div>
-    );
+  if (!session?.user?.admin) {
+    return <p className="text-center mt-6">Acesso negado.</p>;
   }
 
   const barbershop = await db.barberShop.findUnique({
+    where: { ownerId: session.user.id },
+  });
+
+  if (!barbershop) {
+    return <p className="text-center mt-6">Nenhuma barbearia encontrada.</p>;
+  }
+
+  const bookings = await db.booking.findMany({
     where: {
-      ownerId: session.user.id,
+      service: {
+        barberShopId: barbershop.id,
+      },
+    },
+    include: {
+      service: true,
+      user: true,
+    },
+    orderBy: {
+      date: "desc",
     },
   });
+
+  const formattedData = bookings.map((booking) => ({
+    id: booking.id,
+    cliente: booking.user?.name ?? "Usuário",
+    servico: booking.service.name,
+    data: new Date(booking.date).toLocaleDateString("pt-BR"),
+    hora: new Date(booking.date).toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    preco: `R$ ${Number(booking.service.price).toFixed(2).replace(".", ",")}`,
+  }));
 
   const futureBookings = await db.booking.findMany({
     where: {
       service: {
-        barberShopId: barbershop?.id,
+        barberShopId: barbershop.id,
       },
       date: {
         gte: now,
@@ -50,10 +64,11 @@ const Dashboard = async () => {
     },
   });
 
+  // Agendamentos passados (lucro real)
   const pastBookings = await db.booking.findMany({
     where: {
       service: {
-        barberShopId: barbershop?.id,
+        barberShopId: barbershop.id,
       },
       date: {
         lt: now,
@@ -64,49 +79,44 @@ const Dashboard = async () => {
     },
   });
 
+  // Soma dos valores
   const totalFuture = futureBookings.reduce(
     (acc, booking) => acc + Number(booking.service.price),
     0,
   );
-
   const totalPast = pastBookings.reduce(
     (acc, booking) => acc + Number(booking.service.price),
     0,
   );
 
-  return (
-    <>
-      <Header />
-      <div className="space-y-3 p-5 container mx-auto">
-        {barbershop ? (
-          <>
-            <h2 className="text-xl font-bold">{`Olá ${barbershop.name} `}!</h2>
+  const dailyRevenue = bookings.reduce(
+    (acc, booking) => {
+      const date = new Date(booking.date).toISOString().split("T")[0];
+      const value = Number(booking.service.price);
 
-            <DashboardRevenueCards
-              totalPast={totalPast}
-              totalFuture={totalFuture}
-            />
-
-            <div className="mt-8">
-              <BookingsTable />
-            </div>
-          </>
-        ) : (
-          <div className="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900 rounded-lg">
-            <p className="text-yellow-800 dark:text-yellow-200">
-              Você ainda não cadastrou uma barbearia.
-            </p>
-            <Link
-              href="/barbershop/new"
-              className="mt-2 inline-block text-blue-600 hover:underline"
-            >
-              ➕ Cadastrar agora
-            </Link>
-          </div>
-        )}
-      </div>
-    </>
+      acc[date] = (acc[date] || 0) + value;
+      return acc;
+    },
+    {} as Record<string, number>,
   );
-};
 
-export default Dashboard;
+  const chartData = Object.entries(dailyRevenue).map(([date, valor]) => ({
+    date,
+    valor,
+  }));
+
+  return (
+    <div className="flex flex-1 flex-col">
+      <div className="@container/main flex flex-1 flex-col gap-2">
+        <div className="flex flex-col gap-4 py-4 md:gap-6  md:py-6">
+          <SectionCards totalPast={totalPast} totalFuture={totalFuture} />
+
+          <div className="px-4 lg:px-6">
+            <ChartAreaInteractive data={chartData} />
+          </div>
+          <DataTable data={formattedData} />
+        </div>
+      </div>
+    </div>
+  );
+}

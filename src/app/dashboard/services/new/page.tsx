@@ -56,7 +56,7 @@ export default function CreateServicePage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 p-6  rounded-xl shadow-md">
+    <div className="p-5">
       <h2 className="text-2xl font-bold mb-6">Cadastrar novo serviço</h2>
 
       <Form {...form}>
@@ -133,9 +133,11 @@ export default function CreateServicePage() {
             )}
           />
 
-          <Button type="submit" className="w-full">
-            Cadastrar serviço
-          </Button>
+          <div className="w-full flex items-center justify-end">
+            <Button type="submit" className="w-full md:w-fit ">
+              Cadastrar serviço
+            </Button>
+          </div>
         </form>
       </Form>
     </div>

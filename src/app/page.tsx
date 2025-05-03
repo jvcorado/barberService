@@ -3,7 +3,7 @@ import { ptBR } from "date-fns/locale";
 import Image from "next/image";
 import Link from "next/link";
 import { quickSearchOptions } from "../constants/search";
-
+import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
@@ -23,6 +23,10 @@ export default async function Home() {
   });
   const popularBarbershops = await db.barberShop.findMany({});
   const confirmedBookings = await getConfirmedBookings();
+
+  if (session?.user?.admin === true) {
+    redirect("/dashboard");
+  }
 
   return (
     <div>
@@ -46,8 +50,6 @@ export default async function Home() {
         <div className="mt-6">
           <Search />
         </div>
-
-        {/* teste  sdsd */}
 
         {/* BUSCA RÁPIDA */}
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">

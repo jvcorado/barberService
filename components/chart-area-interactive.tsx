@@ -133,7 +133,11 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartAreaInteractive() {
+export function ChartAreaInteractive({
+  data,
+}: {
+  data: { date: string; valor: number }[];
+}) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("30d");
 
@@ -143,7 +147,7 @@ export function ChartAreaInteractive() {
     }
   }, [isMobile]);
 
-  const filteredData = chartData.filter((item) => {
+  const filteredData = data.filter((item) => {
     const date = new Date(item.date);
     const referenceDate = new Date("2024-06-30");
     let daysToSubtract = 90;
@@ -160,12 +164,12 @@ export function ChartAreaInteractive() {
   return (
     <Card className="@container/card">
       <CardHeader className="relative">
-        <CardTitle>Total Visitors</CardTitle>
+        <CardTitle>Total De Clientes</CardTitle>
         <CardDescription>
           <span className="@[540px]/card:block hidden">
-            Total for the last 3 months
+            Total de Clientes para o período de 3 meses
           </span>
-          <span className="@[540px]/card:hidden">Last 3 months</span>
+          <span className="@[540px]/card:hidden">Últimos 3 meses</span>
         </CardDescription>
         <div className="absolute right-4 top-4">
           <ToggleGroup
@@ -176,13 +180,13 @@ export function ChartAreaInteractive() {
             className="@[767px]/card:flex hidden"
           >
             <ToggleGroupItem value="90d" className="h-8 px-2.5">
-              Last 3 months
+              Últimos 3 meses
             </ToggleGroupItem>
             <ToggleGroupItem value="30d" className="h-8 px-2.5">
-              Last 30 days
+              Últimos 30 dias
             </ToggleGroupItem>
             <ToggleGroupItem value="7d" className="h-8 px-2.5">
-              Last 7 days
+              Últimos 7 dias
             </ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
@@ -194,13 +198,13 @@ export function ChartAreaInteractive() {
             </SelectTrigger>
             <SelectContent className="rounded-xl">
               <SelectItem value="90d" className="rounded-lg">
-                Last 3 months
+                Últimos 3 meses
               </SelectItem>
               <SelectItem value="30d" className="rounded-lg">
-                Last 30 days
+                Últimos 30 dias
               </SelectItem>
               <SelectItem value="7d" className="rounded-lg">
-                Last 7 days
+                Últimos 7 dias
               </SelectItem>
             </SelectContent>
           </Select>
@@ -238,7 +242,7 @@ export function ChartAreaInteractive() {
                 />
               </linearGradient>
             </defs>
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="date"
               tickLine={false}
@@ -247,39 +251,35 @@ export function ChartAreaInteractive() {
               minTickGap={32}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return date.toLocaleDateString("en-US", {
+                return date.toLocaleDateString("pt-BR", {
+                  day: "2-digit",
                   month: "short",
-                  day: "numeric",
                 });
               }}
             />
+
             <ChartTooltip
               cursor={false}
               content={
                 <ChartTooltipContent
-                  labelFormatter={(value) => {
-                    return new Date(value).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                    });
-                  }}
+                  labelFormatter={(value) =>
+                    new Date(value).toLocaleDateString("pt-BR", {
+                      day: "2-digit",
+                      month: "long",
+                    })
+                  }
                   indicator="dot"
                 />
               }
             />
+
             <Area
-              dataKey="mobile"
-              type="natural"
-              fill="url(#fillMobile)"
-              stroke="var(--color-mobile)"
-              stackId="a"
-            />
-            <Area
-              dataKey="desktop"
-              type="natural"
-              fill="url(#fillDesktop)"
-              stroke="var(--color-desktop)"
-              stackId="a"
+              dataKey="valor"
+              type="monotone"
+              fill="rgba(34,197,94,0.1)" // verde claro
+              stroke="rgb(34,197,94)" // verde do Tailwind (emerald-500)
+              strokeWidth={2}
+              dot={{ r: 3, fill: "rgb(34,197,94)" }}
             />
           </AreaChart>
         </ChartContainer>

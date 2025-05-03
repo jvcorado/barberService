@@ -1,8 +1,12 @@
 const Loading = () => {
   return (
-    <p className=" text-white h-full flex items-center justify-center">
-      Carregando...
-    </p>
+    <div className=" flex w-full h-full items-center justify-center ">
+      <div className="lds-ellipsis">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
   );
 };
 
