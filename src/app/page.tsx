@@ -10,7 +10,6 @@ import { db } from "@/lib/prisma";
 import Header from "@/components/header";
 import BarbershopItem from "@/components/barbershop-item";
 import BookingItem from "@/components/booking-item";
-import Search from "@/components/search";
 import { Button } from "@/components/ui/button";
 import { getConfirmedBookings } from "../data/get-confirmed-bookings";
 

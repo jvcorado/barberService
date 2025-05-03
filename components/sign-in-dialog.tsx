@@ -2,9 +2,12 @@ import { signIn } from "next-auth/react";
 import { Button } from "./ui/button";
 import { DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import Image from "next/image";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
-const SignInDialog = () => {
-  const handleLoginWithGoogleClick = () => signIn("google");
+const SignInDialog = async () => {
+  const handleLoginWithGoogleClick = () =>
+    signIn("google", { callbackUrl: "/" });
 
   return (
     <>
