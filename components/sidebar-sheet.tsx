@@ -3,6 +3,7 @@
 import { Button } from "./ui/button";
 import {
   CalendarIcon,
+  CircleChevronRight,
   HomeIcon,
   LogInIcon,
   LogOutIcon,
@@ -114,8 +115,19 @@ const SidebarSheet = () => {
         </div>
       )}
 
-      {data?.user && (
+      {data?.user && data?.user.admin == false && (
         <div className="flex flex-col gap-2 py-5">
+          <Button className="justify-start gap-2" variant="ghost" asChild>
+            <Link href="/register">
+              <CircleChevronRight size={18} />
+              Ser tornar parceiro
+            </Link>
+          </Button>
+        </div>
+      )}
+
+      {data?.user && (
+        <div className="flex flex-col gap-2 ">
           <Button
             variant="ghost"
             className="justify-start gap-2"
