@@ -33,7 +33,7 @@ export default async function Home() {
       <Header />
       <div className="p-5 container md:mx-auto">
         {/* TEXTO */}
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl  font-bold">
           {session?.user ? `Olá ${session.user.name} ` : "Seja Bem Vindo"} !
         </h2>
         <p>
@@ -45,11 +45,6 @@ export default async function Home() {
             {format(new Date(), "MMMM", { locale: ptBR })}
           </span>
         </p>
-
-        {/* BUSCA */}
-        <div className="mt-6">
-          <Search />
-        </div>
 
         {/* BUSCA RÁPIDA */}
         <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
@@ -74,14 +69,14 @@ export default async function Home() {
         </div>
 
         {/* IMAGEM */}
-        <div className="relative mt-6 h-[150px] w-full">
+        {/*    <div className="relative mt-6 max-lg:h-[150px] lg:h-[300px] w-full">
           <Image
             alt="Agende nos melhores com FSW Barber"
             src="/banner-01.png"
             fill
             className="rounded-xl object-cover"
           />
-        </div>
+        </div> */}
 
         {confirmedBookings.length > 0 && (
           <>

@@ -48,9 +48,9 @@ const Search = () => {
             <FormItem className="w-full">
               <FormControl>
                 <Input
-                  placeholder="Faça sua busca..."
+                  placeholder="Buscar..."
                   {...field}
-                  className="w-full"
+                  className="w-full bg-transparent"
                 />
               </FormControl>
               <FormMessage />
