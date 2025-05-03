@@ -8,19 +8,18 @@ import { ChevronLeftIcon, MapPinIcon, MenuIcon, StarIcon } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import React from "react";
 
 interface BarbershopPageProps {
   params: {
-    id: string | any;
+    id: string;
   };
 }
 
 const BarbershopPage = async ({ params }: BarbershopPageProps) => {
-  // chamar o meu banco de dados
-  const { id } = await params;
   const barbershop = await db.barberShop.findUnique({
     where: {
-      id: id,
+      id: params.id,
     },
     include: {
       services: true,

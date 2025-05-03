@@ -3,14 +3,17 @@ import Header from "@/components/header";
 import Search from "@/components/search";
 import { db } from "@/lib/prisma";
 
-interface BarbershopsPageProps {
+export interface BarbershopsPageProps {
   searchParams: {
-    title?: string;
-    service?: string;
+    id: string;
+    title: string;
+    service: string;
   };
 }
 
 const BarbershopsPage = async ({ searchParams }: BarbershopsPageProps) => {
+  console.log("searchParams", searchParams);
+
   const barbershops = await db.barberShop.findMany({
     where: {
       OR: [
