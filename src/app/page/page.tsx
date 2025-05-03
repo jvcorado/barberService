@@ -56,7 +56,10 @@ const LP = () => {
             >
               Entrar
             </Button>
-            <Button className="bg-primary text-white ">
+            <Button
+              onClick={(open) => setSignInDialogIsOpen(true)}
+              className="bg-primary text-white "
+            >
               Cadastre sua barbearia
             </Button>
           </nav>
@@ -64,7 +67,7 @@ const LP = () => {
 
         {/* Mobile Nav */}
         {isMenuOpen && (
-          <div className="lg:hidden bg-barber-dark absolute w-full py-4 animate-fade-in">
+          <div className="lg:hidden bg-barber-dark/90 backdrop-blur-sm absolute w-full py-4 animate-fade-in">
             <nav className="flex flex-col gap-4 px-4">
               <a
                 href="#features"
@@ -89,12 +92,16 @@ const LP = () => {
               </a>
               <div className="flex flex-col gap-3 mt-4">
                 <Button
+                  onClick={(open) => setSignInDialogIsOpen(true)}
                   variant="outline"
                   className="text-primary border-barber-gold hover:bg-primary hover:text-barber-dark"
                 >
                   Entrar
                 </Button>
-                <Button className="bg-primary text-barber-dark hover:bg-primary/90">
+                <Button
+                  onClick={(open) => setSignInDialogIsOpen(true)}
+                  className="bg-primary text-barber-dark hover:bg-primary/90"
+                >
                   Cadastre sua barbearia
                 </Button>
               </div>
@@ -125,7 +132,11 @@ const LP = () => {
                 proporciona uma experiência sem complicações para seus clientes.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-                <Button className="  px-8 py-6 text-lg" size="lg">
+                <Button
+                  onClick={(open) => setSignInDialogIsOpen(true)}
+                  className="px-8 py-6 text-lg"
+                  size="lg"
+                >
                   Cadastre sua barbearia
                 </Button>
                 <Button
@@ -183,7 +194,10 @@ const LP = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full b text-barber-dark ">
+                  <Button
+                    onClick={(open) => setSignInDialogIsOpen(true)}
+                    className="w-full b text-barber-dark "
+                  >
                     Confirmar Reserva
                   </Button>
                 </div>
@@ -456,12 +470,14 @@ const LP = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
+                onClick={(open) => setSignInDialogIsOpen(true)}
                 className="bg-primary text-barber-dark hover:bg-primary/90 px-8 py-6 text-lg"
                 size="lg"
               >
                 Começar gratuitamente
               </Button>
               <Button
+                onClick={(open) => setSignInDialogIsOpen(true)}
                 variant="outline"
                 className="text-white border-white hover:bg-white/10 px-8 py-6 text-lg"
                 size="lg"
