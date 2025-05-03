@@ -12,8 +12,6 @@ export interface BarbershopsPageProps {
 }
 
 const BarbershopsPage = async ({ searchParams }: BarbershopsPageProps) => {
-  console.log("searchParams", searchParams);
-
   const barbershops = await db.barberShop.findMany({
     where: {
       OR: [
