@@ -25,8 +25,8 @@ export default async function LinkPage({ params }: { params: { id: string } }) {
   if (!barbershop) return notFound();
 
   return (
-    <div className="container mx-auto flex flex-col items-center  py-10 h-[90vh] ">
-      <header className="mb-8 text-center">
+    <div className="container mx-auto flex flex-col items-center  py-10">
+      <header className="mb-4 text-center">
         <div className="flex items-center justify-center w-24 h-24 mx-auto mb-2 overflow-hidden border-4 rounded-full border-primary">
           <div className="flex flex-col items-center justify-center w-full h-full ">
             <Image
