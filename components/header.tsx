@@ -44,7 +44,7 @@ const Header = () => {
         </div>
 
         <div
-          className={`mt-6 w-full max-w-[600px] overflow-hidden transition-all ease-in-out duration-500 ${
+          className={`mt-6 block lg:hidden w-full max-w-[600px] overflow-hidden transition-all ease-in-out duration-500 ${
             scrolled ? "opacity-0 !h-0" : "opacity-100 max-h-[200px]"
           }`}
         >

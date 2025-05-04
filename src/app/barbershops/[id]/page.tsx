@@ -44,31 +44,18 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
 
         <Button
           size="icon"
-          variant="ghost"
-          className="absolute left-4 top-4 "
+          variant="outline"
+          className="absolute !w-7 !h-7 flex items-center justify-center rounded-full left-4 top-4 "
           asChild
         >
           <Link href="/">
-            <ChevronLeftIcon size={40} />
+            <ChevronLeftIcon size={40} className="!w-6 !h-6" />
           </Link>
         </Button>
 
         <div className="absolute z-50 right-4 top-4 items-center gap-4 ">
           <AuthMenu />
         </div>
-
-        {/*    <Sheet>
-          <SheetTrigger asChild>
-            <Button
-              size="icon"
-              variant="outline"
-              className="absolute right-4 top-4"
-            >
-              <MenuIcon />
-            </Button>
-          </SheetTrigger>
-          <SidebarSheet />
-        </Sheet> */}
       </div>
 
       {/* TÍTULO */}

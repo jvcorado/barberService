@@ -32,6 +32,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import BookingSummary from "./booking-summary";
 import { deleteBooking } from "@/src/actions/delete-booking";
+import { useMediaQuery } from "@react-hook/media-query";
 
 interface BookingItemProps {
   booking: Prisma.BookingGetPayload<{
@@ -59,10 +60,14 @@ const BookingItem = ({ booking }: BookingItemProps) => {
   const handleSheetOpenChange = (isOpen: boolean) => {
     setIsSheetOpen(isOpen);
   };
+
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
+  const sheet = isMobile ? "bottom" : "right";
   return (
     <Sheet open={isSheetOpen} onOpenChange={handleSheetOpenChange}>
       <SheetTrigger className="w-full min-w-[90%]">
-        <Card className="min-w-[90%] bg-background">
+        <Card className="min-w-[90%] bg-background rounded-2xl">
           <CardContent className="flex justify-between p-0">
             {/* ESQUERDA */}
             <div className="flex flex-col gap-2 py-5 pl-5">
@@ -82,7 +87,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
               </div>
             </div>
             {/* DIREITA */}
-            <div className="flex flex-col items-center justify-center border-l-2 border-solid px-5">
+            <div className="flex flex-col items-center justify-center border-l px-5">
               <p className="text-sm capitalize">
                 {format(booking.date, "MMMM", { locale: ptBR })}
               </p>
@@ -96,7 +101,7 @@ const BookingItem = ({ booking }: BookingItemProps) => {
           </CardContent>
         </Card>
       </SheetTrigger>
-      <SheetContent className="w-[85%]">
+      <SheetContent className="max-lg:rounded-t-3xl lg:w-[85%]" side={sheet}>
         <SheetHeader>
           <SheetTitle className="text-left">Informações da Reserva</SheetTitle>
         </SheetHeader>

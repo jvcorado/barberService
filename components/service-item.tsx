@@ -26,6 +26,7 @@ import BookingSummary from "./booking-summary";
 import { toast } from "sonner";
 import { getBookings } from "@/src/actions/get-bookings";
 import { createBooking } from "@/src/actions/create-booking";
+import { useMediaQuery } from "@react-hook/media-query";
 
 interface ServiceItemProps {
   service: BarbershopService;
@@ -170,10 +171,13 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
     });
   }, [dayBookings, selectedDay]);
 
+  const isMobile = useMediaQuery("(max-width: 768px)");
+  const sheet = isMobile ? "bottom" : "right";
+
   return (
     <>
       <Card>
-        <CardContent className="flex items-center gap-3 p-3">
+        <CardContent className="flex items-center gap-3 p-3 bg-background">
           {/* IMAGE */}
           <div className="relative max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px]">
             <Image
@@ -208,7 +212,10 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                   Reservar
                 </Button>
 
-                <SheetContent className="px-0 ">
+                <SheetContent
+                  className="px-0 max-lg:rounded-t-3xl"
+                  side={sheet}
+                >
                   <SheetHeader>
                     <SheetTitle>Fazer Reserva</SheetTitle>
                   </SheetHeader>
