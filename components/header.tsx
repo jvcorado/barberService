@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
 import Link from "next/link";
 import Search from "./search";
@@ -9,7 +9,7 @@ import AuthMenu from "./auth-menu";
 const Header = () => {
   const [scrolled, setScrolled] = useState(false);
 
-  /*   useEffect(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
     };
@@ -17,7 +17,7 @@ const Header = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
- */
+
   return (
     <Card
       className={`rounded-none sticky top-0 z-50 border-none transition-colors duration-300 ${
@@ -43,7 +43,15 @@ const Header = () => {
           </div>
         </div>
 
-        <div className="mt-6 w-full max-w-[600px]">
+        <div
+          className={`mt-6 w-full max-w-[600px] overflow-hidden transition-all ease-in-out duration-500 ${
+            scrolled ? "opacity-0 !h-0" : "opacity-100 max-h-[200px]"
+          }`}
+        >
+          <Search />
+        </div>
+
+        <div className={`mt-6 w-full max-w-[600px] hidden lg:block `}>
           <Search />
         </div>
 
