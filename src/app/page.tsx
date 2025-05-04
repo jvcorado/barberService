@@ -31,8 +31,8 @@ export default async function Home() {
   return (
     <div>
       <Header />
-      <div className="p-5 container md:mx-auto">
-        <div className="mt-0 lg:mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+      <div className="px-5 pb-5 lg:pt-5 container md:mx-auto">
+        <div className="mt-0  lg:mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button
               className="gap-2"

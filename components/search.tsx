@@ -47,11 +47,7 @@ const Search = () => {
           render={({ field }) => (
             <FormItem className="w-full">
               <FormControl>
-                <Input
-                  placeholder="Buscar..."
-                  {...field}
-                  className="w-full bg-transparent"
-                />
+                <Input placeholder="Buscar..." {...field} className="w-full" />
               </FormControl>
               <FormMessage />
             </FormItem>
