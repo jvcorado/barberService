@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import {
   Form,
   FormControl,
@@ -30,7 +30,6 @@ const formSchema = z.object({
   address: z.string().optional(),
   phones: z.string().min(1, "Informe pelo menos um telefone"),
   description: z.string().optional(),
-  imageUrl: z.string().url("URL inválida").optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -38,6 +37,7 @@ type FormData = z.infer<typeof formSchema>;
 export default function RegisterBarbershop() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -46,17 +46,43 @@ export default function RegisterBarbershop() {
       address: "",
       phones: "",
       description: "",
-      imageUrl: "",
     },
   });
 
-  const onSubmit = (data: FormData) => {
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return data.url;
+    } else {
+      alert("Erro ao fazer upload da imagem");
+      return null;
+    }
+  };
+
+  const onSubmit = async (data: FormData) => {
+    if (!imageFile) {
+      alert("Envie uma imagem antes de registrar.");
+      return;
+    }
+
+    const uploadedUrl = await uploadImage(imageFile);
+    if (!uploadedUrl) return;
+
     startTransition(async () => {
       const res = await fetch("/api/register-barbershop", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...data,
+          imageUrl: uploadedUrl,
           phones: data.phones.split(",").map((p) => p.trim()),
         }),
       });
@@ -158,19 +184,22 @@ export default function RegisterBarbershop() {
                       )}
                     />
 
-                    <FormField
-                      control={form.control}
-                      name="imageUrl"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>URL da Imagem</FormLabel>
-                          <FormControl>
-                            <Input placeholder="https://..." {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
+                    <div className="space-y-2">
+                      <FormLabel>Imagem da Barbearia</FormLabel>
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          setImageFile(file ?? null);
+                        }}
+                      />
+                      {imageFile && (
+                        <p className="text-sm text-muted-foreground">
+                          Selecionado: {imageFile.name}
+                        </p>
                       )}
-                    />
+                    </div>
 
                     <Button
                       type="submit"

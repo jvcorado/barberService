@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useRouter } from "next/navigation";
 import { createService } from "@/src/actions/create-service";
+import { useState, useTransition } from "react";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome obrigatório"),
@@ -27,6 +28,8 @@ const formSchema = z.object({
 
 export default function CreateServicePage() {
   const router = useRouter();
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,25 +37,52 @@ export default function CreateServicePage() {
       name: "",
       description: "",
       price: 0,
-      imageUrl: "",
       duration: 30,
     },
   });
 
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const res = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      return data.url;
+    } else {
+      alert("Erro ao fazer upload da imagem");
+      return null;
+    }
+  };
+
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    try {
-      await createService({
+    if (!imageFile) {
+      alert("Envie uma imagem antes de registrar.");
+      return;
+    }
+
+    const uploadedUrl = await uploadImage(imageFile);
+    if (!uploadedUrl) return;
+
+    startTransition(() => {
+      createService({
         name: values.name,
         description: values.description,
         price: values.price,
-        imageUrl: values.imageUrl,
+        imageUrl: uploadedUrl,
         duration: values.duration,
-      });
-
-      router.push("/dashboard/services");
-    } catch (error) {
-      console.error("Erro ao criar barbearia", error);
-    }
+      })
+        .then(() => {
+          router.push("/dashboard/services");
+        })
+        .catch((error) => {
+          console.error("Erro ao criar barbearia", error);
+        });
+    });
   };
 
   return (
@@ -119,23 +149,26 @@ export default function CreateServicePage() {
             />
           </div>
 
-          <FormField
-            control={form.control}
-            name="imageUrl"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>URL da Imagem</FormLabel>
-                <FormControl>
-                  <Input placeholder="https://..." {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          <div className="space-y-2">
+            <FormLabel>Imagem da Barbearia</FormLabel>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                setImageFile(file ?? null);
+              }}
+            />
+            {imageFile && (
+              <p className="text-sm text-muted-foreground">
+                Selecionado: {imageFile.name}
+              </p>
             )}
-          />
+          </div>
 
           <div className="w-full flex items-center justify-end">
             <Button type="submit" className="w-full md:w-fit ">
-              Cadastrar serviço
+              {isPending ? "Cadastrando..." : "Cadastrar serviço"}
             </Button>
           </div>
         </form>
