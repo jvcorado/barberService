@@ -83,6 +83,12 @@
   }
 }
 
+@layer components {
+  .link-card {
+    @apply relative flex items-center justify-between w-full px-6 py-4 mb-4 overflow-hidden text-left transition-all duration-300 rounded-md bg-muted hover:bg-muted/80;
+  }
+}
+
 /* From Uiverse.io by Shoh2008 */
 .lds-ellipsis {
   display: inline-block;

@@ -75,6 +75,9 @@ model BarberShop {
   updatedAt   DateTime            @updatedAt
   services    BarbershopService[]
   Booking     Booking[]
+  instagram   String?
+  facebook    String?
+  tiktok      String?
 
   // RELAÇÃO COM USER (ADMIN)
   ownerId String? @unique

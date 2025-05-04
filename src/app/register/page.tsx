@@ -1,11 +1,10 @@
-// app/register-barbershop/page.tsx
 "use client";
 
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
 import {
   Form,
   FormControl,
@@ -17,19 +16,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { cn } from "@/lib/utils";
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet";
 
 const formSchema = z.object({
   name: z.string().min(1, "Nome é obrigatório"),
   address: z.string().optional(),
   phones: z.string().min(1, "Informe pelo menos um telefone"),
   description: z.string().optional(),
+  instagram: z.string().optional(),
+  facebook: z.string().optional(),
+  tiktok: z.string().optional(),
 });
 
 type FormData = z.infer<typeof formSchema>;
@@ -38,6 +39,7 @@ export default function RegisterBarbershop() {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
@@ -46,8 +48,15 @@ export default function RegisterBarbershop() {
       address: "",
       phones: "",
       description: "",
+      instagram: "",
+      facebook: "",
+      tiktok: "",
     },
   });
+
+  useEffect(() => {
+    if (!open) return setOpen(true);
+  }, [open]);
 
   const uploadImage = async (file: File): Promise<string | null> => {
     const formData = new FormData();
@@ -97,124 +106,164 @@ export default function RegisterBarbershop() {
   };
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-md">
-        <div className={cn("flex flex-col gap-6")}>
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl"> Registrar Barbearia</CardTitle>
-              <CardDescription>
-                Preencha os dados abaixo para registrar sua barbearia.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className=" mx-auto mt-10 space-y-6">
-                <Form {...form}>
-                  <form
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      form.handleSubmit(onSubmit)();
-                    }}
-                    className="space-y-4"
-                  >
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome da Barbearia</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Ex: Barbearia do Zé"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+    <Sheet
+      open={open}
+      onOpenChange={() => {
+        setOpen(false);
+        router.push("/");
+      }}
+    >
+      <SheetContent side="bottom" className="w-full rounded-t-3xl">
+        <SheetHeader>
+          <SheetTitle>Registrar Barbearia</SheetTitle>
+          <SheetDescription>
+            Preencha os dados abaixo para registrar sua barbearia.
+          </SheetDescription>
+        </SheetHeader>
 
-                    <FormField
-                      control={form.control}
-                      name="address"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Endereço</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Rua Exemplo, 123" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+        <div className="mt-6 space-y-6">
+          <Form {...form}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                form.handleSubmit(onSubmit)();
+              }}
+              className="space-y-4"
+            >
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nome da Barbearia</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ex: Barbearia do Zé" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                    <FormField
-                      control={form.control}
-                      name="phones"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>
-                            Telefones (separados por vírgula)
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="(11) 99999-9999, (11) 98888-8888"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              <FormField
+                control={form.control}
+                name="address"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Endereço</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Rua Exemplo, 123" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Descrição</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder="Ex: Cortes modernos e clássicos"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+              <FormField
+                control={form.control}
+                name="phones"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Telefone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="(11) 99999-9999" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                    <div className="space-y-2">
-                      <FormLabel>Imagem da Barbearia</FormLabel>
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descrição</FormLabel>
+                    <FormControl>
                       <Input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          setImageFile(file ?? null);
-                        }}
+                        placeholder="Ex: Cortes modernos e clássicos"
+                        {...field}
                       />
-                      {imageFile && (
-                        <p className="text-sm text-muted-foreground">
-                          Selecionado: {imageFile.name}
-                        </p>
-                      )}
-                    </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-                    <Button
-                      type="submit"
-                      className="w-full"
-                      disabled={isPending}
-                    >
-                      {isPending ? "Registrando..." : "Registrar Barbearia"}
-                    </Button>
-                  </form>
-                </Form>
+              <FormField
+                control={form.control}
+                name="instagram"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Instagram</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://instagram.com/sua_barbearia"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="facebook"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Facebook</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://facebook.com/sua_barbearia"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="tiktok"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>TikTok</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="https://tiktok.com/@sua_barbearia"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-2">
+                <FormLabel>Imagem da Barbearia</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    setImageFile(file ?? null);
+                  }}
+                />
+                {imageFile && (
+                  <p className="text-sm text-muted-foreground">
+                    Selecionado: {imageFile.name}
+                  </p>
+                )}
               </div>
-            </CardContent>
-          </Card>
+
+              <Button type="submit" className="w-full" disabled={isPending}>
+                {isPending ? "Registrando..." : "Registrar Barbearia"}
+              </Button>
+            </form>
+          </Form>
         </div>
-      </div>
-    </div>
+      </SheetContent>
+    </Sheet>
   );
 }

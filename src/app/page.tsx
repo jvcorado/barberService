@@ -13,6 +13,7 @@ import BookingItem from "@/components/booking-item";
 import { Button } from "@/components/ui/button";
 import { getConfirmedBookings } from "../data/get-confirmed-bookings";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import RegisterBarbershop from "./register/page";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
