@@ -12,6 +12,7 @@ import BarbershopItem from "@/components/barbershop-item";
 import BookingItem from "@/components/booking-item";
 import { Button } from "@/components/ui/button";
 import { getConfirmedBookings } from "../data/get-confirmed-bookings";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -31,26 +32,11 @@ export default async function Home() {
     <div>
       <Header />
       <div className="p-5 container md:mx-auto">
-        {/* TEXTO */}
-        <h2 className="text-xl  font-bold">
-          {session?.user ? `Olá ${session.user.name} ` : "Seja Bem Vindo"} !
-        </h2>
-        <p>
-          <span className="capitalize">
-            {format(new Date(), "EEEE, dd", { locale: ptBR })}
-          </span>
-          <span>&nbsp;de&nbsp;</span>
-          <span className="capitalize">
-            {format(new Date(), "MMMM", { locale: ptBR })}
-          </span>
-        </p>
-
-        {/* BUSCA RÁPIDA */}
-        <div className="mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
+        <div className="mt-0 lg:mt-6 flex gap-3 overflow-x-scroll [&::-webkit-scrollbar]:hidden">
           {quickSearchOptions.map((option) => (
             <Button
               className="gap-2"
-              variant="secondary"
+              variant="outline"
               key={option.title}
               asChild
             >
@@ -67,6 +53,38 @@ export default async function Home() {
           ))}
         </div>
 
+        {/* TEXTO */}
+
+        <div className="flex items-center gap-2 mt-6">
+          <Avatar className="h-14 w-14 rounded-full opacity-80 transition-all ease-in-out duration-300">
+            <AvatarImage
+              className=""
+              src={session?.user?.image ?? ""}
+              alt={session?.user?.name ?? "U"}
+            />
+            <AvatarFallback>
+              {session?.user?.name?.charAt(0).toUpperCase() ?? "U"}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex flex-col gap-0">
+            <h2 className="text-xl  font-bold">
+              {session?.user ? `${session.user.name} ` : "Faça seu login"}!
+            </h2>
+            <p>
+              <span className="capitalize">
+                {format(new Date(), "EEEE, dd", { locale: ptBR })}
+              </span>
+              <span>&nbsp;de&nbsp;</span>
+              <span className="capitalize">
+                {format(new Date(), "MMMM", { locale: ptBR })}
+              </span>
+            </p>
+          </div>
+        </div>
+
+        {/* BUSCA RÁPIDA */}
+
         {/* IMAGEM */}
         {/*    <div className="relative mt-6 max-lg:h-[150px] lg:h-[300px] w-full">
           <Image
@@ -79,7 +97,7 @@ export default async function Home() {
 
         {confirmedBookings.length > 0 && (
           <>
-            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+            <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-300">
               Agendamentos
             </h2>
 
@@ -94,7 +112,7 @@ export default async function Home() {
             </div>
           </>
         )}
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-300">
           Recomendados
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">
@@ -103,7 +121,7 @@ export default async function Home() {
           ))}
         </div>
 
-        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-400">
+        <h2 className="mb-3 mt-6 text-xs font-bold uppercase text-gray-300">
           Populares
         </h2>
         <div className="flex gap-4 overflow-auto [&::-webkit-scrollbar]:hidden">

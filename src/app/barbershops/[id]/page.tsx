@@ -1,3 +1,4 @@
+import AuthMenu from "@/components/auth-menu";
 import PhoneItem from "@/components/phone-item";
 import ServiceItem from "@/components/service-item";
 import SidebarSheet from "@/components/sidebar-sheet";
@@ -43,16 +44,20 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
 
         <Button
           size="icon"
-          variant="secondary"
+          variant="ghost"
           className="absolute left-4 top-4 "
           asChild
         >
           <Link href="/">
-            <ChevronLeftIcon />
+            <ChevronLeftIcon size={40} />
           </Link>
         </Button>
 
-        <Sheet>
+        <div className="absolute z-50 right-4 top-4 items-center gap-4 ">
+          <AuthMenu />
+        </div>
+
+        {/*    <Sheet>
           <SheetTrigger asChild>
             <Button
               size="icon"
@@ -63,7 +68,7 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
             </Button>
           </SheetTrigger>
           <SidebarSheet />
-        </Sheet>
+        </Sheet> */}
       </div>
 
       {/* TÍTULO */}
@@ -82,13 +87,13 @@ const BarbershopPage = async ({ params }: BarbershopPageProps) => {
 
       {/* DESCRIÇÃO */}
       <div className="space-y-2 border-b border-solid p-5  container md:mx-auto">
-        <h2 className="text-xs font-bold uppercase text-gray-400">Sobre nós</h2>
+        <h2 className="text-xs font-bold uppercase text-gray-300">Sobre nós</h2>
         <p className="text-justify text-sm">{barbershop?.description}</p>
       </div>
 
       {/* SERVIÇOS */}
       <div className="space-y-3 border-b border-solid p-5  container md:mx-auto">
-        <h2 className="text-xs font-bold uppercase text-gray-400">Serviços</h2>
+        <h2 className="text-xs font-bold uppercase text-gray-300">Serviços</h2>
         <div className="space-y-3">
           {barbershop.services.map((service) => (
             <ServiceItem

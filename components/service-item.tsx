@@ -186,7 +186,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
           {/* DIREITA */}
           <div className="space-y-2  w-full">
             <h3 className="text-sm font-semibold">{service.name}</h3>
-            <p className="text-sm text-gray-400">{service.description}</p>
+            <p className="text-sm text-gray-300">{service.description}</p>
             {/* PREÇO E BOTÃO */}
             <div className="flex items-center justify-between  w-full">
               <p className="text-sm font-bold text-primary">

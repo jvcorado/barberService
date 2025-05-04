@@ -1,53 +1,54 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
 import { Card, CardContent } from "./ui/card";
-import { Button } from "./ui/button";
-import { MenuIcon } from "lucide-react";
-import { Sheet, SheetTrigger } from "./ui/sheet";
-import SidebarSheet from "./sidebar-sheet";
 import Link from "next/link";
 import Search from "./search";
+import AuthMenu from "./auth-menu";
 
 const Header = () => {
+  const [scrolled, setScrolled] = useState(false);
+
+  /*   useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+ */
   return (
-    <Card className="rounded-none sticky top-0 z-50 border-none">
-      <CardContent className="flex flex-col lg:flex-row items-center justify-between p-5  container md:mx-auto">
+    <Card
+      className={`rounded-none sticky top-0 z-50 border-none transition-colors duration-300 ${
+        scrolled
+          ? "bg-background/40 backdrop-blur-sm"
+          : "bg-background/40 backdrop-blur-sm"
+      }`}
+    >
+      <CardContent className="flex flex-col lg:flex-row items-end justify-between max-lg:pt-4 container md:mx-auto">
         <Link href="/" className="hidden lg:block">
-          {/*  <Image alt="FSW Barber" src="/logo.png" height={18} width={120} /> */}
           <p className="text-primary text-lg">reserva</p>
           <p className="-mt-2 text-lg">agora.com</p>
         </Link>
 
         <div className="flex items-center justify-between w-full lg:hidden">
           <Link href="/">
-            {/*  <Image alt="FSW Barber" src="/logo.png" height={18} width={120} /> */}
             <p className="text-primary text-lg">reserva</p>
             <p className="-mt-2 text-lg">agora.com</p>
           </Link>
 
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
-                <MenuIcon />
-              </Button>
-            </SheetTrigger>
-            <SidebarSheet />
-          </Sheet>
+          <div className="flex items-center gap-4">
+            <AuthMenu />
+          </div>
         </div>
 
-        {/* BUSCA */}
         <div className="mt-6 w-full max-w-[600px]">
           <Search />
         </div>
 
-        <div className="hidden lg:block">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button size="icon" variant="outline">
-                <MenuIcon />
-              </Button>
-            </SheetTrigger>
-            <SidebarSheet />
-          </Sheet>
+        <div className="items-center gap-4 hidden lg:flex">
+          <AuthMenu />
         </div>
       </CardContent>
     </Card>

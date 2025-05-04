@@ -26,7 +26,7 @@ const SidebarSheet = () => {
   const handleLogoutClick = () => signOut();
 
   return (
-    <SheetContent className="overflow-y-auto">
+    <SheetContent className="overflow-y-auto ">
       <SheetHeader>
         <SheetTitle className="text-left">Menu</SheetTitle>
       </SheetHeader>
@@ -52,7 +52,7 @@ const SidebarSheet = () => {
                   <LogInIcon />
                 </Button>
               </DialogTrigger>
-              <DialogContent className="w-[90%]">
+              <DialogContent className="w-[90%] ">
                 <SignInDialog />
               </DialogContent>
             </Dialog>
