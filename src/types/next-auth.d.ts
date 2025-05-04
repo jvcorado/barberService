@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { Barbershop } from "@prisma/client"; // importa o tipo
 
 declare module "next-auth" {
   interface Session {
@@ -8,6 +9,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       admin: boolean;
+      barbershop?: Barbershop | null; // aqui vai o objeto Barbershop
     };
   }
 

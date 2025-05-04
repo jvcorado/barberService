@@ -17,6 +17,9 @@ export const authOptions: AuthOptions = {
         where: {
           id: user.id,
         },
+        include: {
+          barbershop: true, // inclui a barbearia associada
+        },
       });
 
       if (!dbUser) return session;
@@ -25,10 +28,13 @@ export const authOptions: AuthOptions = {
         ...session.user,
         id: user.id,
         admin: dbUser.admin,
+        ...(dbUser.admin &&
+          dbUser.barbershop && { barbershop: dbUser.barbershop }),
       } as any;
 
       return session;
     },
   },
+
   secret: process.env.NEXT_AUTH_SECRET,
 };

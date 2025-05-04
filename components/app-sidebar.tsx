@@ -54,17 +54,20 @@ const datas = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data } = useSession();
 
+  console.log(data);
+
   return (
-    <Sidebar collapsible="offcanvas" {...props}>
+    <Sidebar className="bg-background" collapsible="offcanvas" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5"
+              className="data-[slot=sidebar-menu-button]:!p-1.5  flex flex-col items-start p-0 h-13"
             >
-              <Link href="/">
-                <span className="text-base font-semibold">BarberShop</span>
+              <Link href="/" className="">
+                <p className="text-primary text-start text-lg">reserva</p>
+                <p className="-mt-5 text-lg text-start">agora.com</p>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -80,6 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             name: data?.user.name ?? "Usuário",
             email: data?.user.email ?? "sem-email",
             avatar: data?.user.image ?? "",
+            barbershopId: data?.user.barbershop?.id ?? "",
           }}
         />
       </SidebarFooter>

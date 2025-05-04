@@ -3,6 +3,7 @@
 import {
   BellIcon,
   CreditCardIcon,
+  ExternalLink,
   LogOutIcon,
   MoreVerticalIcon,
   UserCircleIcon,
@@ -25,6 +26,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export function NavUser({
   user,
@@ -33,6 +35,7 @@ export function NavUser({
     name: string;
     email: string;
     avatar: string;
+    barbershopId: string;
   };
 }) {
   const { isMobile } = useSidebar();
@@ -88,21 +91,22 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <UserCircleIcon />
-                Account
+                Minha Conta
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <CreditCardIcon />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <BellIcon />
-                Notifications
+                <Link
+                  className="flex items-center gap-2"
+                  href={`/link-page/${user.barbershopId}`}
+                >
+                  <ExternalLink />
+                  Meu Site
+                </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogoutClick}>
               <LogOutIcon />
-              Log out
+              Sair
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
