@@ -111,3 +111,13 @@ model Booking {
   BarberShop   BarberShop?       @relation(fields: [barberShopId], references: [id])
   barberShopId String?
 }
+
+model ChatHistory {
+  id        String   @id @default(cuid())
+  phone     String
+  role      String // 'user' ou 'assistant'
+  message   String
+  createdAt DateTime @default(now())
+
+  @@index([phone, createdAt])
+}

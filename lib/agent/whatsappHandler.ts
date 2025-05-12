@@ -1,23 +1,95 @@
 import { db } from "@/lib/prisma";
 import OpenAI from "openai";
+import { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY!,
 });
 
+const BARBERSHOP_PHONE = "5511939101265";
+
 export async function handleIncomingMessage(
   message: string,
-  phone: string,
+  clientPhone: string,
 ): Promise<string> {
+  console.log("📞 Número do cliente:", clientPhone);
+  console.log("🏪 Número da barbearia fixo:", BARBERSHOP_PHONE);
+
+  const barber = await db.user.findFirst({
+    where: { phone: BARBERSHOP_PHONE },
+  });
+
+  if (!barber) {
+    console.warn("❌ Dono da barbearia não encontrado.");
+    return "Não foi possível identificar a barbearia que recebeu a mensagem.";
+  }
+
+  const barbershop = await db.barberShop.findFirst({
+    where: { ownerId: barber.id },
+  });
+
+  if (!barbershop) {
+    console.warn("❌ Barbearia não encontrada.");
+    return "Não foi possível localizar a barbearia associada.";
+  }
+
+  const services = await db.barbershopService.findMany({
+    where: { barberShopId: barbershop.id },
+  });
+
+  const serviceList = services.map((s) => `• ${s.name}`).join("\n");
+
+  let client = await db.user.findFirst({ where: { phone: clientPhone } });
+  const isNewUser = !client;
+
+  if (!client) {
+    client = await db.user.create({
+      data: {
+        phone: clientPhone,
+        name: "Cliente WhatsApp",
+        email: `${clientPhone}@viawhatsapp.com`,
+      },
+    });
+  }
+
+  const history = await db.chatHistory.findMany({
+    where: { phone: clientPhone },
+    orderBy: { createdAt: "asc" },
+    take: 10,
+  });
+
+  const messages: ChatCompletionMessageParam[] = [
+    {
+      role: "system",
+      content: `
+Você é um assistente da barbearia "${barbershop.name}".
+
+Siga este fluxo:
+
+1. Liste os serviços disponíveis:
+${serviceList}
+
+2. Pergunte qual serviço o cliente deseja.
+
+3. Depois, pergunte o *nome completo* e o *e-mail*.
+
+4. Em seguida, pergunte o *dia e horário* para o agendamento.
+
+5. Quando tiver *serviço*, *nome*, *e-mail*, *telefone* (já disponível) e *data/hora*, use a função 'createBooking'.
+
+Responda de forma clara, educada e direta. Se algo estiver faltando, pergunte apenas o que faltar.
+      `,
+    },
+    ...history.map((h) => ({
+      role: h.role as "user" | "assistant",
+      content: h.message,
+    })),
+    { role: "user", content: message },
+  ];
+
   const completion = await openai.chat.completions.create({
     model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content: `Você é um assistente de uma barbearia. Sempre responda de forma educada e direta. Peça serviço e horário, se faltar algo.`,
-      },
-      { role: "user", content: message },
-    ],
+    messages,
     tools: [
       {
         type: "function",
@@ -30,8 +102,16 @@ export async function handleIncomingMessage(
               serviceName: { type: "string" },
               dateTime: { type: "string", format: "date-time" },
               userPhone: { type: "string" },
+              userName: { type: "string" },
+              userEmail: { type: "string" },
             },
-            required: ["serviceName", "dateTime", "userPhone"],
+            required: [
+              "serviceName",
+              "dateTime",
+              "userPhone",
+              "userName",
+              "userEmail",
+            ],
           },
         },
       },
@@ -43,49 +123,57 @@ export async function handleIncomingMessage(
 
   if (toolCall?.function?.name === "createBooking") {
     const args = JSON.parse(toolCall.function.arguments);
-    const { serviceName, dateTime, userPhone } = args;
+    const { serviceName, dateTime, userPhone, userName, userEmail } = args;
 
-    // Tenta encontrar usuário pelo número
-    let user = await db.user.findFirst({ where: { phone: userPhone } });
-
-    // Se não existir, cria automaticamente
-    if (!user) {
-      user = await db.user.create({
+    if (
+      isNewUser ||
+      client.name === "Cliente WhatsApp" ||
+      client.email.endsWith("@viawhatsapp.com")
+    ) {
+      await db.user.update({
+        where: { id: client.id },
         data: {
-          phone: userPhone,
-          name: "Cliente WhatsApp",
-          email: `${userPhone}@viawhatsapp.com`,
+          name: userName,
+          email: userEmail,
         },
       });
     }
 
-    // Busca serviço
     const service = await db.barbershopService.findFirst({
       where: {
         name: { equals: serviceName, mode: "insensitive" },
+        barberShopId: barbershop.id,
       },
     });
 
     if (!service) {
-      return `Serviço "${serviceName}" não encontrado. Verifique o nome e tente novamente.`;
+      return `O serviço "${serviceName}" não foi encontrado.`;
     }
 
-    // Cria o agendamento
     await db.booking.create({
       data: {
-        userId: user.id,
+        userId: client.id,
         serviceId: service.id,
-        barberShopId: service.barberShopId,
+        barberShopId: barbershop.id,
         date: new Date(dateTime),
       },
     });
+
+    await db.chatHistory.deleteMany({ where: { phone: clientPhone } });
 
     const formatted = new Date(dateTime).toLocaleString("pt-BR");
     return `✅ Agendamento confirmado para *${service.name}* em *${formatted}*.`;
   }
 
-  return (
+  const resposta =
     completion.choices[0].message.content ??
-    "Desculpe, não entendi. Pode repetir com mais detalhes?"
-  );
+    "Desculpe, não entendi. Pode repetir?";
+  await db.chatHistory.createMany({
+    data: [
+      { phone: clientPhone, role: "user", message },
+      { phone: clientPhone, role: "assistant", message: resposta },
+    ],
+  });
+
+  return resposta;
 }
