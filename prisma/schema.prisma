@@ -14,6 +14,7 @@ model User {
   emailVerified DateTime?
   image         String?
   admin         Boolean     @default(false)
+  phone         String?     @unique // 👈 Adicione este campo
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
