@@ -14,6 +14,18 @@ export const metadata: Metadata = {
   title: "Reserva Agora",
   description:
     "é a plataforma ideal para você marcar serviços em poucos cliques. Seja para um corte de cabelo, uma consulta, ou qualquer outro atendimento, aqui você encontra praticidade e controle na palma da mão.",
+  manifest: "/barber_app/manifest.json",
+  themeColor: "#000000",
+  viewport:
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "BarberApp",
+  },
+  formatDetection: {
+    telephone: false,
+  },
 };
 
 export default function RootLayout({

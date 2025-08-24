@@ -5,7 +5,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import BarberAppLayout from "./components/barber-app-layout";
 import { Button } from "@/components/ui/button";
-import Image from "next/image";
+import { SafeImage } from "@/components/safe-image";
+import { usePWA } from "@/hooks/use-pwa";
+import { PWAToast } from "@/components/pwa-toast";
 import {
   Star,
   ThumbsUp,
@@ -15,6 +17,9 @@ import {
   MessageCircle,
   Clock,
   ChevronRight,
+  Download,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 
 interface BookingWithDetails {
@@ -43,9 +48,21 @@ interface Barbershop {
 export default function BarberAppPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const {
+    isInstallable,
+    isInstalled,
+    isOnline,
+    installApp,
+    requestNotificationPermission,
+    sendNotification,
+  } = usePWA();
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
   const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error" | "info";
+  } | null>(null);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -149,7 +166,7 @@ export default function BarberAppPage() {
           <div className="flex items-start gap-4">
             <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
               {barbershop.imageUrl ? (
-                <Image
+                <SafeImage
                   src={barbershop.imageUrl}
                   alt={barbershop.name}
                   width={80}
@@ -226,6 +243,47 @@ export default function BarberAppPage() {
               <p className="text-sm text-gray-600">Agendamentos</p>
             </div>
           </div>
+
+          {/* Status PWA */}
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-700">
+                Status do App
+              </span>
+              <div className="flex items-center gap-2">
+                {isOnline ? (
+                  <Wifi className="h-4 w-4 text-green-500" />
+                ) : (
+                  <WifiOff className="h-4 w-4 text-yellow-500" />
+                )}
+                <span className="text-xs text-gray-500">
+                  {isOnline ? "Online" : "Offline"}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-gray-600">
+                {isInstalled ? "App instalado" : "App não instalado"}
+              </span>
+
+              {isInstallable && !isInstalled && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={installApp}
+                  className="gap-2 h-7 text-xs"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                    color: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
+                  <Download className="h-3 w-3" />
+                  Instalar
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Galeria de Fotos */}
@@ -274,7 +332,7 @@ export default function BarberAppPage() {
 
           <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
             {barbershop.imageUrl ? (
-              <Image
+              <SafeImage
                 src={barbershop.imageUrl}
                 alt="Barbearia"
                 width={400}
@@ -332,8 +390,8 @@ export default function BarberAppPage() {
                 Link do App do Cliente:
               </p>
               <p className="text-sm font-mono text-gray-700 break-all">
-                {typeof window !== "undefined"
-                  ? `${window.location.origin}/barber_app/client?id=${barbershop.id}`
+                {barbershop.id
+                  ? `/barber_app/client?id=${barbershop.id}`
                   : "Carregando..."}
               </p>
             </div>
@@ -345,13 +403,59 @@ export default function BarberAppPage() {
                 borderColor: (barbershop as any).primaryColor || "#000000",
                 color: (barbershop as any).primaryColor || "#000000",
               }}
-              onClick={() => {
-                const url = `${window.location.origin}/barber_app/client?id=${barbershop.id}`;
-                navigator.clipboard.writeText(url);
-                // Aqui você pode adicionar um toast de confirmação
+              onClick={async () => {
+                try {
+                  const url = `/barber_app/client?id=${barbershop.id}`;
+                  await navigator.clipboard.writeText(url);
+                  setToast({
+                    message: "Link copiado para a área de transferência!",
+                    type: "success",
+                  });
+                } catch (error) {
+                  setToast({
+                    message: "Erro ao copiar link",
+                    type: "error",
+                  });
+                }
               }}
             >
               Copiar Link
+            </Button>
+
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              style={{
+                borderColor: (barbershop as any).primaryColor || "#000000",
+                color: (barbershop as any).primaryColor || "#000000",
+              }}
+              onClick={async () => {
+                try {
+                  const hasPermission = await requestNotificationPermission();
+                  if (hasPermission) {
+                    sendNotification("BarberApp", {
+                      body: "Teste de notificação funcionando!",
+                      icon: "/logo.png",
+                    });
+                    setToast({
+                      message: "Notificação enviada com sucesso!",
+                      type: "success",
+                    });
+                  } else {
+                    setToast({
+                      message: "Permissão de notificação negada",
+                      type: "error",
+                    });
+                  }
+                } catch (error) {
+                  setToast({
+                    message: "Erro ao enviar notificação",
+                    type: "error",
+                  });
+                }
+              }}
+            >
+              Testar Notificação
             </Button>
           </div>
         </div>
@@ -435,6 +539,15 @@ export default function BarberAppPage() {
         {/* Espaço para o botão fixo */}
         <div className="h-20"></div>
       </div>
+
+      {/* Toast PWA */}
+      {toast && (
+        <PWAToast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
     </BarberAppLayout>
   );
 }

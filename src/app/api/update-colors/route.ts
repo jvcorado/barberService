@@ -88,9 +88,18 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error("❌ Erro ao atualizar cores:", error);
-    console.error("📋 Stack trace:", error.stack);
+
+    // Tratar error como unknown para acessar propriedades com segurança
+    const errorMessage =
+      error instanceof Error ? error.message : "Erro desconhecido";
+    const errorStack = error instanceof Error ? error.stack : undefined;
+
+    if (errorStack) {
+      console.error("📋 Stack trace:", errorStack);
+    }
+
     return NextResponse.json(
-      { error: "Erro interno do servidor", details: error.message },
+      { error: "Erro interno do servidor", details: errorMessage },
       { status: 500 },
     );
   } finally {

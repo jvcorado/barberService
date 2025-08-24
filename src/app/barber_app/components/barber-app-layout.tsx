@@ -8,6 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
 import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
+import { PWAInstallBanner } from "@/components/pwa-install-banner";
+import { OfflineIndicator } from "@/components/offline-indicator";
+import { BackgroundSync } from "@/components/background-sync";
 
 interface BarberAppLayoutProps {
   children: React.ReactNode;
@@ -56,6 +59,11 @@ export default function BarberAppLayout({
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* PWA Components */}
+      <OfflineIndicator />
+      <PWAInstallBanner />
+      <BackgroundSync />
+
       {/* Menu Button */}
       <div className="fixed top-4 right-4 z-50">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
