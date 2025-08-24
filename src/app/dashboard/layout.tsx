@@ -18,11 +18,13 @@ export default async function Layout({
 
   return (
     <SidebarProvider>
-      <AppSidebar variant="inset" />
-      <SidebarInset>
-        <SiteHeader />
-        {children}
-      </SidebarInset>
+      <div className="h-screen flex">
+        <AppSidebar variant="inset" />
+        <SidebarInset className="flex-1 flex flex-col">
+          <SiteHeader />
+          <main className="flex-1 overflow-hidden">{children}</main>
+        </SidebarInset>
+      </div>
     </SidebarProvider>
   );
 }

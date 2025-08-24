@@ -3,9 +3,15 @@
 import * as React from "react";
 import {
   BarChartIcon,
+  CalendarIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
   ListIcon,
+  LogOutIcon,
+  PackageIcon,
+  SettingsIcon,
+  UsersIcon,
+  UserIcon,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -31,30 +37,48 @@ const datas = {
       icon: LayoutDashboardIcon,
     },
     {
-      title: "Serviços",
-      url: "/dashboard/services",
-      icon: ListIcon,
+      title: "Agenda",
+      url: "/dashboard/bookings",
+      icon: CalendarIcon,
     },
     {
-      title: "Agendamentos",
-      url: "/dashboard/bookings",
+      title: "Clientes",
+      url: "/dashboard/customers",
+      icon: UsersIcon,
+    },
+    {
+      title: "Barbeiros",
+      url: "/dashboard/stylists",
+      icon: UserIcon,
+    },
+    {
+      title: "Produtos",
+      url: "/dashboard/products",
+      icon: PackageIcon,
+    },
+    {
+      title: "Relatórios",
+      url: "/dashboard/reports",
       icon: BarChartIcon,
+    },
+    {
+      title: "Configurações",
+      url: "/dashboard/settings",
+      icon: SettingsIcon,
     },
   ],
 
   navSecondary: [
     {
-      title: "Ajuda",
-      url: "#",
-      icon: HelpCircleIcon,
+      title: "Sair",
+      url: "/api/auth/signout",
+      icon: LogOutIcon,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data } = useSession();
-
-  console.log(data);
 
   return (
     <Sidebar className="bg-background" collapsible="offcanvas" {...props}>
@@ -63,11 +87,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              className="data-[slot=sidebar-menu-button]:!p-1.5  flex flex-col items-start p-0 h-13"
+              className="data-[slot=sidebar-menu-button]:!p-1.5 flex flex-col items-start p-0 h-13"
             >
               <Link href="/" className="">
-                <p className="text-primary text-start text-lg">reserva</p>
-                <p className="-mt-5 text-lg text-start">agora.com</p>
+                <p className="text-primary text-start text-lg font-bold">
+                  BARBERS
+                </p>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

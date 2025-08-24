@@ -1,11 +1,9 @@
+import { SectionCards } from "@/components/section-cards";
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
 import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
-
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
-import { redirect } from "next/dist/server/api-utils";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -64,7 +62,6 @@ export default async function Page() {
     },
   });
 
-  // Agendamentos passados (lucro real)
   const pastBookings = await db.booking.findMany({
     where: {
       service: {
@@ -79,7 +76,6 @@ export default async function Page() {
     },
   });
 
-  // Soma dos valores
   const totalFuture = futureBookings.reduce(
     (acc, booking) => acc + Number(booking.service.price),
     0,
@@ -108,10 +104,13 @@ export default async function Page() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6  md:py-6">
+        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-6">
+          <h1 className="text-2xl font-bold">Dashboard</h1>
+          <p className="text-muted-foreground">Visão geral da sua barbearia</p>
+
           <SectionCards totalPast={totalPast} totalFuture={totalFuture} />
 
-          <div className="px-4 lg:px-6">
+          <div className="px-0">
             <ChartAreaInteractive data={chartData} />
           </div>
           <DataTable data={formattedData} />
