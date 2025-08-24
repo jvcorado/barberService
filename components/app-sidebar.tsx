@@ -6,6 +6,7 @@ import {
   HelpCircleIcon,
   LayoutDashboardIcon,
   ListIcon,
+  Smartphone,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -39,6 +40,11 @@ const datas = {
       title: "Agendamentos",
       url: "/dashboard/bookings",
       icon: BarChartIcon,
+    },
+    {
+      title: "App Mobile",
+      url: "/barber_app",
+      icon: Smartphone,
     },
   ],
 

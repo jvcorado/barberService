@@ -1,269 +1,146 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetDescription,
-} from "@/components/ui/sheet";
-
-const formSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  address: z.string().optional(),
-  phones: z.string().min(1, "Informe pelo menos um telefone"),
-  description: z.string().optional(),
-  instagram: z.string().optional(),
-  facebook: z.string().optional(),
-  tiktok: z.string().optional(),
-});
-
-type FormData = z.infer<typeof formSchema>;
+import { ArrowLeft } from "lucide-react";
+import { RegisterForm } from "./components/register-form";
 
 export default function RegisterBarbershop() {
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [imageFile, setImageFile] = useState<File | null>(null);
-  const [open, setOpen] = useState(false);
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      address: "",
-      phones: "",
-      description: "",
-      instagram: "",
-      facebook: "",
-      tiktok: "",
-    },
-  });
 
   useEffect(() => {
-    if (!open) return setOpen(true);
-  }, [open]);
+    // Auto-open effect removed for better UX
+  }, []);
 
-  const uploadImage = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("image", file);
-
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      return data.url;
-    } else {
-      alert("Erro ao fazer upload da imagem");
-      return null;
-    }
-  };
-
-  const onSubmit = async (data: FormData) => {
-    if (!imageFile) {
-      alert("Envie uma imagem antes de registrar.");
-      return;
-    }
-
-    const uploadedUrl = await uploadImage(imageFile);
-    if (!uploadedUrl) return;
-
-    startTransition(async () => {
-      const res = await fetch("/api/register-barbershop", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...data,
-          imageUrl: uploadedUrl,
-          phones: data.phones.split(",").map((p) => p.trim()),
-        }),
-      });
-
-      if (res.ok) {
-        router.push("/dashboard");
-      } else {
-        const { error } = await res.json();
-        alert(error);
-      }
-    });
+  const handleBack = () => {
+    router.push("/");
   };
 
   return (
-    <Sheet
-      open={open}
-      onOpenChange={() => {
-        setOpen(false);
-        router.push("/");
-      }}
-    >
-      <SheetContent side="bottom" className="w-full rounded-t-3xl">
-        <SheetHeader>
-          <SheetTitle>Registrar Barbearia</SheetTitle>
-          <SheetDescription>
-            Preencha os dados abaixo para registrar sua barbearia.
-          </SheetDescription>
-        </SheetHeader>
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="border-b border-border bg-card/80 backdrop-blur-sm">
+        <div className="container mx-auto px-4 py-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
+      </div>
 
-        <div className="mt-6 space-y-6">
-          <Form {...form}>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                form.handleSubmit(onSubmit)();
-              }}
-              className="space-y-4"
-            >
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nome da Barbearia</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Ex: Barbearia do Zé" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="address"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Endereço</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Rua Exemplo, 123" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phones"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Telefone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="(11) 99999-9999" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Descrição</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Ex: Cortes modernos e clássicos"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="instagram"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Instagram</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://instagram.com/sua_barbearia"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="facebook"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Facebook</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://facebook.com/sua_barbearia"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="tiktok"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>TikTok</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="https://tiktok.com/@sua_barbearia"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <FormLabel>Imagem da Barbearia</FormLabel>
-                <Input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    setImageFile(file ?? null);
-                  }}
-                />
-                {imageFile && (
-                  <p className="text-sm text-muted-foreground">
-                    Selecionado: {imageFile.name}
-                  </p>
-                )}
+      {/* Main Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="mx-auto max-w-6xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Left Column - Form */}
+            <div className="bg-card rounded-2xl shadow-xl p-8 border border-border">
+              <div className="mb-8">
+                <h2 className="text-3xl font-bold text-foreground mb-2">
+                  Registrar Barbearia
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  Junte-se agora para gerenciar sua barbearia de forma eficiente
+                  desde o primeiro dia.
+                </p>
               </div>
 
-              <Button type="submit" className="w-full" disabled={isPending}>
-                {isPending ? "Registrando..." : "Registrar Barbearia"}
-              </Button>
-            </form>
-          </Form>
+              <RegisterForm
+                imageFile={imageFile}
+                onImageChange={setImageFile}
+                onSuccess={() => router.push("/dashboard")}
+              />
+            </div>
+
+            {/* Right Column - Preview/Info */}
+            <div className="bg-primary rounded-2xl shadow-xl p-8 text-primary-foreground">
+              <div className="mb-8">
+                <h3 className="text-3xl font-bold mb-4">
+                  Gerencie sua barbearia com facilidade
+                </h3>
+                <p className="text-primary-foreground/80 text-lg">
+                  Acesse seu dashboard e gerencie agendamentos, serviços e
+                  clientes de forma simples.
+                </p>
+              </div>
+
+              {/* Feature Cards */}
+              <div className="space-y-4">
+                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
+                      <span className="text-primary-foreground font-semibold">
+                        📅
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Agendamentos</h4>
+                      <p className="text-primary-foreground/80 text-sm">
+                        Controle total sobre horários
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
+                      <span className="text-primary-foreground font-semibold">
+                        💰
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Financeiro</h4>
+                      <p className="text-primary-foreground/80 text-sm">
+                        Acompanhe receitas e despesas
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 border border-primary-foreground/20">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 bg-primary-foreground/20 rounded-lg flex items-center justify-center">
+                      <span className="text-primary-foreground font-semibold">
+                        👥
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold">Clientes</h4>
+                      <p className="text-primary-foreground/80 text-sm">
+                        Histórico completo de atendimentos
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats Preview */}
+              <div className="mt-8 grid grid-cols-2 gap-4">
+                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                  <div className="text-2xl font-bold">24/7</div>
+                  <div className="text-primary-foreground/80 text-sm">
+                    Disponível
+                  </div>
+                </div>
+                <div className="bg-primary-foreground/10 backdrop-blur-sm rounded-xl p-4 text-center">
+                  <div className="text-2xl font-bold">100%</div>
+                  <div className="text-primary-foreground/80 text-sm">
+                    Seguro
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </SheetContent>
-    </Sheet>
+      </div>
+    </div>
   );
 }
