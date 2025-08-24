@@ -246,7 +246,7 @@ export default function BarberAppLayout({
                         (barbershop as any).textColor || "#111827";
                     }}
                   >
-                    <Calendar className="h-4 w-4" />
+                    {/* <Calendar className="h-4 w-4" /> */}
                     App do Cliente
                   </Button>
 
