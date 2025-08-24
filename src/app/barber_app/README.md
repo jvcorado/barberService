@@ -1,117 +1,112 @@
-# App do Barbeiro - Rota Mobile
+# Barber App - Aplicativo Mobile para Barbearias
 
-Esta rota (`/barber_app`) é uma versão mobile/app da interface do barbeiro, otimizada para dispositivos móveis.
+## Visão Geral
 
-## 🚀 Funcionalidades
+O Barber App é uma aplicação mobile desenvolvida em Next.js que oferece duas versões:
 
-### 📱 **Interface Mobile-First**
+1. **App do Barbeiro**: Interface para o proprietário da barbearia gerenciar seu negócio
+2. **App do Cliente**: Interface para clientes agendarem serviços
 
-- Design responsivo otimizado para smartphones
-- Navegação por abas intuitiva
-- Componentes touch-friendly
-- Animações suaves para mobile
+## Funcionalidades
 
-### 🗓️ **Agenda**
+### App do Barbeiro (`/barber_app`)
 
-- Visualização dos agendamentos do dia
-- Lista de clientes e serviços
-- Horários organizados cronologicamente
+- Visualização do perfil da barbearia
+- Estatísticas de agendamentos
+- Galeria de fotos
+- Informações de contato e localização
+- Acesso ao dashboard web
+- Configurações personalizáveis
 
-### ✂️ **Serviços**
+### App do Cliente (`/barber_app/client?id={barbershopId}`)
 
-- Lista completa dos serviços oferecidos
-- Preços e duração
-- Gerenciamento dos serviços da barbearia
+- Visualização do perfil da barbearia
+- Lista de serviços disponíveis
+- Agendamento de serviços com:
+  - Seleção de serviço
+  - Escolha de data (a partir de amanhã)
+  - Seleção de horário (9h às 18h)
+  - Confirmação do agendamento
+- Histórico de agendamentos do usuário
+- Contatos diretos (telefone e WhatsApp)
 
-### ⏰ **Horários**
+## Como Usar
 
-- Horários de funcionamento por dia da semana
-- Interface clara e organizada
+### Para Barbeiros
 
-### 📊 **Relatórios**
+1. Acesse `/barber_app` estando logado
+2. Use o menu lateral para navegar entre funcionalidades
+3. Acesse o dashboard web para gerenciamento completo
+4. Configure cores e personalização
 
-- Estatísticas básicas da barbearia
-- Contagem de agendamentos e serviços
+### Para Clientes
 
-### 👤 **Perfil**
+1. Acesse `/barber_app/client?id={ID_DA_BARBEARIA}`
+2. Visualize serviços disponíveis
+3. Clique em "Agendar" no serviço desejado
+4. Siga o processo de 4 etapas:
+   - Escolha o serviço
+   - Selecione a data
+   - Escolha o horário
+   - Confirme o agendamento
 
-- Informações da barbearia
-- Foto, nome e descrição
-- Endereço e contato
-
-## 🛠️ **Tecnologias**
-
-- **Next.js 14** com App Router
-- **TypeScript** para type safety
-- **Tailwind CSS** para estilização
-- **ShadCN/UI** para componentes
-- **Lucide React** para ícones
-- **PWA** ready com manifest.json
-
-## 📱 **PWA Features**
-
-- Manifest para instalação como app
-- Meta tags para iOS/Android
-- Viewport otimizado para mobile
-- Touch-friendly interactions
-
-## 🎨 **Design System**
-
-### **Classes CSS Customizadas**
-
-- `.mobile-tabs` - Navegação por abas otimizada
-- `.mobile-tab` - Abas individuais com animações
-- `.mobile-card` - Cards com sombras suaves
-- `.touch-button` - Botões otimizados para touch
-- `.animate-fade-in` - Animações de entrada
-- `.animate-slide-up` - Animações de deslize
-
-### **Cores e Temas**
-
-- Tema escuro por padrão
-- Cores primárias consistentes
-- Contraste otimizado para mobile
-
-## 🔧 **Como Usar**
-
-1. **Acesso**: Navegue para `/barber_app`
-2. **Autenticação**: Faça login como proprietário da barbearia
-3. **Navegação**: Use as abas inferiores para navegar
-4. **Menu**: Toque no ícone de menu para opções adicionais
-
-## 📁 **Estrutura de Arquivos**
+## Estrutura de Arquivos
 
 ```
-barber_app/
+src/app/barber_app/
 ├── components/
-│   ├── barber-app-layout.tsx    # Layout principal
-│   └── notification-bell.tsx    # Componente de notificação
-├── globals.css                  # Estilos mobile-otimizados
-├── layout.tsx                   # Layout da rota
-├── manifest.json                # Configuração PWA
-├── page.tsx                     # Página principal
+│   └── barber-app-layout.tsx    # Layout principal do app
+├── client/
+│   ├── layout.tsx               # Layout da versão cliente
+│   ├── page.tsx                 # Página principal do cliente
+│   └── book/
+│       └── page.tsx             # Página de agendamento
+├── config/
+│   └── page.tsx                 # Configurações da barbearia
+├── layout.tsx                   # Layout do barber app
+├── page.tsx                     # Página principal (versão barbeiro)
 └── README.md                    # Esta documentação
 ```
 
-## 🚀 **Próximos Passos**
+## Tecnologias Utilizadas
 
-- [ ] Implementar notificações push
-- [ ] Adicionar funcionalidade offline
-- [ ] Integrar com calendário nativo
-- [ ] Adicionar gestos de swipe
-- [ ] Implementar sincronização em tempo real
+- **Next.js 14** com App Router
+- **TypeScript** para tipagem
+- **Tailwind CSS** para estilização
+- **ShadCN/UI** para componentes
+- **Prisma** para banco de dados
+- **NextAuth** para autenticação
+- **date-fns** para manipulação de datas
+- **Sonner** para notificações
 
-## 📱 **Compatibilidade**
+## Personalização
 
-- ✅ iOS Safari 12+
-- ✅ Chrome Mobile 80+
-- ✅ Firefox Mobile 75+
-- ✅ Samsung Internet 10+
-- ✅ Edge Mobile 80+
+O app suporta personalização de cores através das configurações da barbearia:
 
-## 🎯 **Performance**
+- `primaryColor`: Cor principal
+- `secondaryColor`: Cor secundária
+- `backgroundColor`: Cor de fundo
+- `textColor`: Cor do texto
 
-- Lazy loading de componentes
-- Otimizações para mobile
-- Animações CSS nativas
-- Touch events otimizados
+## API Endpoints
+
+- `GET /api/barbershops/[id]`: Busca informações da barbearia
+- `POST /api/bookings`: Cria novo agendamento (via action)
+
+## Considerações de UX
+
+- Interface mobile-first responsiva
+- Navegação intuitiva com steps progressivos
+- Validação de horários disponíveis
+- Feedback visual para todas as ações
+- Cores personalizáveis por barbearia
+- Botões de ação fixos para fácil acesso
+
+## Próximas Funcionalidades
+
+- Notificações push para lembretes
+- Sistema de avaliações
+- Pagamento integrado
+- Histórico completo de agendamentos
+- Filtros por data e serviço
+- Integração com calendário do usuário

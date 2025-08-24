@@ -1,7 +1,8 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { redirect } from "next/navigation";
-import { db } from "@/lib/prisma";
+"use client";
+
+import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import BarberAppLayout from "./components/barber-app-layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -27,43 +28,87 @@ interface BookingWithDetails {
   };
 }
 
-export default async function BarberAppPage() {
-  const session = await getServerSession(authOptions);
+interface Barbershop {
+  id: string;
+  name: string;
+  address: string;
+  imageUrl?: string | null;
+  primaryColor?: string;
+  secondaryColor?: string;
+  backgroundColor?: string;
+  textColor?: string;
+  services: any[];
+}
 
-  if (!session?.user) {
-    redirect("/");
+export default function BarberAppPage() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
+  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (status === "loading") return;
+
+    if (status === "unauthenticated") {
+      router.push("/");
+      return;
+    }
+
+    if (session?.user) {
+      fetchBarbershopData();
+    }
+  }, [session, status]);
+
+  const fetchBarbershopData = async () => {
+    try {
+      const response = await fetch("/api/barbershops/me");
+      if (response.ok) {
+        const data = await response.json();
+        setBarbershop(data.barbershop);
+        setBookings(data.bookings || []);
+      } else {
+        router.push("/register");
+      }
+    } catch (error) {
+      console.error("Erro ao buscar dados:", error);
+      router.push("/register");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Loading state
+  if (loading || status === "loading") {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
+            <p className="text-gray-600">Carregando...</p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
-  const barbershop = await db.barberShop.findFirst({
-    where: {
-      ownerId: session.user.id,
-    },
-    include: {
-      services: true,
-    },
-  });
-
-  if (!barbershop) {
-    redirect("/register");
+  // No session state
+  if (status === "unauthenticated" || !barbershop) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <p className="text-gray-600 mb-4">
+              Você precisa estar logado para acessar o app
+            </p>
+            <Button onClick={() => router.push("/api/auth/signin")}>
+              Entrar
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
-
-  // Buscar agendamentos separadamente
-  const bookings: BookingWithDetails[] = await db.booking.findMany({
-    where: {
-      barberShopId: barbershop.id,
-      date: {
-        gte: new Date(new Date().setHours(0, 0, 0, 0)),
-      },
-    },
-    orderBy: {
-      date: "asc",
-    },
-    take: 10,
-    include: {
-      service: true,
-      user: true,
-    },
-  });
 
   return (
     <BarberAppLayout barbershop={barbershop}>
@@ -266,6 +311,51 @@ export default async function BarberAppPage() {
           </div>
         </div>
 
+        {/* Link para App do Cliente */}
+        <div
+          className="mt-2 px-4 py-6"
+          style={{
+            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+          }}
+        >
+          <div className="text-center">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+              Compartilhe com seus Clientes
+            </h3>
+            <p className="text-sm text-gray-600 mb-4">
+              Envie este link para seus clientes agendarem serviços diretamente
+              pelo app
+            </p>
+
+            <div className="p-3 bg-gray-50 rounded-lg border mb-4">
+              <p className="text-xs text-gray-500 mb-1">
+                Link do App do Cliente:
+              </p>
+              <p className="text-sm font-mono text-gray-700 break-all">
+                {typeof window !== "undefined"
+                  ? `${window.location.origin}/barber_app/client?id=${barbershop.id}`
+                  : "Carregando..."}
+              </p>
+            </div>
+
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              style={{
+                borderColor: (barbershop as any).primaryColor || "#000000",
+                color: (barbershop as any).primaryColor || "#000000",
+              }}
+              onClick={() => {
+                const url = `${window.location.origin}/barber_app/client?id=${barbershop.id}`;
+                navigator.clipboard.writeText(url);
+                // Aqui você pode adicionar um toast de confirmação
+              }}
+            >
+              Copiar Link
+            </Button>
+          </div>
+        </div>
+
         {/* Avaliações */}
         <div
           className="mt-2 px-4 py-6"
@@ -306,9 +396,9 @@ export default async function BarberAppPage() {
           </div>
         </div>
 
-        {/* Botão de Agendamento */}
+        {/* Botões de Ação */}
         <div
-          className="fixed bottom-0 left-0 right-0 border-t p-4"
+          className="fixed bottom-0 left-0 right-0 border-t p-4 space-y-3"
           style={{
             backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
             borderColor: (barbershop as any).primaryColor || "#000000",
@@ -320,8 +410,25 @@ export default async function BarberAppPage() {
               backgroundColor: (barbershop as any).primaryColor || "#000000",
               color: (barbershop as any).secondaryColor || "#ffffff",
             }}
+            onClick={() => {
+              router.push(`/barber_app/client?id=${barbershop.id}`);
+            }}
           >
-            Agendar Agora
+            Acessar App do Cliente
+          </Button>
+
+          <Button
+            variant="outline"
+            className="w-full py-2"
+            style={{
+              borderColor: (barbershop as any).primaryColor || "#000000",
+              color: (barbershop as any).primaryColor || "#000000",
+            }}
+            onClick={() => {
+              router.push(`/dashboard`);
+            }}
+          >
+            Ir para Dashboard Web
           </Button>
         </div>
 

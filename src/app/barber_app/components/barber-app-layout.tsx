@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Settings, X, Phone, MessageCircle, Palette } from "lucide-react";
-import Link from "next/link";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
+import { Calendar } from "@/components/ui/calendar";
+import { useRouter } from "next/navigation";
 
 interface BarberAppLayoutProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export default function BarberAppLayout({
 }: BarberAppLayoutProps) {
   const { data: session, status } = useSession();
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
 
   // Loading state
   if (status === "loading") {
@@ -43,9 +45,9 @@ export default function BarberAppLayout({
             <p className="text-gray-600 mb-4">
               Você precisa estar logado para acessar o app
             </p>
-            <Link href="/api/auth/signin">
-              <Button>Entrar</Button>
-            </Link>
+            <Button onClick={() => router.push("/api/auth/signin")}>
+              Entrar
+            </Button>
           </div>
         </div>
       </div>
@@ -70,12 +72,29 @@ export default function BarberAppLayout({
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+          <SheetContent
+            side="right"
+            className="w-[300px] sm:w-[400px]"
+            style={{
+              backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+              color: (barbershop as any).textColor || "#111827",
+            }}
+          >
             <div className="flex flex-col h-full">
               <div className="space-y-6 flex-1">
                 {/* Header do Sidebar */}
-                <div className="flex items-center justify-between border-b pb-4">
-                  <h2 className="text-xl font-bold text-gray-900">
+                <div
+                  className="flex items-center justify-between border-b pb-4"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
+                  <h2
+                    className="text-xl font-bold"
+                    style={{
+                      color: (barbershop as any).primaryColor || "#000000",
+                    }}
+                  >
                     {barbershop.name}
                   </h2>
                   <Button
@@ -83,13 +102,21 @@ export default function BarberAppLayout({
                     size="icon"
                     className="h-8 w-8"
                     onClick={() => setIsOpen(false)}
+                    style={{
+                      color: (barbershop as any).primaryColor || "#000000",
+                    }}
                   >
                     <X className="h-4 w-4" />
                   </Button>
                 </div>
 
                 {/* Perfil do Usuário */}
-                <div className="flex items-center gap-3 border-b pb-4">
+                <div
+                  className="flex items-center gap-3 border-b pb-4"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
                   <Avatar className="h-12 w-12">
                     <AvatarImage
                       src={session?.user?.image || ""}
@@ -100,52 +127,155 @@ export default function BarberAppLayout({
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p
+                      className="font-medium"
+                      style={{
+                        color: (barbershop as any).primaryColor || "#000000",
+                      }}
+                    >
                       {session?.user?.name}
                     </p>
-                    <p className="text-sm text-gray-600">
+                    <p
+                      className="text-sm"
+                      style={{
+                        color: (barbershop as any).textColor || "#111827",
+                      }}
+                    >
                       {session?.user?.email}
                     </p>
                   </div>
                 </div>
 
                 {/* Informações da Barbearia */}
-                <div className="space-y-3 border-b pb-4">
-                  <h3 className="font-semibold text-gray-900">
+                <div
+                  className="space-y-3 border-b pb-4"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
+                  <h3
+                    className="font-semibold"
+                    style={{
+                      color: (barbershop as any).primaryColor || "#000000",
+                    }}
+                  >
                     {barbershop.name}
                   </h3>
-                  <p className="text-sm text-gray-600">{barbershop.address}</p>
+                  <p
+                    className="text-sm"
+                    style={{
+                      color: (barbershop as any).textColor || "#111827",
+                    }}
+                  >
+                    {barbershop.address}
+                  </p>
                 </div>
 
                 {/* Navegação */}
                 <nav className="space-y-2">
-                  <Link
-                    href="/dashboard"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    onClick={() => {
+                      router.push("/dashboard");
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      color: (barbershop as any).textColor || "#111827",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        (barbershop as any).primaryColor || "#000000";
+                      e.currentTarget.style.color =
+                        (barbershop as any).secondaryColor || "#ffffff";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color =
+                        (barbershop as any).textColor || "#111827";
+                    }}
                   >
                     <Settings className="h-4 w-4" />
                     Dashboard Web
-                  </Link>
+                  </Button>
 
-                  <Link
-                    href="/barber_app"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium bg-accent text-accent-foreground"
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium"
+                    onClick={() => {
+                      router.push("/barber_app");
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      backgroundColor:
+                        (barbershop as any).primaryColor || "#000000",
+                      color: (barbershop as any).secondaryColor || "#ffffff",
+                    }}
                   >
                     <Menu className="h-4 w-4" />
-                    App Mobile
-                  </Link>
+                    App do Barbeiro
+                  </Button>
 
-                  <Link
-                    href="/barber_app/config"
-                    className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-accent transition-colors"
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    onClick={() => {
+                      router.push(`/barber_app/client?id=${barbershop.id}`);
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      color: (barbershop as any).textColor || "#111827",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        (barbershop as any).primaryColor || "#000000";
+                      e.currentTarget.style.color =
+                        (barbershop as any).secondaryColor || "#ffffff";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color =
+                        (barbershop as any).textColor || "#111827";
+                    }}
+                  >
+                    <Calendar className="h-4 w-4" />
+                    App do Cliente
+                  </Button>
+
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    onClick={() => {
+                      router.push("/barber_app/config");
+                      setIsOpen(false);
+                    }}
+                    style={{
+                      color: (barbershop as any).textColor || "#111827",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.backgroundColor =
+                        (barbershop as any).primaryColor || "#000000";
+                      e.currentTarget.style.color =
+                        (barbershop as any).secondaryColor || "#ffffff";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.backgroundColor = "transparent";
+                      e.currentTarget.style.color =
+                        (barbershop as any).textColor || "#111827";
+                    }}
                   >
                     <Palette className="h-4 w-4" />
                     Configurações
-                  </Link>
+                  </Button>
                 </nav>
 
                 {/* Ações Rápidas */}
-                <div className="space-y-2 pt-4 border-t">
+                <div
+                  className="space-y-2 pt-4 border-t"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
                   <Button
                     variant="outline"
                     className="w-full gap-2"
@@ -157,6 +287,11 @@ export default function BarberAppLayout({
                     disabled={
                       !barbershop.phones || barbershop.phones.length === 0
                     }
+                    style={{
+                      borderColor:
+                        (barbershop as any).primaryColor || "#000000",
+                      color: (barbershop as any).primaryColor || "#000000",
+                    }}
                   >
                     <Phone className="h-4 w-4" />
                     {barbershop.phones && barbershop.phones.length > 0
@@ -178,6 +313,11 @@ export default function BarberAppLayout({
                     disabled={
                       !barbershop.phones || barbershop.phones.length === 0
                     }
+                    style={{
+                      borderColor:
+                        (barbershop as any).primaryColor || "#000000",
+                      color: (barbershop as any).primaryColor || "#000000",
+                    }}
                   >
                     <MessageCircle className="h-4 w-4" />
                     {barbershop.phones && barbershop.phones.length > 0
@@ -187,8 +327,18 @@ export default function BarberAppLayout({
                 </div>
 
                 {/* Footer do Sidebar */}
-                <div className="pt-4 border-t mt-auto">
-                  <div className="text-center text-xs text-gray-500">
+                <div
+                  className="pt-4 border-t mt-auto"
+                  style={{
+                    borderColor: (barbershop as any).primaryColor || "#000000",
+                  }}
+                >
+                  <div
+                    className="text-center text-xs"
+                    style={{
+                      color: (barbershop as any).textColor || "#111827",
+                    }}
+                  >
                     <p>App do Barbeiro</p>
                     <p>v1.0.0</p>
                   </div>
