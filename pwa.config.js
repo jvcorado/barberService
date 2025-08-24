@@ -30,9 +30,63 @@ module.exports = {
     prefer_related_applications: false,
   },
 
+  // Configurações do Manifest do Cliente
+  manifestClient: {
+    name: "BarberApp Cliente",
+    short_name: "BarberApp",
+    description:
+      "Aplicativo mobile para clientes agendarem serviços na barbearia",
+    start_url: "/barber_app/client",
+    display: "standalone",
+    background_color: "#000000",
+    theme_color: "#000000",
+    orientation: "portrait-primary",
+    scope: "/barber_app/client",
+    lang: "pt-BR",
+    categories: ["business", "productivity", "lifestyle"],
+    prefer_related_applications: false,
+    shortcuts: [
+      {
+        name: "Agendar Serviço",
+        short_name: "Agendar",
+        description: "Agendar um novo serviço",
+        url: "/barber_app/client/book",
+        icons: [
+          {
+            src: "/logo.png",
+            sizes: "96x96",
+          },
+        ],
+      },
+      {
+        name: "Meus Agendamentos",
+        short_name: "Agendamentos",
+        description: "Ver meus agendamentos",
+        url: "/barber_app/client",
+        icons: [
+          {
+            src: "/logo.png",
+            sizes: "96x96",
+          },
+        ],
+      },
+    ],
+  },
+
   // Configurações de Cache
   cache: {
     name: "barber-app-v1",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
+    strategies: {
+      static: "cache-first",
+      api: "network-first",
+      page: "stale-while-revalidate",
+    },
+  },
+
+  // Configurações de Cache do Cliente
+  cacheClient: {
+    name: "barber-app-client-v1",
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 dias
     strategies: {
       static: "cache-first",
@@ -47,6 +101,26 @@ module.exports = {
     defaultBadge: "/logo.png",
     defaultVibrate: [100, 50, 100],
     defaultTag: "barber-app",
+  },
+
+  // Configurações de Notificações do Cliente
+  notificationsClient: {
+    defaultIcon: "/logo.png",
+    defaultBadge: "/logo.png",
+    defaultVibrate: [100, 50, 100],
+    defaultTag: "barber-app-client",
+    actions: [
+      {
+        action: "view",
+        title: "Ver",
+        icon: "/logo.png",
+      },
+      {
+        action: "close",
+        title: "Fechar",
+        icon: "/logo.png",
+      },
+    ],
   },
 
   // Configurações de Ícones

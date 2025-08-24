@@ -18,9 +18,14 @@ import {
   ChevronRight,
   Plus,
   Minus,
+  Download,
+  Bell,
+  Wifi,
+  WifiOff,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { usePWAClient } from "@/src/hooks/use-pwa-client";
 
 interface Service {
   id: string;
@@ -55,6 +60,7 @@ export default function ClientPage() {
   const searchParams = useSearchParams();
   const barbershopId = searchParams.get("id");
   const { colors } = useBarbershopColors();
+  const pwaStatus = usePWAClient();
 
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
   const [userBookings, setUserBookings] = useState<Booking[]>([]);
@@ -148,6 +154,30 @@ export default function ClientPage() {
     );
   }
 
+  // Função para agendar notificação de lembrete
+  const scheduleReminder = async (bookingDate: Date, serviceName: string) => {
+    if (!pwaStatus.hasNotifications) {
+      const granted = await pwaStatus.requestNotificationPermission();
+      if (!granted) return;
+    }
+
+    // Calcular tempo para o lembrete (1 hora antes)
+    const reminderTime = new Date(bookingDate.getTime() - 60 * 60 * 1000);
+    const now = new Date();
+
+    if (reminderTime > now) {
+      const timeUntilReminder = reminderTime.getTime() - now.getTime();
+
+      setTimeout(() => {
+        pwaStatus.sendNotification(`Lembrete: ${serviceName}`, {
+          body: `Seu agendamento está marcado para daqui a 1 hora!`,
+          tag: `reminder-${serviceName}`,
+          requireInteraction: true,
+        });
+      }, timeUntilReminder);
+    }
+  };
+
   return (
     <BarberAppLayout barbershop={barbershop}>
       <div
@@ -157,7 +187,7 @@ export default function ClientPage() {
           color: colors.textColor,
         }}
       >
-        {/* Header */}
+        {/* Header com Status PWA */}
         <div
           className="border-b px-4 py-3"
           style={{
@@ -165,7 +195,7 @@ export default function ClientPage() {
             borderColor: colors.primaryColor,
           }}
         >
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-between">
             <h1
               className="text-lg font-semibold"
               style={{
@@ -174,6 +204,46 @@ export default function ClientPage() {
             >
               {barbershop.name}
             </h1>
+
+            {/* Status PWA */}
+            <div className="flex items-center gap-2">
+              {/* Status Online/Offline */}
+              {pwaStatus.isOnline ? (
+                <Wifi className="h-4 w-4 text-green-500" />
+              ) : (
+                <WifiOff className="h-4 w-4 text-red-500" />
+              )}
+
+              {/* Botão de Notificação */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                onClick={() => pwaStatus.requestNotificationPermission()}
+                style={{
+                  color: pwaStatus.hasNotifications
+                    ? colors.accentColor
+                    : colors.textColor,
+                }}
+              >
+                <Bell className="h-4 w-4" />
+              </Button>
+
+              {/* Botão de Instalação */}
+              {pwaStatus.canInstall && !pwaStatus.isInstalled && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => pwaStatus.installApp()}
+                  style={{
+                    color: colors.accentColor,
+                  }}
+                >
+                  <Download className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -415,6 +485,31 @@ export default function ClientPage() {
                       }).format(Number(booking.service.price))}
                     </span>
                   </div>
+
+                  {/* Botão para agendar lembrete */}
+                  <div
+                    className="mt-3 pt-3 border-t"
+                    style={{ borderColor: colors.primaryColor + "30" }}
+                  >
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full gap-2"
+                      onClick={() =>
+                        scheduleReminder(
+                          new Date(booking.date),
+                          booking.service.name,
+                        )
+                      }
+                      style={{
+                        borderColor: colors.primaryColor,
+                        color: colors.primaryColor,
+                      }}
+                    >
+                      <Bell className="h-4 w-4" />
+                      Agendar Lembrete
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -637,6 +732,9 @@ export default function ClientPage() {
               color: colors.secondaryColor,
             }}
             onClick={() => {
+              // Sincronizar dados antes de navegar
+              pwaStatus.syncInBackground("pre-navigation");
+
               // Redirecionar para página de agendamento
               window.location.href = `/barber_app/client/book?barbershopId=${barbershop.id}`;
             }}
