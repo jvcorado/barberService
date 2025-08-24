@@ -3,10 +3,9 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import BarberAppLayout from "../components/barber-app-layout";
+import ClientLayout from "./components/client-layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
 import {
   Star,
   ThumbsUp,
@@ -26,6 +25,7 @@ import {
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { usePWAClient } from "@/src/hooks/use-pwa-client";
+import { useBarbershopColorsById } from "@/hooks/use-barbershop-colors-by-id";
 
 interface Service {
   id: string;
@@ -44,6 +44,7 @@ interface BarberShop {
   textColor?: string | null;
   primaryColor?: string | null;
   secondaryColor?: string | null;
+  accentColor?: string | null;
   phones?: string[];
   services: Service[];
 }
@@ -59,7 +60,6 @@ export default function ClientPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const barbershopId = searchParams.get("id");
-  const { colors } = useBarbershopColors();
   const pwaStatus = usePWAClient();
 
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
@@ -70,7 +70,7 @@ export default function ClientPage() {
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
-      router.push("/");
+      router.push(`/barber_app/client/login?id=${barbershopId}`);
       return;
     }
 
@@ -118,15 +118,17 @@ export default function ClientPage() {
     return (
       <div
         className="min-h-screen flex flex-col"
-        style={{ backgroundColor: colors.backgroundColor }}
+        style={{ backgroundColor: barbershop?.backgroundColor || "#f9fafb" }}
       >
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div
               className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4"
-              style={{ borderColor: colors.primaryColor }}
+              style={{ borderColor: barbershop?.primaryColor || "#000000" }}
             ></div>
-            <p style={{ color: colors.textColor }}>Carregando...</p>
+            <p style={{ color: barbershop?.textColor || "#111827" }}>
+              Carregando...
+            </p>
           </div>
         </div>
       </div>
@@ -138,14 +140,23 @@ export default function ClientPage() {
     return (
       <div
         className="min-h-screen flex flex-col"
-        style={{ backgroundColor: colors.backgroundColor }}
+        style={{ backgroundColor: barbershop?.backgroundColor || "#f9fafb" }}
       >
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p className="mb-4" style={{ color: colors.textColor }}>
+            <p
+              className="mb-4"
+              style={{ color: barbershop?.textColor || "#111827" }}
+            >
               Você precisa estar logado para acessar o app
             </p>
-            <Button onClick={() => router.push("/api/auth/signin")}>
+            <Button
+              onClick={() => router.push("/api/auth/signin")}
+              style={{
+                backgroundColor: barbershop?.primaryColor || "#000000",
+                color: barbershop?.secondaryColor || "#ffffff",
+              }}
+            >
               Entrar
             </Button>
           </div>
@@ -179,30 +190,30 @@ export default function ClientPage() {
   };
 
   return (
-    <BarberAppLayout barbershop={barbershop}>
+    <ClientLayout barbershop={barbershop}>
       <div
         className="min-h-screen"
         style={{
-          backgroundColor: colors.backgroundColor,
-          color: colors.textColor,
+          backgroundColor: barbershop.backgroundColor || "#f9fafb",
+          color: barbershop.textColor || "#111827",
         }}
       >
         {/* Header com Status PWA */}
         <div
           className="border-b px-4 py-3"
           style={{
-            backgroundColor: colors.secondaryColor,
-            borderColor: colors.primaryColor,
+            backgroundColor: barbershop.secondaryColor || "#ffffff",
+            borderColor: barbershop.primaryColor || "#000000",
           }}
         >
           <div className="flex items-center justify-between">
             <h1
               className="text-lg font-semibold"
               style={{
-                color: colors.primaryColor,
+                color: barbershop.primaryColor || "#000000",
               }}
             >
-              {barbershop.name}
+              App do Cliente
             </h1>
 
             {/* Status PWA */}
@@ -222,8 +233,8 @@ export default function ClientPage() {
                 onClick={() => pwaStatus.requestNotificationPermission()}
                 style={{
                   color: pwaStatus.hasNotifications
-                    ? colors.accentColor
-                    : colors.textColor,
+                    ? barbershop.accentColor || "#3b82f6"
+                    : barbershop.textColor || "#111827",
                 }}
               >
                 <Bell className="h-4 w-4" />
@@ -237,7 +248,7 @@ export default function ClientPage() {
                   className="h-8 w-8"
                   onClick={() => pwaStatus.installApp()}
                   style={{
-                    color: colors.accentColor,
+                    color: barbershop.accentColor || "#3b82f6",
                   }}
                 >
                   <Download className="h-4 w-4" />
@@ -251,13 +262,15 @@ export default function ClientPage() {
         <div
           className="px-4 py-6"
           style={{
-            backgroundColor: colors.secondaryColor,
+            backgroundColor: barbershop.secondaryColor || "#ffffff",
           }}
         >
           <div className="flex items-start gap-4">
             <div
               className="w-20 h-20 rounded-full overflow-hidden"
-              style={{ backgroundColor: colors.accentColor + "20" }}
+              style={{
+                backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
+              }}
             >
               {barbershop.imageUrl ? (
                 <Image
@@ -270,11 +283,14 @@ export default function ClientPage() {
               ) : (
                 <div
                   className="w-full h-full flex items-center justify-center"
-                  style={{ backgroundColor: colors.accentColor + "30" }}
+                  style={{
+                    backgroundColor:
+                      (barbershop.accentColor || "#3b82f6") + "30",
+                  }}
                 >
                   <span
                     className="text-2xl font-bold"
-                    style={{ color: colors.textColor }}
+                    style={{ color: barbershop.textColor || "#111827" }}
                   >
                     {barbershop.name.charAt(0).toUpperCase()}
                   </span>
@@ -286,7 +302,7 @@ export default function ClientPage() {
               <h2
                 className="text-xl font-bold mb-1"
                 style={{
-                  color: colors.primaryColor,
+                  color: barbershop.primaryColor || "#000000",
                 }}
               >
                 {barbershop.name}
@@ -294,7 +310,7 @@ export default function ClientPage() {
               <p
                 className="mb-3"
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               >
                 {barbershop.address}
@@ -306,8 +322,8 @@ export default function ClientPage() {
                   variant="outline"
                   className="gap-2"
                   style={{
-                    borderColor: colors.primaryColor,
-                    color: colors.primaryColor,
+                    borderColor: barbershop.primaryColor || "#000000",
+                    color: barbershop.primaryColor || "#000000",
                   }}
                   onClick={() => {
                     if (barbershop.phones && barbershop.phones.length > 0) {
@@ -323,8 +339,8 @@ export default function ClientPage() {
                   variant="outline"
                   className="gap-2"
                   style={{
-                    borderColor: colors.primaryColor,
-                    color: colors.primaryColor,
+                    borderColor: barbershop.primaryColor || "#000000",
+                    color: barbershop.primaryColor || "#000000",
                   }}
                   onClick={() => {
                     if (barbershop.phones && barbershop.phones.length > 0) {
@@ -348,12 +364,12 @@ export default function ClientPage() {
               <div className="flex items-center justify-center gap-1 mb-1">
                 <Star
                   className="h-4 w-4 fill-current"
-                  style={{ color: colors.accentColor }}
+                  style={{ color: barbershop.accentColor || "#3b82f6" }}
                 />
                 <span
                   className="font-semibold"
                   style={{
-                    color: colors.primaryColor,
+                    color: barbershop.primaryColor || "#000000",
                   }}
                 >
                   4.6/5
@@ -362,7 +378,7 @@ export default function ClientPage() {
               <p
                 className="text-sm"
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               >
                 (123 avaliações)
@@ -373,12 +389,12 @@ export default function ClientPage() {
               <div className="flex items-center justify-center gap-1 mb-1">
                 <Calendar
                   className="h-4 w-4"
-                  style={{ color: colors.accentColor }}
+                  style={{ color: barbershop.accentColor || "#3b82f6" }}
                 />
                 <span
                   className="font-semibold"
                   style={{
-                    color: colors.primaryColor,
+                    color: barbershop.primaryColor || "#000000",
                   }}
                 >
                   {userBookings.length}
@@ -387,7 +403,7 @@ export default function ClientPage() {
               <p
                 className="text-sm"
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               >
                 Meus Agendamentos
@@ -401,13 +417,13 @@ export default function ClientPage() {
           <div
             className="mt-2 px-4 py-6"
             style={{
-              backgroundColor: colors.secondaryColor,
+              backgroundColor: barbershop.secondaryColor || "#ffffff",
             }}
           >
             <h3
               className="text-lg font-semibold mb-4"
               style={{
-                color: colors.primaryColor,
+                color: barbershop.primaryColor || "#000000",
               }}
             >
               Meus Agendamentos
@@ -419,14 +435,14 @@ export default function ClientPage() {
                   key={booking.id}
                   className="border rounded-lg p-4"
                   style={{
-                    borderColor: colors.primaryColor,
+                    borderColor: barbershop.primaryColor || "#000000",
                   }}
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h4
                       className="font-semibold"
                       style={{
-                        color: colors.primaryColor,
+                        color: barbershop.primaryColor || "#000000",
                       }}
                     >
                       {booking.service.name}
@@ -434,8 +450,8 @@ export default function ClientPage() {
                     <span
                       className="text-sm font-medium px-2 py-1 rounded-full"
                       style={{
-                        backgroundColor: colors.primaryColor,
-                        color: colors.secondaryColor,
+                        backgroundColor: barbershop.primaryColor || "#000000",
+                        color: barbershop.secondaryColor || "#ffffff",
                       }}
                     >
                       Confirmado
@@ -446,12 +462,12 @@ export default function ClientPage() {
                     <Calendar
                       className="h-4 w-4"
                       style={{
-                        color: colors.textColor,
+                        color: barbershop.textColor || "#111827",
                       }}
                     />
                     <span
                       style={{
-                        color: colors.textColor,
+                        color: barbershop.textColor || "#111827",
                       }}
                     >
                       {format(
@@ -468,7 +484,7 @@ export default function ClientPage() {
                     <span
                       className="text-sm"
                       style={{
-                        color: colors.textColor,
+                        color: barbershop.textColor || "#111827",
                       }}
                     >
                       Duração: {booking.service.duration || 30} min
@@ -476,7 +492,7 @@ export default function ClientPage() {
                     <span
                       className="font-semibold"
                       style={{
-                        color: colors.primaryColor,
+                        color: barbershop.primaryColor || "#000000",
                       }}
                     >
                       {new Intl.NumberFormat("pt-BR", {
@@ -489,7 +505,10 @@ export default function ClientPage() {
                   {/* Botão para agendar lembrete */}
                   <div
                     className="mt-3 pt-3 border-t"
-                    style={{ borderColor: colors.primaryColor + "30" }}
+                    style={{
+                      borderColor:
+                        (barbershop.primaryColor || "#000000") + "30",
+                    }}
                   >
                     <Button
                       variant="outline"
@@ -502,8 +521,8 @@ export default function ClientPage() {
                         )
                       }
                       style={{
-                        borderColor: colors.primaryColor,
-                        color: colors.primaryColor,
+                        borderColor: barbershop.primaryColor || "#000000",
+                        color: barbershop.primaryColor || "#000000",
                       }}
                     >
                       <Bell className="h-4 w-4" />
@@ -520,13 +539,13 @@ export default function ClientPage() {
         <div
           className="mt-2 px-4 py-6"
           style={{
-            backgroundColor: colors.secondaryColor,
+            backgroundColor: barbershop.secondaryColor || "#ffffff",
           }}
         >
           <h3
             className="text-lg font-semibold mb-4"
             style={{
-              color: colors.primaryColor,
+              color: barbershop.primaryColor || "#000000",
             }}
           >
             Serviços Disponíveis
@@ -538,7 +557,7 @@ export default function ClientPage() {
                 key={service.id}
                 className="border rounded-lg p-4"
                 style={{
-                  borderColor: colors.primaryColor,
+                  borderColor: barbershop.primaryColor || "#000000",
                 }}
               >
                 <div className="flex items-start justify-between mb-2">
@@ -546,7 +565,7 @@ export default function ClientPage() {
                     <h4
                       className="font-semibold"
                       style={{
-                        color: colors.primaryColor,
+                        color: barbershop.primaryColor || "#000000",
                       }}
                     >
                       {service.name}
@@ -555,7 +574,7 @@ export default function ClientPage() {
                       <p
                         className="text-sm mt-1"
                         style={{
-                          color: colors.textColor,
+                          color: barbershop.textColor || "#111827",
                         }}
                       >
                         {service.description}
@@ -565,7 +584,7 @@ export default function ClientPage() {
                   <span
                     className="font-bold text-lg"
                     style={{
-                      color: colors.primaryColor,
+                      color: barbershop.primaryColor || "#000000",
                     }}
                   >
                     {new Intl.NumberFormat("pt-BR", {
@@ -580,12 +599,12 @@ export default function ClientPage() {
                     <Clock
                       className="h-4 w-4"
                       style={{
-                        color: colors.textColor,
+                        color: barbershop.textColor || "#111827",
                       }}
                     />
                     <span
                       style={{
-                        color: colors.textColor,
+                        color: barbershop.textColor || "#111827",
                       }}
                     >
                       {service.duration || 30} min
@@ -595,8 +614,8 @@ export default function ClientPage() {
                   <Button
                     size="sm"
                     style={{
-                      backgroundColor: colors.primaryColor,
-                      color: colors.secondaryColor,
+                      backgroundColor: barbershop.primaryColor || "#000000",
+                      color: barbershop.secondaryColor || "#ffffff",
                     }}
                     onClick={() => {
                       // Redirecionar para página de agendamento
@@ -615,13 +634,13 @@ export default function ClientPage() {
         <div
           className="mt-2 px-4 py-6"
           style={{
-            backgroundColor: colors.secondaryColor,
+            backgroundColor: barbershop.secondaryColor || "#ffffff",
           }}
         >
           <h3
             className="text-lg font-semibold mb-4"
             style={{
-              color: colors.primaryColor,
+              color: barbershop.primaryColor || "#000000",
             }}
           >
             Sobre a Barbearia
@@ -629,7 +648,9 @@ export default function ClientPage() {
 
           <div
             className="aspect-video rounded-lg overflow-hidden mb-4"
-            style={{ backgroundColor: colors.accentColor + "20" }}
+            style={{
+              backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
+            }}
           >
             {barbershop.imageUrl ? (
               <Image
@@ -644,18 +665,21 @@ export default function ClientPage() {
                 <div className="text-center">
                   <div
                     className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
-                    style={{ backgroundColor: colors.accentColor + "30" }}
+                    style={{
+                      backgroundColor:
+                        (barbershop.accentColor || "#3b82f6") + "30",
+                    }}
                   >
                     <span
                       className="text-2xl"
-                      style={{ color: colors.textColor }}
+                      style={{ color: barbershop.textColor || "#111827" }}
                     >
                       🏪
                     </span>
                   </div>
                   <p
                     style={{
-                      color: colors.textColor,
+                      color: barbershop.textColor || "#111827",
                     }}
                   >
                     Imagem da Barbearia
@@ -670,12 +694,12 @@ export default function ClientPage() {
               <Clock
                 className="h-5 w-5"
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               />
               <span
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               >
                 Seg a Sáb - 9h às 18h
@@ -686,12 +710,12 @@ export default function ClientPage() {
               <MapPin
                 className="h-5 w-5"
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               />
               <span
                 style={{
-                  color: colors.textColor,
+                  color: barbershop.textColor || "#111827",
                 }}
               >
                 {barbershop.address}
@@ -702,14 +726,14 @@ export default function ClientPage() {
               variant="outline"
               className="w-full gap-2"
               style={{
-                borderColor: colors.primaryColor,
-                color: colors.primaryColor,
+                borderColor: barbershop.primaryColor || "#000000",
+                color: barbershop.primaryColor || "#000000",
               }}
             >
               <MapPin
                 className="h-4 w-4"
                 style={{
-                  color: colors.primaryColor,
+                  color: barbershop.primaryColor || "#000000",
                 }}
               />
               Mostrar no mapa
@@ -721,15 +745,15 @@ export default function ClientPage() {
         <div
           className="fixed bottom-0 left-0 right-0 border-t p-4"
           style={{
-            backgroundColor: colors.secondaryColor,
-            borderColor: colors.primaryColor,
+            backgroundColor: barbershop.secondaryColor || "#ffffff",
+            borderColor: barbershop.primaryColor || "#000000",
           }}
         >
           <Button
             className="w-full py-3 text-lg font-semibold"
             style={{
-              backgroundColor: colors.primaryColor,
-              color: colors.secondaryColor,
+              backgroundColor: barbershop.primaryColor || "#000000",
+              color: barbershop.secondaryColor || "#ffffff",
             }}
             onClick={() => {
               // Sincronizar dados antes de navegar
@@ -746,6 +770,6 @@ export default function ClientPage() {
         {/* Espaço para o botão fixo */}
         <div className="h-20"></div>
       </div>
-    </BarberAppLayout>
+    </ClientLayout>
   );
 }

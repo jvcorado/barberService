@@ -65,6 +65,16 @@ export default async function LinkPage({ params }: { params: { id: string } }) {
           </Link>
         </Button>
 
+        <Button
+          asChild
+          variant="outline"
+          className="w-full py-6 text-lg font-bold border-primary text-primary hover:bg-primary hover:text-secondary"
+        >
+          <Link href={`/barber_app/client/login?id=${params.id}`}>
+            📱 Acessar App do Cliente
+          </Link>
+        </Button>
+
         <div className="space-y-3">
           <LinkCard href="/servicos" icon={<Scissors size={20} />}>
             Nossos Serviços

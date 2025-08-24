@@ -223,19 +223,8 @@ export default function BookPage() {
   }
 
   if (status === "unauthenticated") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Acesso Negado
-          </h2>
-          <p className="text-gray-600 mb-4">
-            Você precisa estar logado para fazer um agendamento
-          </p>
-          <Button onClick={() => router.push("/")}>Ir para Login</Button>
-        </div>
-      </div>
-    );
+    router.push(`/barber_app/client/login?id=${barbershopId}`);
+    return null;
   }
 
   if (isLoadingBarbershop) {
@@ -284,7 +273,6 @@ export default function BookPage() {
         </Button>
         <div>
           <h1 className="text-xl font-bold text-gray-900">Agendar Serviço</h1>
-          <p className="text-sm text-gray-600">{barbershop.name}</p>
         </div>
       </div>
 
