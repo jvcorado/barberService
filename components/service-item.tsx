@@ -30,7 +30,7 @@ import { useMediaQuery } from "@react-hook/media-query";
 
 interface ServiceItemProps {
   service: BarbershopService;
-  barbershop: Pick<BarberShop, "name">;
+  barbershop: Pick<BarberShop, "id" | "name">;
 }
 
 const TIME_LIST = [
@@ -153,6 +153,7 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
       await createBooking({
         serviceId: service.id,
         date: newDates,
+        barberShopId: barbershop.id,
       });
       toast.success("Reserva criada com sucesso!");
     } catch (error) {

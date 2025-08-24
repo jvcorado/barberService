@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "prepare": "husky && prisma generate"
+    "prepare": "husky && prisma generate",
+    "pwa:build": "next build && next export",
+    "pwa:analyze": "next build --analyze"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
