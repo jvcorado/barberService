@@ -79,6 +79,13 @@ model BarberShop {
   facebook    String?
   tiktok      String?
 
+  // PERSONALIZAÇÃO DE CORES
+  primaryColor    String? @default("#000000")
+  secondaryColor  String? @default("#ffffff")
+  accentColor     String? @default("#3b82f6")
+  backgroundColor String? @default("#f9fafb")
+  textColor       String? @default("#111827")
+
   // RELAÇÃO COM USER (ADMIN)
   ownerId String? @unique
   owner   User?   @relation("UserBarbershop", fields: [ownerId], references: [id])
