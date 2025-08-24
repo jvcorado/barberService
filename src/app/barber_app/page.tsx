@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { SafeImage } from "@/components/safe-image";
 import { usePWA } from "@/hooks/use-pwa";
 import { PWAToast } from "@/components/pwa-toast";
+import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
 import {
   Star,
   ThumbsUp,
@@ -56,6 +57,7 @@ export default function BarberAppPage() {
     requestNotificationPermission,
     sendNotification,
   } = usePWA();
+  const { colors } = useBarbershopColors();
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
   const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
@@ -98,11 +100,17 @@ export default function BarberAppPage() {
   // Loading state
   if (loading || status === "loading") {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div
+        className="min-h-screen flex flex-col"
+        style={{ backgroundColor: colors.backgroundColor }}
+      >
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto mb-4"></div>
-            <p className="text-gray-600">Carregando...</p>
+            <div
+              className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4"
+              style={{ borderColor: colors.primaryColor }}
+            ></div>
+            <p style={{ color: colors.textColor }}>Carregando...</p>
           </div>
         </div>
       </div>
@@ -112,10 +120,13 @@ export default function BarberAppPage() {
   // No session state
   if (status === "unauthenticated" || !barbershop) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div
+        className="min-h-screen flex flex-col"
+        style={{ backgroundColor: colors.backgroundColor }}
+      >
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <p className="text-gray-600 mb-4">
+            <p className="mb-4" style={{ color: colors.textColor }}>
               Você precisa estar logado para acessar o app
             </p>
             <Button onClick={() => router.push("/api/auth/signin")}>
@@ -140,15 +151,15 @@ export default function BarberAppPage() {
         <div
           className="border-b px-4 py-3"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
-            borderColor: (barbershop as any).primaryColor || "#000000",
+            backgroundColor: colors.secondaryColor,
+            borderColor: colors.primaryColor,
           }}
         >
           <div className="flex items-center justify-center">
             <h1
               className="text-lg font-semibold"
               style={{
-                color: (barbershop as any).primaryColor || "#000000",
+                color: colors.primaryColor,
               }}
             >
               {barbershop.name}
@@ -160,11 +171,14 @@ export default function BarberAppPage() {
         <div
           className="px-4 py-6"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+            backgroundColor: colors.secondaryColor,
           }}
         >
           <div className="flex items-start gap-4">
-            <div className="w-20 h-20 rounded-full overflow-hidden bg-gray-200">
+            <div
+              className="w-20 h-20 rounded-full overflow-hidden"
+              style={{ backgroundColor: colors.accentColor + "20" }}
+            >
               {barbershop.imageUrl ? (
                 <SafeImage
                   src={barbershop.imageUrl}
@@ -174,8 +188,14 @@ export default function BarberAppPage() {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-300">
-                  <span className="text-gray-600 text-2xl font-bold">
+                <div
+                  className="w-full h-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.accentColor + "30" }}
+                >
+                  <span
+                    className="text-2xl font-bold"
+                    style={{ color: colors.textColor }}
+                  >
                     {barbershop.name.charAt(0).toUpperCase()}
                   </span>
                 </div>
@@ -183,10 +203,15 @@ export default function BarberAppPage() {
             </div>
 
             <div className="flex-1">
-              <h2 className="text-xl font-bold text-gray-900">
+              <h2
+                className="text-xl font-bold"
+                style={{ color: colors.primaryColor }}
+              >
                 {barbershop.name}
               </h2>
-              <p className="text-gray-600 mb-3">{barbershop.address}</p>
+              <p className="mb-3" style={{ color: colors.textColor }}>
+                {barbershop.address}
+              </p>
 
               {/* <div className="flex items-center gap-4 mb-4">
                 <Button
@@ -221,26 +246,56 @@ export default function BarberAppPage() {
           <div className="grid grid-cols-3 gap-4 mt-6">
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                <span className="font-semibold">4.6/5</span>
+                <Star
+                  className="h-4 w-4 fill-current"
+                  style={{ color: colors.accentColor }}
+                />
+                <span
+                  className="font-semibold"
+                  style={{ color: colors.primaryColor }}
+                >
+                  4.6/5
+                </span>
               </div>
-              <p className="text-sm text-gray-600">(123)</p>
+              <p className="text-sm" style={{ color: colors.textColor }}>
+                (123)
+              </p>
             </div>
 
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <ThumbsUp className="h-4 w-4 text-green-500" />
-                <span className="font-semibold">46%</span>
+                <ThumbsUp
+                  className="h-4 w-4"
+                  style={{ color: colors.accentColor }}
+                />
+                <span
+                  className="font-semibold"
+                  style={{ color: colors.primaryColor }}
+                >
+                  46%
+                </span>
               </div>
-              <p className="text-sm text-gray-600">Recomendado</p>
+              <p className="text-sm" style={{ color: colors.textColor }}>
+                Recomendado
+              </p>
             </div>
 
             <div className="text-center">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Calendar className="h-4 w-4 text-blue-500" />
-                <span className="font-semibold">{bookings.length}</span>
+                <Calendar
+                  className="h-4 w-4"
+                  style={{ color: colors.accentColor }}
+                />
+                <span
+                  className="font-semibold"
+                  style={{ color: colors.primaryColor }}
+                >
+                  {bookings.length}
+                </span>
               </div>
-              <p className="text-sm text-gray-600">Agendamentos</p>
+              <p className="text-sm" style={{ color: colors.textColor }}>
+                Agendamentos
+              </p>
             </div>
           </div>
 
@@ -290,14 +345,21 @@ export default function BarberAppPage() {
         <div
           className="mt-2 px-4 py-6"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+            backgroundColor: colors.secondaryColor,
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3
+              className="text-lg font-semibold"
+              style={{ color: colors.primaryColor }}
+            >
               Galeria de Fotos
             </h3>
-            <Button variant="ghost" className="text-blue-600 p-0 h-auto">
+            <Button
+              variant="ghost"
+              className="p-0 h-auto"
+              style={{ color: colors.accentColor }}
+            >
               Ver mais <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -306,13 +368,24 @@ export default function BarberAppPage() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="aspect-square bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center"
+                className="aspect-square rounded-lg overflow-hidden flex items-center justify-center"
+                style={{ backgroundColor: colors.accentColor + "20" }}
               >
                 <div className="text-center">
-                  <div className="w-12 h-12 bg-gray-300 rounded-full mx-auto mb-2 flex items-center justify-center">
-                    <span className="text-gray-600 text-lg">📷</span>
+                  <div
+                    className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
+                    style={{ backgroundColor: colors.accentColor + "30" }}
+                  >
+                    <span
+                      className="text-lg"
+                      style={{ color: colors.textColor }}
+                    >
+                      📷
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-500">Foto {i}</p>
+                  <p className="text-sm" style={{ color: colors.textColor }}>
+                    Foto {i}
+                  </p>
                 </div>
               </div>
             ))}
@@ -323,14 +396,20 @@ export default function BarberAppPage() {
         <div
           className="mt-2 px-4 py-6"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+            backgroundColor: colors.secondaryColor,
           }}
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+          <h3
+            className="text-lg font-semibold mb-4"
+            style={{ color: colors.primaryColor }}
+          >
             Barbearia
           </h3>
 
-          <div className="aspect-video bg-gray-200 rounded-lg overflow-hidden mb-4">
+          <div
+            className="aspect-video rounded-lg overflow-hidden mb-4"
+            style={{ backgroundColor: colors.accentColor + "20" }}
+          >
             {barbershop.imageUrl ? (
               <SafeImage
                 src={barbershop.imageUrl}
@@ -342,10 +421,18 @@ export default function BarberAppPage() {
             ) : (
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-gray-300 rounded-full mx-auto mb-3 flex items-center justify-center">
-                    <span className="text-gray-600 text-2xl">🏪</span>
+                  <div
+                    className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
+                    style={{ backgroundColor: colors.accentColor + "30" }}
+                  >
+                    <span
+                      className="text-2xl"
+                      style={{ color: colors.textColor }}
+                    >
+                      🏪
+                    </span>
                   </div>
-                  <p className="text-gray-600">Imagem da Barbearia</p>
+                  <p style={{ color: colors.textColor }}>Imagem da Barbearia</p>
                 </div>
               </div>
             )}
@@ -353,16 +440,27 @@ export default function BarberAppPage() {
 
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5 text-gray-600" />
-              <span className="text-gray-900">Seg a Sáb - 9h às 18h</span>
+              <Clock className="h-5 w-5" style={{ color: colors.textColor }} />
+              <span style={{ color: colors.textColor }}>
+                Seg a Sáb - 9h às 18h
+              </span>
             </div>
 
             <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5 text-gray-600" />
-              <span className="text-gray-900">{barbershop.address}</span>
+              <MapPin className="h-5 w-5" style={{ color: colors.textColor }} />
+              <span style={{ color: colors.textColor }}>
+                {barbershop.address}
+              </span>
             </div>
 
-            <Button variant="outline" className="w-full gap-2">
+            <Button
+              variant="outline"
+              className="w-full gap-2"
+              style={{
+                borderColor: colors.primaryColor,
+                color: colors.primaryColor,
+              }}
+            >
               <MapPin className="h-4 w-4" />
               Mostrar no mapa
             </Button>
@@ -464,12 +562,21 @@ export default function BarberAppPage() {
         <div
           className="mt-2 px-4 py-6"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
+            backgroundColor: colors.secondaryColor,
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900">Avaliações</h3>
-            <Button variant="ghost" className="text-blue-600 p-0 h-auto">
+            <h3
+              className="text-lg font-semibold"
+              style={{ color: colors.primaryColor }}
+            >
+              Avaliações
+            </h3>
+            <Button
+              variant="ghost"
+              className="p-0 h-auto"
+              style={{ color: colors.accentColor }}
+            >
               Ver todas <ChevronRight className="h-4 w-4 ml-1" />
             </Button>
           </div>
@@ -477,23 +584,42 @@ export default function BarberAppPage() {
           <div className="space-y-4">
             {bookings.slice(0, 3).map((booking) => (
               <div key={booking.id} className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                  <span className="text-sm font-medium text-gray-600">
+                <div
+                  className="w-10 h-10 rounded-full flex items-center justify-center"
+                  style={{ backgroundColor: colors.accentColor + "20" }}
+                >
+                  <span
+                    className="text-sm font-medium"
+                    style={{ color: colors.textColor }}
+                  >
                     {booking.user?.name?.charAt(0) || "C"}
                   </span>
                 </div>
 
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium text-gray-900">
+                    <span
+                      className="font-medium"
+                      style={{ color: colors.primaryColor }}
+                    >
                       {booking.user?.name || "Cliente"}
                     </span>
                     <div className="flex items-center gap-1">
-                      <Star className="h-4 w-4 text-yellow-400 fill-current" />
-                      <span className="text-sm text-gray-600">5/5</span>
+                      <Star
+                        className="h-4 w-4 fill-current"
+                        style={{ color: colors.accentColor }}
+                      />
+                      <span
+                        className="text-sm"
+                        style={{ color: colors.textColor }}
+                      >
+                        5/5
+                      </span>
                     </div>
                   </div>
-                  <p className="text-gray-600 text-sm">Excelente serviço!</p>
+                  <p className="text-sm" style={{ color: colors.textColor }}>
+                    Excelente serviço!
+                  </p>
                 </div>
               </div>
             ))}
@@ -504,15 +630,15 @@ export default function BarberAppPage() {
         <div
           className="fixed bottom-0 left-0 right-0 border-t p-4 space-y-4"
           style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
-            borderColor: (barbershop as any).primaryColor || "#000000",
+            backgroundColor: colors.secondaryColor,
+            borderColor: colors.primaryColor,
           }}
         >
           <Button
             className="w-full py-3 text-lg font-semibold"
             style={{
-              backgroundColor: (barbershop as any).primaryColor || "#000000",
-              color: (barbershop as any).secondaryColor || "#ffffff",
+              backgroundColor: colors.primaryColor,
+              color: colors.secondaryColor,
             }}
             onClick={() => {
               router.push(`/barber_app/client?id=${barbershop.id}`);
@@ -525,8 +651,8 @@ export default function BarberAppPage() {
             variant="outline"
             className="w-full py-2"
             style={{
-              borderColor: (barbershop as any).primaryColor || "#000000",
-              color: (barbershop as any).primaryColor || "#000000",
+              borderColor: colors.primaryColor,
+              color: colors.primaryColor,
             }}
             onClick={() => {
               router.push(`/dashboard`);

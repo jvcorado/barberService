@@ -1,0 +1,54 @@
+{
+  "name": "BarberApp Cliente",
+  "short_name": "BarberApp",
+  "description": "Aplicativo mobile para clientes agendarem serviços na barbearia",
+  "start_url": "/barber_app/client",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "orientation": "portrait-primary",
+  "scope": "/barber_app/client",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity", "lifestyle"],
+  "lang": "pt-BR",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Agendar Serviço",
+      "short_name": "Agendar",
+      "description": "Agendar um novo serviço",
+      "url": "/barber_app/client/book",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Meus Agendamentos",
+      "short_name": "Agendamentos",
+      "description": "Ver meus agendamentos",
+      "url": "/barber_app/client",
+      "icons": [
+        {
+          "src": "/logo.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ]
+}

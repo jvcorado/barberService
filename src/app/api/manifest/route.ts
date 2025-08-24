@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { db } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     let description = "Aplicativo mobile para gerenciamento da barbearia";
 
     if (barbershopId) {
-      const barbershop = await prisma.barbershop.findUnique({
+      const barbershop = await db.barberShop.findUnique({
         where: { id: barbershopId },
         select: { name: true, description: true },
       });
