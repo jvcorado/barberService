@@ -188,7 +188,7 @@ export default function BarberAppPage() {
               </h2>
               <p className="text-gray-600 mb-3">{barbershop.address}</p>
 
-              <div className="flex items-center gap-4 mb-4">
+              {/* <div className="flex items-center gap-4 mb-4">
                 <Button
                   size="sm"
                   variant="outline"
@@ -213,7 +213,7 @@ export default function BarberAppPage() {
                   <MessageCircle className="h-4 w-4" />
                   Mensagem
                 </Button>
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -245,7 +245,7 @@ export default function BarberAppPage() {
           </div>
 
           {/* Status PWA */}
-          <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
+          {/* <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
             <div className="flex items-center justify-between mb-2">
               <span className="text-sm font-medium text-gray-700">
                 Status do App
@@ -283,7 +283,7 @@ export default function BarberAppPage() {
                 </Button>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Galeria de Fotos */}
@@ -370,7 +370,7 @@ export default function BarberAppPage() {
         </div>
 
         {/* Link para App do Cliente */}
-        <div
+        {/* <div
           className="mt-2 px-4 py-6"
           style={{
             backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
@@ -458,7 +458,7 @@ export default function BarberAppPage() {
               Testar Notificação
             </Button>
           </div>
-        </div>
+        </div> */}
 
         {/* Avaliações */}
         <div
@@ -502,7 +502,7 @@ export default function BarberAppPage() {
 
         {/* Botões de Ação */}
         <div
-          className="fixed bottom-0 left-0 right-0 border-t p-4 space-y-3"
+          className="fixed bottom-0 left-0 right-0 border-t p-4 space-y-4"
           style={{
             backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
             borderColor: (barbershop as any).primaryColor || "#000000",
