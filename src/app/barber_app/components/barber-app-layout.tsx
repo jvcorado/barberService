@@ -6,7 +6,6 @@ import { Menu, Settings, X, Phone, MessageCircle, Palette } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
-import { Calendar } from "@/components/ui/calendar";
 import { useRouter } from "next/navigation";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
 import { OfflineIndicator } from "@/components/offline-indicator";
@@ -96,15 +95,10 @@ export default function BarberAppLayout({
               color: colors.textColor,
             }}
           >
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full justify-between">
               <div className="space-y-6 flex-1">
                 {/* Header do Sidebar */}
-                <div
-                  className="flex items-center justify-between border-b pb-4"
-                  style={{
-                    borderColor: colors.primaryColor,
-                  }}
-                >
+                <div className="flex items-center justify-between border-b pb-4">
                   <h2
                     className="text-xl font-bold"
                     style={{
@@ -113,26 +107,10 @@ export default function BarberAppLayout({
                   >
                     {barbershop.name}
                   </h2>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8"
-                    onClick={() => setIsOpen(false)}
-                    style={{
-                      color: colors.primaryColor,
-                    }}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
 
                 {/* Perfil do Usuário */}
-                <div
-                  className="flex items-center gap-3 border-b pb-4"
-                  style={{
-                    borderColor: colors.primaryColor,
-                  }}
-                >
+                <div className="flex items-center gap-3 border-b pb-4">
                   <Avatar className="h-12 w-12">
                     <AvatarImage
                       src={session?.user?.image || ""}
@@ -163,7 +141,7 @@ export default function BarberAppLayout({
                 </div>
 
                 {/* Informações da Barbearia */}
-                <div
+                {/* <div
                   className="space-y-3 border-b pb-4"
                   style={{
                     borderColor: colors.primaryColor,
@@ -185,7 +163,7 @@ export default function BarberAppLayout({
                   >
                     {barbershop.address}
                   </p>
-                </div>
+                </div> */}
 
                 {/* Navegação */}
                 <nav className="space-y-2">
@@ -213,7 +191,7 @@ export default function BarberAppLayout({
                     Dashboard Web
                   </Button>
 
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium"
                     onClick={() => {
@@ -227,9 +205,9 @@ export default function BarberAppLayout({
                   >
                     <Menu className="h-4 w-4" />
                     App do Barbeiro
-                  </Button>
+                  </Button> */}
 
-                  <Button
+                  {/* <Button
                     variant="ghost"
                     className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
                     onClick={() => {
@@ -250,7 +228,7 @@ export default function BarberAppLayout({
                     }}
                   >
                     App do Cliente
-                  </Button>
+                  </Button> */}
 
                   <Button
                     variant="ghost"
@@ -278,7 +256,7 @@ export default function BarberAppLayout({
                 </nav>
 
                 {/* Ações Rápidas */}
-                <div
+                {/* <div
                   className="space-y-2 pt-4 border-t"
                   style={{
                     borderColor: colors.primaryColor,
@@ -313,7 +291,7 @@ export default function BarberAppLayout({
                       if (barbershop.phones && barbershop.phones.length > 0) {
                         window.open(
                           `https://wa.me/${barbershop.phones[0].replace(/\D/g, "")}`,
-                          "_blank",
+                          "_blank"
                         );
                       }
                     }}
@@ -330,24 +308,23 @@ export default function BarberAppLayout({
                       ? "WhatsApp"
                       : "Sem WhatsApp"}
                   </Button>
-                </div>
-
-                {/* Footer do Sidebar */}
+                </div> */}
+              </div>
+              {/* Footer do Sidebar */}
+              <div
+                className="pt-4 border-t mt-auto"
+                style={{
+                  borderColor: colors.primaryColor,
+                }}
+              >
                 <div
-                  className="pt-4 border-t mt-auto"
+                  className="text-center text-xs"
                   style={{
-                    borderColor: colors.primaryColor,
+                    color: colors.textColor,
                   }}
                 >
-                  <div
-                    className="text-center text-xs"
-                    style={{
-                      color: colors.textColor,
-                    }}
-                  >
-                    <p>App do Barbeiro</p>
-                    <p>v1.0.0</p>
-                  </div>
+                  <p>App do Barbeiro</p>
+                  <p>v1.0.0</p>
                 </div>
               </div>
             </div>

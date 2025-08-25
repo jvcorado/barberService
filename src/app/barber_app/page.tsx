@@ -9,10 +9,12 @@ import { SafeImage } from "@/components/safe-image";
 import { usePWA } from "@/hooks/use-pwa";
 import { PWAToast } from "@/components/pwa-toast";
 import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
+import { useCalendarData } from "./hooks/use-calendar-data";
+import { format, addDays, subDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
 import {
   Star,
   ThumbsUp,
-  Calendar,
   MapPin,
   Phone,
   MessageCircle,
@@ -21,18 +23,23 @@ import {
   Download,
   Wifi,
   WifiOff,
+  Plus,
+  Filter,
+  MoreVertical,
+  Bell,
+  ChevronDown,
+  ChevronLeft,
+  MessageCircle as ChatIcon,
+  Heart,
+  CheckCircle,
+  Sparkles,
+  Calendar,
+  Users,
+  FileText,
+  Zap,
+  ShoppingBag,
+  ChevronsUpDown,
 } from "lucide-react";
-
-interface BookingWithDetails {
-  id: string;
-  date: Date;
-  user?: {
-    name?: string | null;
-  };
-  service?: {
-    name?: string | null;
-  };
-}
 
 interface Barbershop {
   id: string;
@@ -44,6 +51,13 @@ interface Barbershop {
   backgroundColor?: string;
   textColor?: string;
   services: any[];
+}
+
+interface Barber {
+  id: string;
+  name: string;
+  imageUrl?: string;
+  workingHours: string;
 }
 
 export default function BarberAppPage() {
@@ -59,12 +73,63 @@ export default function BarberAppPage() {
   } = usePWA();
   const { colors } = useBarbershopColors();
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
-  const [bookings, setBookings] = useState<BookingWithDetails[]>([]);
+  const [barbers, setBarbers] = useState<Barber[]>([]);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{
-    message: string;
-    type: "success" | "error" | "info";
-  } | null>(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [showCalendar, setShowCalendar] = useState(false);
+
+  // Hook do calendário
+  const {
+    calendarData,
+    loading: calendarLoading,
+    error: calendarError,
+    getWeekDays,
+    getMonthName,
+    goToPreviousWeek,
+    goToNextWeek,
+    goToToday,
+    getBookingsByDate,
+    getTimePosition,
+    getTimeHeight,
+    getCurrentTimePosition,
+    isCurrentTimeVisible,
+  } = useCalendarData({
+    barbershopId: barbershop?.id || "",
+    selectedDate,
+  });
+
+  // Debug: verificar dados do calendário
+  useEffect(() => {
+    console.log("🏪 Barbearia:", barbershop);
+    console.log("📅 Dados do calendário:", calendarData);
+    console.log(
+      "📅 Agendamentos para data selecionada:",
+      getBookingsByDate(selectedDate),
+    );
+  }, [barbershop, calendarData, selectedDate, getBookingsByDate]);
+
+  // Horários de trabalho (9h às 19h)
+  const workingHours = Array.from({ length: 41 }, (_, i) => {
+    const hour = Math.floor(i / 4) + 9;
+    const minute = (i % 4) * 15;
+    return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+  });
+
+  // Dados mockados para barbeiros (pode ser expandido para buscar do banco)
+  const mockBarbers: Barber[] = [
+    {
+      id: "1",
+      name: "Patricia Taylor",
+      imageUrl: "/logo.png",
+      workingHours: "10:00-19:00",
+    },
+    {
+      id: "2",
+      name: "Michael Brown",
+      imageUrl: "/logo.png",
+      workingHours: "10:00-19:00",
+    },
+  ];
 
   useEffect(() => {
     if (status === "loading") return;
@@ -85,7 +150,7 @@ export default function BarberAppPage() {
       if (response.ok) {
         const data = await response.json();
         setBarbershop(data.barbershop);
-        setBookings(data.bookings || []);
+        setBarbers(mockBarbers);
       } else {
         router.push("/register");
       }
@@ -95,6 +160,62 @@ export default function BarberAppPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case "favorite":
+        return <Heart className="h-3 w-3 text-red-500" />;
+      case "completed":
+        return <CheckCircle className="h-3 w-3 text-green-500" />;
+      case "premium":
+        return <Sparkles className="h-3 w-3 text-purple-500" />;
+      default:
+        return <ChatIcon className="h-3 w-3 text-blue-500" />;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "favorite":
+        return "bg-pink-200 border-pink-300";
+      case "completed":
+        return "bg-green-200 border-green-300";
+      case "premium":
+        return "bg-purple-200 border-purple-300";
+      default:
+        return "bg-blue-200 border-blue-300";
+    }
+  };
+
+  // Funções de navegação do calendário
+  const handlePreviousWeek = () => {
+    const newDate = goToPreviousWeek();
+    setSelectedDate(newDate);
+  };
+
+  const handleNextWeek = () => {
+    const newDate = goToNextWeek();
+    setSelectedDate(newDate);
+  };
+
+  const handleToday = () => {
+    const today = goToToday();
+    setSelectedDate(today);
+  };
+
+  const selectDate = (date: Date) => {
+    console.log("📅 Selecionando nova data:", date);
+    setSelectedDate(date);
+    setShowCalendar(false);
+  };
+
+  const formatSelectedDate = () => {
+    const today = new Date();
+    if (format(selectedDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")) {
+      return "Hoje";
+    }
+    return format(selectedDate, "dd/MM", { locale: ptBR });
   };
 
   // Loading state
@@ -143,8 +264,8 @@ export default function BarberAppPage() {
       <div
         className="min-h-screen"
         style={{
-          backgroundColor: (barbershop as any).backgroundColor || "#f9fafb",
-          color: (barbershop as any).textColor || "#111827",
+          backgroundColor: colors.backgroundColor || "#f9fafb",
+          color: colors.textColor || "#111827",
         }}
       >
         {/* Header */}
@@ -152,527 +273,499 @@ export default function BarberAppPage() {
           className="border-b px-4 py-3"
           style={{
             backgroundColor: colors.secondaryColor,
-            borderColor: colors.primaryColor,
           }}
         >
-          <div className="flex items-center justify-center">
-            <h1
-              className="text-lg font-semibold"
-              style={{
-                color: colors.primaryColor,
-              }}
-            >
-              {barbershop.name}
-            </h1>
-          </div>
-        </div>
-
-        {/* Perfil do Barbeiro */}
-        <div
-          className="px-4 py-6"
-          style={{
-            backgroundColor: colors.secondaryColor,
-          }}
-        >
-          <div className="flex items-start gap-4">
-            <div
-              className="w-20 h-20 rounded-full overflow-hidden"
-              style={{ backgroundColor: colors.accentColor + "20" }}
-            >
-              {barbershop.imageUrl ? (
-                <SafeImage
-                  src={barbershop.imageUrl}
-                  alt={barbershop.name}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center"
-                  style={{ backgroundColor: colors.accentColor + "30" }}
-                >
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: colors.textColor }}
-                  >
-                    {barbershop.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex-1">
-              <h2
-                className="text-xl font-bold"
-                style={{ color: colors.primaryColor }}
-              >
-                {barbershop.name}
-              </h2>
-              <p className="mb-3" style={{ color: colors.textColor }}>
-                {barbershop.address}
-              </p>
-
-              {/* <div className="flex items-center gap-4 mb-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2"
-                  style={{
-                    borderColor: (barbershop as any).primaryColor || "#000000",
-                    color: (barbershop as any).primaryColor || "#000000",
-                  }}
-                >
-                  <Phone className="h-4 w-4" />
-                  Ligar
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2"
-                  style={{
-                    borderColor: (barbershop as any).primaryColor || "#000000",
-                    color: (barbershop as any).primaryColor || "#000000",
-                  }}
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  Mensagem
-                </Button>
-              </div> */}
-            </div>
-          </div>
-
-          {/* Avaliações e Estatísticas */}
-          <div className="grid grid-cols-3 gap-4 mt-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Star
-                  className="h-4 w-4 fill-current"
-                  style={{ color: colors.accentColor }}
-                />
-                <span
-                  className="font-semibold"
-                  style={{ color: colors.primaryColor }}
-                >
-                  4.6/5
-                </span>
-              </div>
-              <p className="text-sm" style={{ color: colors.textColor }}>
-                (123)
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <ThumbsUp
-                  className="h-4 w-4"
-                  style={{ color: colors.accentColor }}
-                />
-                <span
-                  className="font-semibold"
-                  style={{ color: colors.primaryColor }}
-                >
-                  46%
-                </span>
-              </div>
-              <p className="text-sm" style={{ color: colors.textColor }}>
-                Recomendado
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Calendar
-                  className="h-4 w-4"
-                  style={{ color: colors.accentColor }}
-                />
-                <span
-                  className="font-semibold"
-                  style={{ color: colors.primaryColor }}
-                >
-                  {bookings.length}
-                </span>
-              </div>
-              <p className="text-sm" style={{ color: colors.textColor }}>
-                Agendamentos
-              </p>
-            </div>
-          </div>
-
-          {/* Status PWA */}
-          {/* <div className="mt-4 p-3 bg-gray-50 rounded-lg border">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700">
-                Status do App
-              </span>
-              <div className="flex items-center gap-2">
-                {isOnline ? (
-                  <Wifi className="h-4 w-4 text-green-500" />
-                ) : (
-                  <WifiOff className="h-4 w-4 text-yellow-500" />
-                )}
-                <span className="text-xs text-gray-500">
-                  {isOnline ? "Online" : "Offline"}
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span className="text-xs text-gray-600">
-                {isInstalled ? "App instalado" : "App não instalado"}
-              </span>
-
-              {isInstallable && !isInstalled && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={installApp}
-                  className="gap-2 h-7 text-xs"
-                  style={{
-                    borderColor: (barbershop as any).primaryColor || "#000000",
-                    color: (barbershop as any).primaryColor || "#000000",
-                  }}
-                >
-                  <Download className="h-3 w-3" />
-                  Instalar
-                </Button>
-              )}
-            </div>
-          </div> */}
-        </div>
-
-        {/* Galeria de Fotos */}
-        <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: colors.secondaryColor,
-          }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3
-              className="text-lg font-semibold"
-              style={{ color: colors.primaryColor }}
-            >
-              Galeria de Fotos
-            </h3>
-            <Button
-              variant="ghost"
-              className="p-0 h-auto"
-              style={{ color: colors.accentColor }}
-            >
-              Ver mais <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3">
-            {[1, 2, 3].map((i) => (
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
               <div
-                key={i}
-                className="aspect-square rounded-lg overflow-hidden flex items-center justify-center"
-                style={{ backgroundColor: colors.accentColor + "20" }}
+                className="text-sm font-medium"
+                style={{ color: colors.textColor }}
               >
-                <div className="text-center">
-                  <div
-                    className="w-12 h-12 rounded-full mx-auto mb-2 flex items-center justify-center"
-                    style={{ backgroundColor: colors.accentColor + "30" }}
-                  >
-                    <span
-                      className="text-lg"
-                      style={{ color: colors.textColor }}
-                    >
-                      📷
-                    </span>
-                  </div>
-                  <p className="text-sm" style={{ color: colors.textColor }}>
-                    Foto {i}
-                  </p>
-                </div>
+                {new Date().toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Barbearia */}
-        <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: colors.secondaryColor,
-          }}
-        >
-          <h3
-            className="text-lg font-semibold mb-4"
-            style={{ color: colors.primaryColor }}
-          >
-            Barbearia
-          </h3>
-
-          <div
-            className="aspect-video rounded-lg overflow-hidden mb-4"
-            style={{ backgroundColor: colors.accentColor + "20" }}
-          >
-            {barbershop.imageUrl ? (
-              <SafeImage
-                src={barbershop.imageUrl}
-                alt="Barbearia"
-                width={400}
-                height={225}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div
-                    className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
-                    style={{ backgroundColor: colors.accentColor + "30" }}
-                  >
-                    <span
-                      className="text-2xl"
-                      style={{ color: colors.textColor }}
-                    >
-                      🏪
-                    </span>
-                  </div>
-                  <p style={{ color: colors.textColor }}>Imagem da Barbearia</p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Clock className="h-5 w-5" style={{ color: colors.textColor }} />
-              <span style={{ color: colors.textColor }}>
-                Seg a Sáb - 9h às 18h
-              </span>
+              <Bell className="h-5 w-5" style={{ color: colors.textColor }} />
             </div>
 
-            <div className="flex items-center gap-3">
-              <MapPin className="h-5 w-5" style={{ color: colors.textColor }} />
-              <span style={{ color: colors.textColor }}>
-                {barbershop.address}
-              </span>
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              style={{
-                borderColor: colors.primaryColor,
-                color: colors.primaryColor,
-              }}
-            >
-              <MapPin className="h-4 w-4" />
-              Mostrar no mapa
-            </Button>
-          </div>
-        </div>
-
-        {/* Link para App do Cliente */}
-        {/* <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: (barbershop as any).secondaryColor || "#ffffff",
-          }}
-        >
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
-              Compartilhe com seus Clientes
-            </h3>
-            <p className="text-sm text-gray-600 mb-4">
-              Envie este link para seus clientes agendarem serviços diretamente
-              pelo app
-            </p>
-
-            <div className="p-3 bg-gray-50 rounded-lg border mb-4">
-              <p className="text-xs text-gray-500 mb-1">
-                Link do App do Cliente:
-              </p>
-              <p className="text-sm font-mono text-gray-700 break-all">
-                {barbershop.id
-                  ? `/barber_app/client?id=${barbershop.id}`
-                  : "Carregando..."}
-              </p>
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              style={{
-                borderColor: (barbershop as any).primaryColor || "#000000",
-                color: (barbershop as any).primaryColor || "#000000",
-              }}
-              onClick={async () => {
-                try {
-                  const url = `/barber_app/client?id=${barbershop.id}`;
-                  await navigator.clipboard.writeText(url);
-                  setToast({
-                    message: "Link copiado para a área de transferência!",
-                    type: "success",
-                  });
-                } catch (error) {
-                  setToast({
-                    message: "Erro ao copiar link",
-                    type: "error",
-                  });
-                }
-              }}
-            >
-              Copiar Link
-            </Button>
-
-            <Button
-              variant="outline"
-              className="w-full gap-2"
-              style={{
-                borderColor: (barbershop as any).primaryColor || "#000000",
-                color: (barbershop as any).primaryColor || "#000000",
-              }}
-              onClick={async () => {
-                try {
-                  const hasPermission = await requestNotificationPermission();
-                  if (hasPermission) {
-                    sendNotification("BarberApp", {
-                      body: "Teste de notificação funcionando!",
-                      icon: "/logo.png",
-                    });
-                    setToast({
-                      message: "Notificação enviada com sucesso!",
-                      type: "success",
-                    });
-                  } else {
-                    setToast({
-                      message: "Permissão de notificação negada",
-                      type: "error",
-                    });
-                  }
-                } catch (error) {
-                  setToast({
-                    message: "Erro ao enviar notificação",
-                    type: "error",
-                  });
-                }
-              }}
-            >
-              Testar Notificação
-            </Button>
-          </div>
-        </div> */}
-
-        {/* Avaliações */}
-        <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: colors.secondaryColor,
-          }}
-        >
-          <div className="flex items-center justify-between mb-4">
-            <h3
-              className="text-lg font-semibold"
-              style={{ color: colors.primaryColor }}
-            >
-              Avaliações
-            </h3>
-            <Button
-              variant="ghost"
-              className="p-0 h-auto"
-              style={{ color: colors.accentColor }}
-            >
-              Ver todas <ChevronRight className="h-4 w-4 ml-1" />
-            </Button>
-          </div>
-
-          <div className="space-y-4">
-            {bookings.slice(0, 3).map((booking) => (
-              <div key={booking.id} className="flex items-start gap-3">
-                <div
-                  className="w-10 h-10 rounded-full flex items-center justify-center"
-                  style={{ backgroundColor: colors.accentColor + "20" }}
+            <div className="flex items-center gap-2">
+              <div className="text-center relative">
+                <button
+                  onClick={() => setShowCalendar(!showCalendar)}
+                  className="flex items-center gap-1"
                 >
                   <span
-                    className="text-sm font-medium"
-                    style={{ color: colors.textColor }}
+                    className="font-semibold"
+                    style={{ color: colors.primaryColor }}
                   >
-                    {booking.user?.name?.charAt(0) || "C"}
+                    {formatSelectedDate()}
                   </span>
+                  <ChevronDown
+                    className="h-4 w-4"
+                    style={{ color: colors.textColor }}
+                  />
+                </button>
+                <div className="text-sm" style={{ color: colors.textColor }}>
+                  10:00-19:00
                 </div>
 
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span
-                      className="font-medium"
-                      style={{ color: colors.primaryColor }}
-                    >
-                      {booking.user?.name || "Cliente"}
-                    </span>
-                    <div className="flex items-center gap-1">
-                      <Star
-                        className="h-4 w-4 fill-current"
-                        style={{ color: colors.accentColor }}
-                      />
-                      <span
-                        className="text-sm"
-                        style={{ color: colors.textColor }}
+                {/* Calendário Dropdown */}
+                {showCalendar && (
+                  <div
+                    className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white border rounded-lg shadow-lg z-50 p-4 min-w-[280px]"
+                    style={{ borderColor: colors.primaryColor + "20" }}
+                  >
+                    {/* Header do Calendário */}
+                    <div className="flex items-center justify-between mb-4">
+                      <button
+                        onClick={handlePreviousWeek}
+                        className="p-1 hover:bg-gray-100 rounded"
                       >
-                        5/5
-                      </span>
+                        <ChevronLeft
+                          className="h-4 w-4"
+                          style={{ color: colors.textColor }}
+                        />
+                      </button>
+                      <div
+                        className="font-medium"
+                        style={{ color: colors.primaryColor }}
+                      >
+                        {getMonthName(selectedDate)}
+                      </div>
+                      <button
+                        onClick={handleNextWeek}
+                        className="p-1 hover:bg-gray-100 rounded"
+                      >
+                        <ChevronRight
+                          className="h-4 w-4"
+                          style={{ color: colors.textColor }}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Botão Hoje */}
+                    <div className="mb-4">
+                      <button
+                        onClick={handleToday}
+                        className="w-full py-2 px-4 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                      >
+                        Hoje
+                      </button>
+                    </div>
+
+                    {/* Dias da Semana */}
+                    <div className="grid grid-cols-7 gap-1 mb-2">
+                      {["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"].map(
+                        (day) => (
+                          <div
+                            key={day}
+                            className="text-xs font-medium text-center py-1"
+                            style={{ color: colors.textColor }}
+                          >
+                            {day}
+                          </div>
+                        ),
+                      )}
+                    </div>
+
+                    {/* Dias da Semana */}
+                    <div className="grid grid-cols-7 gap-1">
+                      {getWeekDays().map((day: any, index: number) => (
+                        <button
+                          key={index}
+                          onClick={() => selectDate(day.date)}
+                          className={`h-8 w-8 rounded-full text-sm font-medium transition-colors ${
+                            day.isToday
+                              ? "bg-red-500 text-white"
+                              : day.isSelected
+                                ? "bg-blue-500 text-white"
+                                : "hover:bg-gray-100"
+                          }`}
+                          style={{
+                            color:
+                              day.isToday || day.isSelected
+                                ? "white"
+                                : colors.textColor,
+                          }}
+                        >
+                          {day.dayNumber}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                  <p className="text-sm" style={{ color: colors.textColor }}>
-                    Excelente serviço!
-                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="h-5 w-5" style={{ color: colors.textColor }} />
+              <MoreVertical
+                className="h-5 w-5"
+                style={{ color: colors.textColor }}
+              />
+              {/* Botão de Debug */}
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={async () => {
+                  try {
+                    const response = await fetch("/api/debug/bookings");
+                    const data = await response.json();
+                    console.log("🔍 Debug completo:", data);
+                    alert(
+                      `Debug: ${data.debug.totalBookings} agendamentos encontrados`,
+                    );
+                  } catch (error) {
+                    console.error("Erro no debug:", error);
+                    alert("Erro ao fazer debug");
+                  }
+                }}
+                className="text-xs"
+              >
+                Debug
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Seletor de Data */}
+        <div
+          className="px-4 py-3 border-b"
+          style={{
+            backgroundColor: colors.secondaryColor,
+          }}
+        >
+          <div className="flex justify-between items-center">
+            {getWeekDays().map((day: any, index: number) => (
+              <div
+                key={index}
+                className="text-center cursor-pointer group"
+                onClick={() => selectDate(day.date)}
+              >
+                <div
+                  className="text-xs font-medium mb-1 transition-colors"
+                  style={{
+                    color: day.isSelected
+                      ? colors.primaryColor
+                      : colors.textColor,
+                  }}
+                >
+                  {day.dayName}
                 </div>
+                <div
+                  className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-200 hover:scale-110 ${
+                    day.isToday
+                      ? "bg-red-500 text-white shadow-lg"
+                      : day.isSelected
+                        ? "bg-blue-500 text-white shadow-lg"
+                        : "hover:bg-gray-100 hover:shadow-md"
+                  }`}
+                  style={{
+                    color:
+                      day.isToday || day.isSelected
+                        ? "white"
+                        : colors.textColor,
+                  }}
+                >
+                  {day.dayNumber}
+                </div>
+                {day.isSelected && (
+                  <div
+                    className="w-2 h-2 rounded-full mx-auto mt-1"
+                    style={{ backgroundColor: colors.primaryColor }}
+                  />
+                )}
               </div>
             ))}
           </div>
         </div>
 
-        {/* Botões de Ação */}
-        <div
-          className="fixed bottom-0 left-0 right-0 border-t p-4 space-y-4"
-          style={{
-            backgroundColor: colors.secondaryColor,
-            borderColor: colors.primaryColor,
-          }}
-        >
+        {/* Calendário de Agendamentos */}
+        <div className="flex-1 relative overflow-x-auto">
+          <div className="min-w-max">
+            {/* Cabeçalho dos Barbeiros */}
+            <div
+              className="flex border-b"
+              style={{ borderColor: colors.primaryColor + "20" }}
+            >
+              <div className="w-20 flex-shrink-0"></div>
+              {barbers.map((barber) => (
+                <div
+                  key={barber.id}
+                  className="w-48 flex-shrink-0 p-3 border-l text-center"
+                  style={{ borderColor: colors.primaryColor + "20" }}
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-12 h-12 rounded-full overflow-hidden">
+                      <SafeImage
+                        src={barber.imageUrl || "/logo.png"}
+                        alt={barber.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <div
+                        className="font-medium"
+                        style={{ color: colors.primaryColor }}
+                      >
+                        {barber.name}
+                      </div>
+                      <div
+                        className="text-xs"
+                        style={{ color: colors.textColor }}
+                      >
+                        {barber.workingHours}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Grade de Horários */}
+            <div className="relative">
+              {/* Linha do tempo atual */}
+              {isCurrentTimeVisible() && (
+                <div
+                  className="absolute left-0 right-0 z-10 flex items-center"
+                  style={{ top: getCurrentTimePosition() }}
+                >
+                  <div className="w-20 flex-shrink-0 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  </div>
+                  <div className="flex-1 h-px bg-red-500"></div>
+                </div>
+              )}
+
+              {/* Horários e Agendamentos */}
+              {workingHours.map((time, index) => (
+                <div
+                  key={time}
+                  className="flex border-b relative"
+                  style={{ borderColor: colors.primaryColor + "10" }}
+                >
+                  {/* Coluna de Horários */}
+                  <div className="w-20 flex-shrink-0 p-2 text-xs font-medium flex items-center justify-center">
+                    {index % 4 === 0 ? (
+                      <span className="font-semibold">{time}</span>
+                    ) : (
+                      <span className="text-gray-400">
+                        {time.split(":")[1]}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Colunas dos Barbeiros */}
+                  {barbers.map((barber) => (
+                    <div
+                      key={barber.id}
+                      className="w-48 flex-shrink-0 border-l relative"
+                      style={{ borderColor: colors.primaryColor + "10" }}
+                    >
+                      {/* Agendamentos para este barbeiro neste horário */}
+                      {(() => {
+                        const bookingsForDate = getBookingsByDate(selectedDate);
+
+                        if (bookingsForDate.length === 0) {
+                          return null;
+                        }
+
+                        // Renderizar agendamentos que devem aparecer neste horário
+                        return bookingsForDate
+                          .filter((booking: any) => {
+                            const bookingDate = new Date(booking.date);
+                            const [currentHour, currentMinute] = time
+                              .split(":")
+                              .map(Number);
+                            const currentTime =
+                              currentHour * 60 + currentMinute;
+                            const bookingStartTime =
+                              bookingDate.getHours() * 60 +
+                              bookingDate.getMinutes();
+                            const bookingEndTime =
+                              bookingStartTime +
+                              (booking.service.duration || 60);
+
+                            // Verifica se o horário atual está dentro do agendamento
+                            return (
+                              currentTime >= bookingStartTime &&
+                              currentTime < bookingEndTime
+                            );
+                          })
+                          .map((booking: any) => {
+                            const bookingDate = new Date(booking.date);
+                            const startTime = format(bookingDate, "HH:mm");
+                            const endTime = format(
+                              new Date(
+                                bookingDate.getTime() +
+                                  (booking.service.duration || 60) * 60000,
+                              ),
+                              "HH:mm",
+                            );
+
+                            // Calcular posição baseada na data real do agendamento
+                            const topPosition = getTimePosition(bookingDate);
+                            const height = getTimeHeight(
+                              booking.service.duration || 60,
+                            );
+
+                            console.log("🎯 Renderizando agendamento:", {
+                              id: booking.id,
+                              user: booking.user.name,
+                              service: booking.service.name,
+                              startTime,
+                              endTime,
+                              date: booking.date,
+                              duration: booking.service.duration,
+                              position: {
+                                top: topPosition,
+                                height: height,
+                              },
+                              timeSlot: time,
+                            });
+
+                            return (
+                              <div
+                                key={booking.id}
+                                className="absolute left-1 right-1 rounded-lg border p-2 text-xs bg-blue-200 border-blue-300 z-10"
+                                style={{
+                                  top: topPosition,
+                                  height: height,
+                                  minHeight: "40px", // Altura mínima para agendamentos curtos
+                                }}
+                              >
+                                <div className="flex items-start justify-between h-full">
+                                  <div className="flex-1">
+                                    <div
+                                      className="font-medium text-xs"
+                                      style={{ color: colors.textColor }}
+                                    >
+                                      {booking.user.name}
+                                    </div>
+                                    <div
+                                      className="text-xs opacity-75"
+                                      style={{ color: colors.textColor }}
+                                    >
+                                      {booking.service.name}
+                                    </div>
+                                    <div
+                                      className="text-xs opacity-75"
+                                      style={{ color: colors.textColor }}
+                                    >
+                                      {startTime} - {endTime}
+                                    </div>
+                                  </div>
+                                  <div className="ml-1">
+                                    {getStatusIcon("confirmed")}
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          });
+                      })()}
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Botão de Ação Flutuante */}
+        <div className="fixed bottom-6 right-6 z-20">
           <Button
-            className="w-full py-3 text-lg font-semibold"
+            className="w-14 h-14 rounded-full shadow-lg"
             style={{
               backgroundColor: colors.primaryColor,
               color: colors.secondaryColor,
             }}
             onClick={() => {
-              router.push(`/barber_app/client?id=${barbershop.id}`);
+              // Ação para adicionar novo agendamento
+              console.log("Adicionar agendamento");
             }}
           >
-            Acessar App do Cliente
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full py-2"
-            style={{
-              borderColor: colors.primaryColor,
-              color: colors.primaryColor,
-            }}
-            onClick={() => {
-              router.push(`/dashboard`);
-            }}
-          >
-            Ir para Dashboard Web
+            <Plus className="h-6 w-6" />
           </Button>
         </div>
 
-        {/* Espaço para o botão fixo */}
+        {/* Navegação Inferior */}
+        <div
+          className="fixed bottom-0 left-0 right-0 border-t p-3"
+          style={{
+            backgroundColor: colors.secondaryColor,
+            borderColor: colors.primaryColor + "20",
+          }}
+        >
+          <div className="flex justify-around">
+            <div className="flex flex-col items-center">
+              <Calendar
+                className="h-6 w-6"
+                style={{ color: colors.primaryColor }}
+              />
+              <span
+                className="text-xs mt-1"
+                style={{ color: colors.primaryColor }}
+              >
+                Agenda
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Users className="h-6 w-6" style={{ color: colors.textColor }} />
+              <span
+                className="text-xs mt-1"
+                style={{ color: colors.textColor }}
+              >
+                Clientes
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <FileText
+                className="h-6 w-6"
+                style={{ color: colors.textColor }}
+              />
+              <span
+                className="text-xs mt-1"
+                style={{ color: colors.textColor }}
+              >
+                Faturas
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <Zap className="h-6 w-6" style={{ color: colors.textColor }} />
+              <span
+                className="text-xs mt-1"
+                style={{ color: colors.textColor }}
+              >
+                Serviços
+              </span>
+            </div>
+            <div className="flex flex-col items-center">
+              <ShoppingBag
+                className="h-6 w-6"
+                style={{ color: colors.textColor }}
+              />
+              <span
+                className="text-xs mt-1"
+                style={{ color: colors.textColor }}
+              >
+                Loja
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Espaço para a navegação inferior */}
         <div className="h-20"></div>
       </div>
 
       {/* Toast PWA */}
-      {toast && (
-        <PWAToast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast(null)}
-        />
+      {calendarError && (
+        <div className="fixed top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-lg z-50">
+          {calendarError}
+        </div>
       )}
     </BarberAppLayout>
   );
