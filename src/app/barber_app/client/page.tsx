@@ -21,6 +21,7 @@ import {
   Bell,
   Wifi,
   WifiOff,
+  Instagram,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -47,6 +48,8 @@ interface BarberShop {
   accentColor?: string | null;
   phones?: string[];
   services: Service[];
+  instagram?: string | null;
+  tiktok?: string | null;
 }
 
 interface Booking {
@@ -123,7 +126,7 @@ export default function ClientPage() {
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div
-              className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4"
+              className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4"
               style={{ borderColor: barbershop?.primaryColor || "#000000" }}
             ></div>
             <p style={{ color: barbershop?.textColor || "#111827" }}>
@@ -198,66 +201,6 @@ export default function ClientPage() {
           color: barbershop.textColor || "#111827",
         }}
       >
-        {/* Header com Status PWA */}
-        <div
-          className="border-b px-4 py-3"
-          style={{
-            backgroundColor: barbershop.secondaryColor || "#ffffff",
-            borderColor: barbershop.primaryColor || "#000000",
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <h1
-              className="text-lg font-semibold"
-              style={{
-                color: barbershop.primaryColor || "#000000",
-              }}
-            >
-              App do Cliente
-            </h1>
-
-            {/* Status PWA */}
-            <div className="flex items-center gap-2">
-              {/* Status Online/Offline */}
-              {pwaStatus.isOnline ? (
-                <Wifi className="h-4 w-4 text-green-500" />
-              ) : (
-                <WifiOff className="h-4 w-4 text-red-500" />
-              )}
-
-              {/* Botão de Notificação */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8"
-                onClick={() => pwaStatus.requestNotificationPermission()}
-                style={{
-                  color: pwaStatus.hasNotifications
-                    ? barbershop.accentColor || "#3b82f6"
-                    : barbershop.textColor || "#111827",
-                }}
-              >
-                <Bell className="h-4 w-4" />
-              </Button>
-
-              {/* Botão de Instalação */}
-              {pwaStatus.canInstall && !pwaStatus.isInstalled && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => pwaStatus.installApp()}
-                  style={{
-                    color: barbershop.accentColor || "#3b82f6",
-                  }}
-                >
-                  <Download className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Perfil da Barbearia */}
         <div
           className="px-4 py-6"
@@ -267,7 +210,7 @@ export default function ClientPage() {
         >
           <div className="flex items-start gap-4">
             <div
-              className="w-20 h-20 rounded-full overflow-hidden"
+              className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0"
               style={{
                 backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
               }}
@@ -298,7 +241,7 @@ export default function ClientPage() {
               )}
             </div>
 
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h2
                 className="text-xl font-bold mb-1"
                 style={{
@@ -316,31 +259,53 @@ export default function ClientPage() {
                 {barbershop.address}
               </p>
 
-              <div className="flex items-center gap-4 mb-4">
+              <div className="flex items-center gap-3 mb-4">
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 rounded-xl px-4 py-2"
                   style={{
                     borderColor: barbershop.primaryColor || "#000000",
                     color: barbershop.primaryColor || "#000000",
+                    backgroundColor: barbershop.secondaryColor || "#ffffff",
                   }}
                   onClick={() => {
-                    if (barbershop.phones && barbershop.phones.length > 0) {
-                      window.open(`tel:${barbershop.phones[0]}`, "_self");
+                    if (barbershop.instagram) {
+                      window.open(barbershop.instagram, "_blank");
                     }
                   }}
+                  disabled={!barbershop.instagram}
                 >
-                  <Phone className="h-4 w-4" />
-                  Ligar
+                  <Instagram className="h-4 w-4" />
+                  Instagram
                 </Button>
                 <Button
                   size="sm"
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 rounded-xl px-4 py-2"
                   style={{
                     borderColor: barbershop.primaryColor || "#000000",
                     color: barbershop.primaryColor || "#000000",
+                    backgroundColor: barbershop.secondaryColor || "#ffffff",
+                  }}
+                  onClick={() => {
+                    if (barbershop.tiktok) {
+                      window.open(barbershop.tiktok, "_blank");
+                    }
+                  }}
+                  disabled={!barbershop.tiktok}
+                >
+                  <span className="text-lg">🎵</span>
+                  TikTok
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="gap-2 rounded-xl px-4 py-2"
+                  style={{
+                    borderColor: barbershop.primaryColor || "#000000",
+                    color: barbershop.primaryColor || "#000000",
+                    backgroundColor: barbershop.secondaryColor || "#ffffff",
                   }}
                   onClick={() => {
                     if (barbershop.phones && barbershop.phones.length > 0) {
@@ -350,6 +315,9 @@ export default function ClientPage() {
                       );
                     }
                   }}
+                  disabled={
+                    !barbershop.phones || barbershop.phones.length === 0
+                  }
                 >
                   <MessageCircle className="h-4 w-4" />
                   WhatsApp
@@ -433,7 +401,7 @@ export default function ClientPage() {
               {userBookings.map((booking) => (
                 <div
                   key={booking.id}
-                  className="border rounded-lg p-4"
+                  className="border rounded-2xl p-4"
                   style={{
                     borderColor: barbershop.primaryColor || "#000000",
                   }}
@@ -448,7 +416,7 @@ export default function ClientPage() {
                       {booking.service.name}
                     </h4>
                     <span
-                      className="text-sm font-medium px-2 py-1 rounded-full"
+                      className="text-sm font-medium px-3 py-1 rounded-xl"
                       style={{
                         backgroundColor: barbershop.primaryColor || "#000000",
                         color: barbershop.secondaryColor || "#ffffff",
@@ -513,7 +481,7 @@ export default function ClientPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className="w-full gap-2"
+                      className="w-full gap-2 rounded-xl"
                       onClick={() =>
                         scheduleReminder(
                           new Date(booking.date),
@@ -523,6 +491,7 @@ export default function ClientPage() {
                       style={{
                         borderColor: barbershop.primaryColor || "#000000",
                         color: barbershop.primaryColor || "#000000",
+                        backgroundColor: barbershop.secondaryColor || "#ffffff",
                       }}
                     >
                       <Bell className="h-4 w-4" />
@@ -555,7 +524,7 @@ export default function ClientPage() {
             {barbershop.services.map((service) => (
               <div
                 key={service.id}
-                className="border rounded-lg p-4"
+                className="border rounded-2xl p-4"
                 style={{
                   borderColor: barbershop.primaryColor || "#000000",
                 }}
@@ -613,6 +582,7 @@ export default function ClientPage() {
 
                   <Button
                     size="sm"
+                    className="rounded-xl px-4 py-2"
                     style={{
                       backgroundColor: barbershop.primaryColor || "#000000",
                       color: barbershop.secondaryColor || "#ffffff",
@@ -647,7 +617,7 @@ export default function ClientPage() {
           </h3>
 
           <div
-            className="aspect-video rounded-lg overflow-hidden mb-4"
+            className="aspect-video rounded-2xl overflow-hidden mb-4"
             style={{
               backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
             }}
@@ -664,7 +634,7 @@ export default function ClientPage() {
               <div className="w-full h-full flex items-center justify-center">
                 <div className="text-center">
                   <div
-                    className="w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center"
+                    className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center"
                     style={{
                       backgroundColor:
                         (barbershop.accentColor || "#3b82f6") + "30",
@@ -724,10 +694,11 @@ export default function ClientPage() {
 
             <Button
               variant="outline"
-              className="w-full gap-2"
+              className="w-full gap-2 rounded-xl py-3"
               style={{
                 borderColor: barbershop.primaryColor || "#000000",
                 color: barbershop.primaryColor || "#000000",
+                backgroundColor: barbershop.secondaryColor || "#ffffff",
               }}
             >
               <MapPin
@@ -750,7 +721,7 @@ export default function ClientPage() {
           }}
         >
           <Button
-            className="w-full py-3 text-lg font-semibold"
+            className="w-full py-3 text-lg font-semibold rounded-2xl"
             style={{
               backgroundColor: barbershop.primaryColor || "#000000",
               color: barbershop.secondaryColor || "#ffffff",

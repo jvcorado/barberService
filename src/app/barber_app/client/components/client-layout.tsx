@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, MessageCircle } from "lucide-react";
+import { Menu, X, Phone, MessageCircle, Instagram, LogOut } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { BackgroundSync } from "@/components/background-sync";
+import LinkAccountsDialog from "./link-accounts-dialog";
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -34,7 +35,7 @@ export default function ClientLayout({
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div
-              className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4"
+              className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4"
               style={{ borderColor: barbershop.primaryColor || "#000000" }}
             ></div>
             <p style={{ color: barbershop.textColor || "#111827" }}>
@@ -63,19 +64,21 @@ export default function ClientLayout({
       <BackgroundSync />
 
       {/* Menu Button */}
-      <div className="fixed top-4 right-4 z-50">
+      <div className="fixed top-6 right-6 z-50">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 touch-button backdrop-blur shadow-lg"
+              className="h-14 w-14 touch-button backdrop-blur shadow-xl rounded-2xl transition-all duration-200 hover:scale-105"
               style={{
-                backgroundColor: `${barbershop.secondaryColor || "#ffffff"}90`,
+                backgroundColor: `${barbershop.secondaryColor || "#ffffff"}98`,
                 color: barbershop.primaryColor || "#000000",
+                border: `2px solid ${barbershop.primaryColor || "#000000"}30`,
+                boxShadow: `0 8px 32px ${barbershop.primaryColor || "#000000"}20`,
               }}
             >
-              <Menu className="h-5 w-5" />
+              <Menu className="h-7 w-7" />
             </Button>
           </SheetTrigger>
           <SheetContent
@@ -101,7 +104,7 @@ export default function ClientLayout({
                       color: barbershop.primaryColor || "#000000",
                     }}
                   >
-                    Menu do Cliente
+                    Menu
                   </h2>
                   <Button
                     variant="ghost"
@@ -123,15 +126,17 @@ export default function ClientLayout({
                     borderColor: barbershop.primaryColor || "#000000",
                   }}
                 >
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={session?.user?.image || ""}
-                      alt={session?.user?.name || ""}
-                    />
-                    <AvatarFallback>
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
+                    style={{
+                      backgroundColor: barbershop.primaryColor || "#000000",
+                      color: barbershop.secondaryColor || "#ffffff",
+                    }}
+                  >
+                    <span className="text-lg font-semibold">
                       {session?.user?.name?.charAt(0) || "U"}
-                    </AvatarFallback>
-                  </Avatar>
+                    </span>
+                  </div>
                   <div>
                     <p
                       className="font-medium"
@@ -178,10 +183,10 @@ export default function ClientLayout({
                 </div>
 
                 {/* Navegação do Cliente */}
-                <nav className="space-y-2">
+                <nav className="space-y-3">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
                     onClick={() => {
                       router.push(`/barber_app/client?id=${barbershop.id}`);
                       setIsOpen(false);
@@ -191,12 +196,13 @@ export default function ClientLayout({
                       color: barbershop.secondaryColor || "#ffffff",
                     }}
                   >
-                    🏠 Início
+                    <span className="text-lg">🏠</span>
+                    Início
                   </Button>
 
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
                     onClick={() => {
                       router.push(
                         `/barber_app/client/book?barbershopId=${barbershop.id}`,
@@ -205,6 +211,7 @@ export default function ClientLayout({
                     }}
                     style={{
                       color: barbershop.textColor || "#111827",
+                      backgroundColor: "transparent",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor =
@@ -218,18 +225,20 @@ export default function ClientLayout({
                         barbershop.textColor || "#111827";
                     }}
                   >
-                    📅 Agendar Serviço
+                    <span className="text-lg">📅</span>
+                    Agendar Serviço
                   </Button>
 
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
                     onClick={() => {
                       router.push(`/barber_app/client?id=${barbershop.id}`);
                       setIsOpen(false);
                     }}
                     style={{
                       color: barbershop.textColor || "#111827",
+                      backgroundColor: "transparent",
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.backgroundColor =
@@ -243,20 +252,21 @@ export default function ClientLayout({
                         barbershop.textColor || "#111827";
                     }}
                   >
-                    📋 Meus Agendamentos
+                    <span className="text-lg">📋</span>
+                    Meus Agendamentos
                   </Button>
                 </nav>
 
                 {/* Ações Rápidas */}
                 <div
-                  className="space-y-2 pt-4 border-t"
+                  className="space-y-3 pt-4 border-t"
                   style={{
                     borderColor: barbershop.primaryColor || "#000000",
                   }}
                 >
                   <Button
                     variant="outline"
-                    className="w-full gap-2"
+                    className="w-full gap-3 rounded-xl py-3"
                     onClick={() => {
                       if (barbershop.phones && barbershop.phones.length > 0) {
                         window.open(`tel:${barbershop.phones[0]}`, "_self");
@@ -268,9 +278,10 @@ export default function ClientLayout({
                     style={{
                       borderColor: barbershop.primaryColor || "#000000",
                       color: barbershop.primaryColor || "#000000",
+                      backgroundColor: barbershop.secondaryColor || "#ffffff",
                     }}
                   >
-                    <Phone className="h-4 w-4" />
+                    <span className="text-lg">📞</span>
                     {barbershop.phones && barbershop.phones.length > 0
                       ? "Ligar"
                       : "Sem telefone"}
@@ -278,7 +289,7 @@ export default function ClientLayout({
 
                   <Button
                     variant="outline"
-                    className="w-full gap-2"
+                    className="w-full gap-3 rounded-xl py-3"
                     onClick={() => {
                       if (barbershop.phones && barbershop.phones.length > 0) {
                         window.open(
@@ -293,30 +304,51 @@ export default function ClientLayout({
                     style={{
                       borderColor: barbershop.primaryColor || "#000000",
                       color: barbershop.primaryColor || "#000000",
+                      backgroundColor: barbershop.secondaryColor || "#ffffff",
                     }}
                   >
-                    <MessageCircle className="h-4 w-4" />
+                    <span className="text-lg">💬</span>
                     {barbershop.phones && barbershop.phones.length > 0
                       ? "WhatsApp"
                       : "Sem WhatsApp"}
+                  </Button>
+
+                  {/* Botão de Sair */}
+                  <Button
+                    variant="outline"
+                    className="w-full gap-3 rounded-xl py-3"
+                    onClick={() => signOut()}
+                    style={{
+                      borderColor: barbershop.primaryColor || "#000000",
+                      color: barbershop.primaryColor || "#000000",
+                      backgroundColor: barbershop.secondaryColor || "#ffffff",
+                    }}
+                  >
+                    <span className="text-lg">🚪</span>
+                    Sair
                   </Button>
                 </div>
 
                 {/* Footer do Sidebar */}
                 <div
-                  className="pt-4 border-t mt-auto"
+                  className="pt-6 border-t mt-auto"
                   style={{
                     borderColor: barbershop.primaryColor || "#000000",
                   }}
                 >
                   <div
-                    className="text-center text-xs"
+                    className="text-center text-xs space-y-1 mb-4"
                     style={{
                       color: barbershop.textColor || "#111827",
                     }}
                   >
-                    <p>App do Cliente</p>
+                    <p>Cliente</p>
                     <p>v1.0.0</p>
+                  </div>
+
+                  {/* Botão para vincular contas */}
+                  <div className="flex justify-center">
+                    <LinkAccountsDialog barbershopId={barbershop.id} />
                   </div>
                 </div>
               </div>

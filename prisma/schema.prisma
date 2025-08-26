@@ -14,6 +14,11 @@ model User {
   emailVerified DateTime?
   image         String?
   admin         Boolean     @default(false)
+  
+  // CAMPOS PARA LOGIN COM EMAIL/SENHA
+  password      String?
+  isEmailVerified Boolean   @default(false)
+  
   accounts      Account[]
   sessions      Session[]
   bookings      Booking[]
@@ -61,6 +66,15 @@ model VerificationToken {
   expires    DateTime
 
   @@id([identifier, token])
+}
+
+// MODELO PARA RESET DE SENHA
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  email     String
+  token     String   @unique
+  expires   DateTime
+  createdAt DateTime @default(now())
 }
 
 model BarberShop {
