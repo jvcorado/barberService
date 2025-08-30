@@ -151,43 +151,46 @@ export default function ClientLoginPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
-          <div className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4 border-gray-600"></div>
-          <p className="text-gray-600">Carregando...</p>
+          <div className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4 border-yellow-500"></div>
+          <p className="text-white">Carregando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b px-4 py-3">
+      <div className="bg-black border-b border-gray-800 px-4 py-3">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleBackToBarbershop}
-            className="h-8 w-8"
+            className="h-8 w-8 text-white hover:bg-gray-800"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-semibold">Login do Cliente</h1>
+          <h1 className="text-lg font-semibold text-white">Login do Cliente</h1>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md bg-black border-gray-800 text-white">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center">
-              <span className="text-2xl">✂️</span>
+            <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="text-center text-yellow-800 font-bold text-xs leading-tight">
+                <div className="font-serif">BARBERAPP</div>
+                <div className="text-[10px] mt-1">SUA RENOMARDA</div>
+              </div>
             </div>
-            <CardTitle className="text-xl">
+            <CardTitle className="text-xl text-white">
               Bem-vindo ao App do Cliente
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-300">
               Faça login ou crie uma conta para acessar seus agendamentos
             </CardDescription>
           </CardHeader>
@@ -404,11 +407,6 @@ export default function ClientLoginPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Footer */}
-      <div className="bg-white border-t px-4 py-3 text-center text-sm text-gray-600">
-        <p>App do Cliente v1.0.0</p>
       </div>
     </div>
   );

@@ -15,9 +15,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Por enquanto, retornar uma URL mock
+    // Gerar um ID único para o arquivo
+    const fileId = Math.random().toString(36).substring(2, 15);
+    const fileExtension = file.name.split(".").pop() || "jpg";
+
+    // Criar uma URL mock mais robusta
     // Em produção, você pode integrar com Firebase, AWS S3, etc.
-    const mockUrl = `https://via.placeholder.com/400x300/cccccc/666666?text=${encodeURIComponent(file.name)}`;
+    const mockUrl = `/api/placeholder/${fileId}.${fileExtension}`;
 
     return NextResponse.json({ url: mockUrl }, { status: 200 });
   } catch (error) {

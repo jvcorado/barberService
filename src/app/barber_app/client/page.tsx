@@ -22,6 +22,7 @@ import {
   Wifi,
   WifiOff,
   Instagram,
+  Bookmark,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -34,6 +35,7 @@ interface Service {
   description?: string | null;
   price: number;
   duration?: number | null;
+  imageUrl?: string | null;
 }
 
 interface BarberShop {
@@ -198,305 +200,116 @@ export default function ClientPage() {
         className="min-h-screen"
         style={{
           backgroundColor: barbershop.backgroundColor || "#f9fafb",
-          color: barbershop.textColor || "#111827",
         }}
       >
-        {/* Perfil da Barbearia */}
+        {/* Cabeçalho com Saudação e Data */}
         <div
-          className="px-4 py-6"
+          className="px-6 py-6"
           style={{
-            backgroundColor: barbershop.secondaryColor || "#ffffff",
+            backgroundColor: barbershop.backgroundColor || "#1f2937",
           }}
         >
-          <div className="flex items-start gap-4">
-            <div
-              className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0"
-              style={{
-                backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
-              }}
-            >
-              {barbershop.imageUrl ? (
-                <Image
-                  src={barbershop.imageUrl}
-                  alt={barbershop.name}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div
-                  className="w-full h-full flex items-center justify-center"
-                  style={{
-                    backgroundColor:
-                      (barbershop.accentColor || "#3b82f6") + "30",
-                  }}
-                >
-                  <span
-                    className="text-2xl font-bold"
-                    style={{ color: barbershop.textColor || "#111827" }}
-                  >
-                    {barbershop.name.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex-1 min-w-0">
-              <h2
-                className="text-xl font-bold mb-1"
+          <div className="mb-2">
+            <h1 className="text-2xl font-semibold mb-1 text-white">
+              Olá{" "}
+              <span
                 style={{
-                  color: barbershop.primaryColor || "#000000",
+                  color: barbershop.accentColor || "#60a5fa",
                 }}
               >
-                {barbershop.name}
-              </h2>
-              <p
-                className="mb-3"
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              >
-                {barbershop.address}
-              </p>
-
-              <div className="flex items-center gap-3 mb-4">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2 rounded-xl px-4 py-2"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                    color: barbershop.primaryColor || "#000000",
-                    backgroundColor: barbershop.secondaryColor || "#ffffff",
-                  }}
-                  onClick={() => {
-                    if (barbershop.instagram) {
-                      window.open(barbershop.instagram, "_blank");
-                    }
-                  }}
-                  disabled={!barbershop.instagram}
-                >
-                  <Instagram className="h-4 w-4" />
-                  Instagram
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2 rounded-xl px-4 py-2"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                    color: barbershop.primaryColor || "#000000",
-                    backgroundColor: barbershop.secondaryColor || "#ffffff",
-                  }}
-                  onClick={() => {
-                    if (barbershop.tiktok) {
-                      window.open(barbershop.tiktok, "_blank");
-                    }
-                  }}
-                  disabled={!barbershop.tiktok}
-                >
-                  <span className="text-lg">🎵</span>
-                  TikTok
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="gap-2 rounded-xl px-4 py-2"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                    color: barbershop.primaryColor || "#000000",
-                    backgroundColor: barbershop.secondaryColor || "#ffffff",
-                  }}
-                  onClick={() => {
-                    if (barbershop.phones && barbershop.phones.length > 0) {
-                      window.open(
-                        `https://wa.me/${barbershop.phones[0].replace(/\D/g, "")}`,
-                        "_blank",
-                      );
-                    }
-                  }}
-                  disabled={
-                    !barbershop.phones || barbershop.phones.length === 0
-                  }
-                >
-                  <MessageCircle className="h-4 w-4" />
-                  WhatsApp
-                </Button>
-              </div>
-            </div>
-          </div>
-
-          {/* Estatísticas */}
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Star
-                  className="h-4 w-4 fill-current"
-                  style={{ color: barbershop.accentColor || "#3b82f6" }}
-                />
-                <span
-                  className="font-semibold"
-                  style={{
-                    color: barbershop.primaryColor || "#000000",
-                  }}
-                >
-                  4.6/5
-                </span>
-              </div>
-              <p
-                className="text-sm"
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              >
-                (123 avaliações)
-              </p>
-            </div>
-
-            <div className="text-center">
-              <div className="flex items-center justify-center gap-1 mb-1">
-                <Calendar
-                  className="h-4 w-4"
-                  style={{ color: barbershop.accentColor || "#3b82f6" }}
-                />
-                <span
-                  className="font-semibold"
-                  style={{
-                    color: barbershop.primaryColor || "#000000",
-                  }}
-                >
-                  {userBookings.length}
-                </span>
-              </div>
-              <p
-                className="text-sm"
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              >
-                Meus Agendamentos
-              </p>
-            </div>
+                {session?.user?.name?.split(" ")[0]}
+              </span>
+            </h1>
+            <p className="text-sm text-gray-200">
+              {format(new Date(), "EEEE", { locale: ptBR })},{" "}
+              {format(new Date(), "dd 'de' MMM yyyy", { locale: ptBR })}
+            </p>
           </div>
         </div>
 
-        {/* Meus Agendamentos */}
+        {/* Linha separadora */}
+        <div
+          className="w-full h-0.5 mx-6"
+          style={{
+            backgroundColor: barbershop.backgroundColor
+              ? `${barbershop.backgroundColor}40` // 25% de opacidade para ser mais sutil
+              : "#4B5563", // Cor padrão mais visível
+          }}
+        />
+
+        {/* Meus Agendamentos - Se houver agendamentos */}
         {userBookings.length > 0 && (
-          <div
-            className="mt-2 px-4 py-6"
-            style={{
-              backgroundColor: barbershop.secondaryColor || "#ffffff",
-            }}
-          >
-            <h3
-              className="text-lg font-semibold mb-4"
+          <div className="px-6 py-4">
+            <h2
+              className="text-lg font-semibold mb-4 section-title"
               style={{
-                color: barbershop.primaryColor || "#000000",
+                color: "#ffffff",
+                fontWeight: "600",
+                fontSize: "1.125rem",
+                lineHeight: "1.75rem",
+                marginBottom: "1rem",
               }}
             >
-              Meus Agendamentos
-            </h3>
+              Meus agendamentos
+            </h2>
 
             <div className="space-y-3">
-              {userBookings.map((booking) => (
+              {userBookings.slice(0, 3).map((booking, index) => (
                 <div
                   key={booking.id}
-                  className="border rounded-2xl p-4"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                  }}
+                  className="w-full rounded-2xl p-4 flex items-center bg-white border border-gray-200"
                 >
-                  <div className="flex items-center justify-between mb-2">
-                    <h4
-                      className="font-semibold"
-                      style={{
-                        color: barbershop.primaryColor || "#000000",
-                      }}
-                    >
-                      {booking.service.name}
-                    </h4>
-                    <span
-                      className="text-sm font-medium px-3 py-1 rounded-xl"
-                      style={{
-                        backgroundColor: barbershop.primaryColor || "#000000",
-                        color: barbershop.secondaryColor || "#ffffff",
-                      }}
-                    >
-                      Confirmado
-                    </span>
+                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
+                    {barbershop.imageUrl ? (
+                      <Image
+                        src={barbershop.imageUrl}
+                        alt={barbershop.name}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-full flex items-center justify-center"
+                        style={{
+                          backgroundColor: barbershop.accentColor || "#60a5fa",
+                          color: "#ffffff",
+                        }}
+                      >
+                        <span className="text-lg font-bold">
+                          {barbershop.name.charAt(0).toUpperCase()}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  <div className="flex items-center gap-2 text-sm mb-2">
-                    <Calendar
-                      className="h-4 w-4"
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    />
-                    <span
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    >
-                      {format(
-                        new Date(booking.date),
-                        "EEEE, dd 'de' MMMM 'às' HH:mm",
-                        {
-                          locale: ptBR,
-                        },
-                      )}
-                    </span>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-base mb-1 text-gray-900">
+                      {barbershop.name}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-1">
+                      {booking.service?.name || "Serviço"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-3 w-3 text-gray-500" />
+                      <span className="text-xs text-gray-500">
+                        {format(
+                          new Date(booking.date),
+                          "dd/MM/yyyy 'às' HH:mm",
+                          { locale: ptBR },
+                        )}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex items-center justify-between">
-                    <span
-                      className="text-sm"
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    >
-                      Duração: {booking.service.duration || 30} min
-                    </span>
-                    <span
-                      className="font-semibold"
-                      style={{
-                        color: barbershop.primaryColor || "#000000",
-                      }}
-                    >
-                      {new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(Number(booking.service.price))}
-                    </span>
-                  </div>
-
-                  {/* Botão para agendar lembrete */}
                   <div
-                    className="mt-3 pt-3 border-t"
+                    className="w-8 h-8 rounded-full flex items-center justify-center"
                     style={{
-                      borderColor:
-                        (barbershop.primaryColor || "#000000") + "30",
+                      backgroundColor: barbershop.accentColor || "#60a5fa",
+                      color: "#ffffff",
                     }}
                   >
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full gap-2 rounded-xl"
-                      onClick={() =>
-                        scheduleReminder(
-                          new Date(booking.date),
-                          booking.service.name,
-                        )
-                      }
-                      style={{
-                        borderColor: barbershop.primaryColor || "#000000",
-                        color: barbershop.primaryColor || "#000000",
-                        backgroundColor: barbershop.secondaryColor || "#ffffff",
-                      }}
-                    >
-                      <Bell className="h-4 w-4" />
-                      Agendar Lembrete
-                    </Button>
+                    <ChevronRight className="h-4 w-4" />
                   </div>
                 </div>
               ))}
@@ -504,130 +317,69 @@ export default function ClientPage() {
           </div>
         )}
 
-        {/* Serviços Disponíveis */}
-        <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: barbershop.secondaryColor || "#ffffff",
-          }}
-        >
-          <h3
-            className="text-lg font-semibold mb-4"
-            style={{
-              color: barbershop.primaryColor || "#000000",
-            }}
-          >
-            Serviços Disponíveis
-          </h3>
+        {/* Último Agendamento - Se não houver agendamentos */}
+        {userBookings.length === 0 && (
+          <div className="px-6 py-4">
+            <h2 className="text-lg font-semibold mb-4 text-white">
+              Último agendamento
+            </h2>
 
-          <div className="space-y-3">
-            {barbershop.services.map((service) => (
-              <div
-                key={service.id}
-                className="border rounded-2xl p-4"
-                style={{
-                  borderColor: barbershop.primaryColor || "#000000",
-                }}
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1">
-                    <h4
-                      className="font-semibold"
-                      style={{
-                        color: barbershop.primaryColor || "#000000",
-                      }}
-                    >
-                      {service.name}
-                    </h4>
-                    {service.description && (
-                      <p
-                        className="text-sm mt-1"
-                        style={{
-                          color: barbershop.textColor || "#111827",
-                        }}
-                      >
-                        {service.description}
-                      </p>
-                    )}
-                  </div>
-                  <span
-                    className="font-bold text-lg"
+            <div className="w-full rounded-2xl p-4 flex items-center bg-white border border-gray-200">
+              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
+                {barbershop.imageUrl ? (
+                  <Image
+                    src={barbershop.imageUrl}
+                    alt={barbershop.name}
+                    width={48}
+                    height={48}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div
+                    className="w-full h-full flex items-center justify-center"
                     style={{
-                      color: barbershop.primaryColor || "#000000",
+                      backgroundColor: barbershop.accentColor || "#60a5fa",
+                      color: "#ffffff",
                     }}
                   >
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(Number(service.price))}
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock
-                      className="h-4 w-4"
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    />
-                    <span
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    >
-                      {service.duration || 30} min
+                    <span className="text-lg font-bold">
+                      {barbershop.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-
-                  <Button
-                    size="sm"
-                    className="rounded-xl px-4 py-2"
-                    style={{
-                      backgroundColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.secondaryColor || "#ffffff",
-                    }}
-                    onClick={() => {
-                      // Redirecionar para página de agendamento
-                      window.location.href = `/barber_app/client/book?serviceId=${service.id}&barbershopId=${barbershop.id}`;
-                    }}
-                  >
-                    Agendar
-                  </Button>
-                </div>
+                )}
               </div>
-            ))}
+
+              <div className="flex-1 min-w-0">
+                <h3 className="font-semibold text-base mb-1 text-gray-900">
+                  {barbershop.name}
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Nenhum agendamento ainda
+                </p>
+              </div>
+
+              <div
+                className="w-8 h-8 rounded-full flex items-center justify-center"
+                style={{
+                  backgroundColor: barbershop.accentColor || "#60a5fa",
+                  color: "#ffffff",
+                }}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
-        {/* Informações da Barbearia */}
-        <div
-          className="mt-2 px-4 py-6"
-          style={{
-            backgroundColor: barbershop.secondaryColor || "#ffffff",
-          }}
-        >
-          <h3
-            className="text-lg font-semibold mb-4"
-            style={{
-              color: barbershop.primaryColor || "#000000",
-            }}
-          >
-            Sobre a Barbearia
-          </h3>
-
-          <div
-            className="aspect-video rounded-2xl overflow-hidden mb-4"
-            style={{
-              backgroundColor: (barbershop.accentColor || "#3b82f6") + "20",
-            }}
-          >
+        {/* Imagem da Barbearia */}
+        <div className="px-6 py-4">
+          <div className="w-full h-48 rounded-2xl overflow-hidden relative bg-gray-800">
             {barbershop.imageUrl ? (
               <Image
                 src={barbershop.imageUrl}
                 alt="Barbearia"
                 width={400}
-                height={225}
+                height={200}
                 className="w-full h-full object-cover"
               />
             ) : (
@@ -637,109 +389,150 @@ export default function ClientPage() {
                     className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center"
                     style={{
                       backgroundColor:
-                        (barbershop.accentColor || "#3b82f6") + "30",
+                        (barbershop.accentColor || "#60a5fa") + "30",
                     }}
                   >
-                    <span
-                      className="text-2xl"
-                      style={{ color: barbershop.textColor || "#111827" }}
-                    >
-                      🏪
-                    </span>
+                    <span className="text-2xl text-gray-400">✂️</span>
                   </div>
-                  <p
-                    style={{
-                      color: barbershop.textColor || "#111827",
-                    }}
-                  >
-                    Imagem da Barbearia
-                  </p>
+                  <p className="text-gray-400">Imagem da Barbearia</p>
                 </div>
               </div>
             )}
-          </div>
-
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Clock
-                className="h-5 w-5"
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              />
-              <span
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              >
-                Seg a Sáb - 9h às 18h
-              </span>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+            <div className="absolute bottom-4 left-4 right-4">
+              <p className="text-sm font-medium leading-tight text-white">
+                Agende compromissos rapidamente pelo app, sem filas ou ligações
+              </p>
             </div>
-
-            <div className="flex items-center gap-3">
-              <MapPin
-                className="h-5 w-5"
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              />
-              <span
-                style={{
-                  color: barbershop.textColor || "#111827",
-                }}
-              >
-                {barbershop.address}
-              </span>
-            </div>
-
-            <Button
-              variant="outline"
-              className="w-full gap-2 rounded-xl py-3"
-              style={{
-                borderColor: barbershop.primaryColor || "#000000",
-                color: barbershop.primaryColor || "#000000",
-                backgroundColor: barbershop.secondaryColor || "#ffffff",
-              }}
-            >
-              <MapPin
-                className="h-4 w-4"
-                style={{
-                  color: barbershop.primaryColor || "#000000",
-                }}
-              />
-              Mostrar no mapa
-            </Button>
           </div>
         </div>
 
-        {/* Botão de Agendamento Rápido */}
-        <div
-          className="fixed bottom-0 left-0 right-0 border-t p-4"
-          style={{
-            backgroundColor: barbershop.secondaryColor || "#ffffff",
-            borderColor: barbershop.primaryColor || "#000000",
-          }}
-        >
-          <Button
-            className="w-full py-3 text-lg font-semibold rounded-2xl"
-            style={{
-              backgroundColor: barbershop.primaryColor || "#000000",
-              color: barbershop.secondaryColor || "#ffffff",
-            }}
-            onClick={() => {
-              // Sincronizar dados antes de navegar
-              pwaStatus.syncInBackground("pre-navigation");
+        {/* Serviços Disponíveis - Carrossel */}
+        <div className="px-6 py-4">
+          <h2 className="text-lg font-semibold mb-4 text-white">
+            Serviços disponíveis
+          </h2>
 
-              // Redirecionar para página de agendamento
-              window.location.href = `/barber_app/client/book?barbershopId=${barbershop.id}`;
-            }}
-          >
-            Agendar Serviço
-          </Button>
+          <div className="flex gap-4 overflow-x-auto pb-2">
+            {barbershop.services.slice(0, 3).map((service) => (
+              <div
+                key={service.id}
+                className="flex-shrink-0 w-64 bg-white rounded-2xl p-4 shadow-lg border border-gray-200 flex flex-col"
+              >
+                {/* Imagem do Serviço */}
+                <div
+                  className="w-full h-32 rounded-xl overflow-hidden relative mb-3"
+                  style={{
+                    backgroundColor:
+                      (barbershop.accentColor || "#60a5fa") + "20",
+                  }}
+                >
+                  {service.imageUrl ? (
+                    <Image
+                      src={service.imageUrl}
+                      alt={service.name}
+                      width={256}
+                      height={128}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div
+                      className="w-full h-full flex items-center justify-center"
+                      style={{
+                        backgroundColor:
+                          (barbershop.accentColor || "#60a5fa") + "30",
+                      }}
+                    >
+                      <span className="text-2xl">✂️</span>
+                    </div>
+                  )}
+
+                  {/* Badge de Preço */}
+                  <div className="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-lg">
+                    {new Intl.NumberFormat("pt-BR", {
+                      style: "currency",
+                      currency: "BRL",
+                    }).format(Number(service.price))}
+                  </div>
+                </div>
+
+                {/* Informações do Serviço */}
+                <div className="flex-1 space-y-2 mb-3">
+                  <h4 className="font-bold text-lg text-gray-900">
+                    {service.name}
+                  </h4>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="h-4 w-4 text-blue-500" />
+                    <span className="text-gray-600">
+                      {service.duration || 30} min
+                    </span>
+                  </div>
+
+                  <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
+                    {service.description ||
+                      "Descrição do serviço não disponível"}
+                  </p>
+                </div>
+
+                {/* Botões de Ação */}
+                <div className="flex items-center gap-2 mt-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-10 w-10 p-0 rounded-xl flex-shrink-0"
+                    style={{
+                      borderColor: barbershop.primaryColor || "#000000",
+                      color: barbershop.primaryColor || "#000000",
+                      backgroundColor: barbershop.secondaryColor || "#ffffff",
+                    }}
+                  >
+                    <Bookmark className="h-4 w-4" />
+                  </Button>
+
+                  <Button
+                    size="sm"
+                    className="flex-1 h-10 rounded-xl font-bold"
+                    style={{
+                      backgroundColor: barbershop.accentColor || "#60a5fa",
+                      color: barbershop.secondaryColor || "#ffffff",
+                    }}
+                    onClick={() => {
+                      router.push(
+                        `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
+                      );
+                    }}
+                  >
+                    AGENDAR AGORA
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Botão Outros Serviços */}
+          {barbershop.services.length > 3 && (
+            <div className="mt-4 text-center">
+              <Button
+                variant="outline"
+                className="px-6 py-2 rounded-xl"
+                style={{
+                  borderColor: barbershop.accentColor || "#60a5fa",
+                  color: barbershop.accentColor || "#60a5fa",
+                  backgroundColor: "transparent",
+                }}
+                onClick={() => {
+                  // Aqui você pode implementar a navegação para uma página de todos os serviços
+                  router.push(
+                    `/barber_app/client/services?barbershopId=${barbershop.id}`,
+                  );
+                }}
+              >
+                Ver outros serviços ({barbershop.services.length - 3})
+              </Button>
+            </div>
+          )}
         </div>
-
-        {/* Espaço para o botão fixo */}
-        <div className="h-20"></div>
       </div>
     </ClientLayout>
   );
