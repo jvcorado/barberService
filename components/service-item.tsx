@@ -31,6 +31,7 @@ import { useMediaQuery } from "@react-hook/media-query";
 interface ServiceItemProps {
   service: BarbershopService;
   barbershop: Pick<BarberShop, "id" | "name">;
+  showStats?: boolean;
 }
 
 const TIME_LIST = [
@@ -84,7 +85,11 @@ const getTimeList = ({ bookings, selectedDay }: GetTimeListProps) => {
   });
 };
 
-const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
+const ServiceItem = ({
+  service,
+  barbershop,
+  showStats = true,
+}: ServiceItemProps) => {
   const { data } = useSession();
   const [signInDialogIsOpen, setSignInDialogIsOpen] = useState(false);
   const [selectedDay, setSelectedDay] = useState<Date | undefined>(undefined);
@@ -201,102 +206,104 @@ const ServiceItem = ({ service, barbershop }: ServiceItemProps) => {
                 }).format(Number(service.price))}
               </p>
 
-              <Sheet
-                open={bookingSheetIsOpen}
-                onOpenChange={handleBookingSheetOpenChange}
-              >
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={handleBookingClick}
+              {showStats && (
+                <Sheet
+                  open={bookingSheetIsOpen}
+                  onOpenChange={handleBookingSheetOpenChange}
                 >
-                  Reservar
-                </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleBookingClick}
+                  >
+                    Reservar
+                  </Button>
 
-                <SheetContent
-                  className="px-0 max-lg:rounded-t-3xl"
-                  side={sheet}
-                >
-                  <SheetHeader>
-                    <SheetTitle>Fazer Reserva</SheetTitle>
-                  </SheetHeader>
+                  <SheetContent
+                    className="px-0 max-lg:rounded-t-3xl"
+                    side={sheet}
+                  >
+                    <SheetHeader>
+                      <SheetTitle>Fazer Reserva</SheetTitle>
+                    </SheetHeader>
 
-                  <div className="border-b border-solid py-5">
-                    <Calendar
-                      mode="single"
-                      locale={ptBR}
-                      selected={selectedDay}
-                      onSelect={handleDateSelect}
-                      fromDate={new Date()}
-                      className=""
-                      styles={{
-                        head_cell: {
-                          width: "100%",
-                          textTransform: "capitalize",
-                        },
-                        cell: {
-                          width: "100%",
-                        },
-                        button: {
-                          width: "100%",
-                        },
-                        nav_button_previous: {
-                          width: "32px",
-                          height: "32px",
-                        },
-                        nav_button_next: {
-                          width: "32px",
-                          height: "32px",
-                        },
-                        caption: {
-                          textTransform: "capitalize",
-                        },
-                      }}
-                    />
-                  </div>
-
-                  {selectedDay && (
-                    <div className="flex gap-3 overflow-x-auto border-b border-solid p-5 [&::-webkit-scrollbar]:hidden">
-                      {timeList.length > 0 ? (
-                        timeList.map((time) => (
-                          <Button
-                            key={time}
-                            variant={
-                              selectedTime === time ? "default" : "outline"
-                            }
-                            className="rounded-full"
-                            onClick={() => handleTimeSelect(time)}
-                          >
-                            {time}
-                          </Button>
-                        ))
-                      ) : (
-                        <p className="text-xs">
-                          Não há horários disponíveis para este dia.
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {selectedDate && (
-                    <div className="p-5">
-                      <BookingSummary
-                        barbershop={barbershop}
-                        service={service}
-                        selectedDate={selectedDate}
+                    <div className="border-b border-solid py-5">
+                      <Calendar
+                        mode="single"
+                        locale={ptBR}
+                        selected={selectedDay}
+                        onSelect={handleDateSelect}
+                        fromDate={new Date()}
+                        className=""
+                        styles={{
+                          head_cell: {
+                            width: "100%",
+                            textTransform: "capitalize",
+                          },
+                          cell: {
+                            width: "100%",
+                          },
+                          button: {
+                            width: "100%",
+                          },
+                          nav_button_previous: {
+                            width: "32px",
+                            height: "32px",
+                          },
+                          nav_button_next: {
+                            width: "32px",
+                            height: "32px",
+                          },
+                          caption: {
+                            textTransform: "capitalize",
+                          },
+                        }}
                       />
                     </div>
-                  )}
-                  <SheetFooter className="mt-5 px-5">
-                    <Button
-                      onClick={handleCreateBooking}
-                      disabled={!selectedDay || !selectedTime}
-                    >
-                      {isLoading ? "Carregando..." : "Confirmar"}
-                    </Button>
-                  </SheetFooter>
-                </SheetContent>
-              </Sheet>
+
+                    {selectedDay && (
+                      <div className="flex gap-3 overflow-x-auto border-b border-solid p-5 [&::-webkit-scrollbar]:hidden">
+                        {timeList.length > 0 ? (
+                          timeList.map((time) => (
+                            <Button
+                              key={time}
+                              variant={
+                                selectedTime === time ? "default" : "outline"
+                              }
+                              className="rounded-full"
+                              onClick={() => handleTimeSelect(time)}
+                            >
+                              {time}
+                            </Button>
+                          ))
+                        ) : (
+                          <p className="text-xs">
+                            Não há horários disponíveis para este dia.
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {selectedDate && (
+                      <div className="p-5">
+                        <BookingSummary
+                          barbershop={barbershop}
+                          service={service}
+                          selectedDate={selectedDate}
+                        />
+                      </div>
+                    )}
+                    <SheetFooter className="mt-5 px-5">
+                      <Button
+                        onClick={handleCreateBooking}
+                        disabled={!selectedDay || !selectedTime}
+                      >
+                        {isLoading ? "Carregando..." : "Confirmar"}
+                      </Button>
+                    </SheetFooter>
+                  </SheetContent>
+                </Sheet>
+              )}
             </div>
           </div>
         </CardContent>

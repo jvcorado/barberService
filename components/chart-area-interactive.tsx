@@ -162,16 +162,13 @@ export function ChartAreaInteractive({
   });
 
   return (
-    <Card className="@container/card">
+    <Card className="@container/card bg-white border border-gray-200 shadow-sm">
       <CardHeader className="relative">
-        <CardTitle>Total De Clientes</CardTitle>
-        <CardDescription>
-          <span className="@[540px]/card:block hidden">
-            Total de Clientes para o período de 3 meses
-          </span>
+        {/* <CardDescription className="text-gray-600">    <CardTitle className="text-gray-900">Gráfico de Faturamento</CardTitle>
+          <span className="@[540px]/card:block hidden">Últimos 3 meses</span>
           <span className="@[540px]/card:hidden">Últimos 3 meses</span>
-        </CardDescription>
-        <div className="absolute right-4 top-4">
+        </CardDescription> */}
+        {/* <div className="absolute right-4 top-4">
           <ToggleGroup
             type="single"
             value={timeRange}
@@ -208,12 +205,12 @@ export function ChartAreaInteractive({
               </SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> */}
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 bg-white text-black">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full"
+          className="aspect-auto h-[250px] w-full bg-white text-black"
         >
           <AreaChart data={filteredData}>
             <defs>

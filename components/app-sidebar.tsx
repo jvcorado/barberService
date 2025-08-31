@@ -42,6 +42,11 @@ const datas = {
       icon: BarChartIcon,
     },
     {
+      title: "Faturas",
+      url: "/dashboard/invoices",
+      icon: BarChartIcon,
+    },
+    {
       title: "App Mobile",
       url: "/barber_app",
       icon: Smartphone,

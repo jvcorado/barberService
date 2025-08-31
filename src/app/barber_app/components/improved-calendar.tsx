@@ -421,7 +421,7 @@ export default function ImprovedCalendar({
       )}
 
       {/* Add Event Button */}
-      <div
+      {/* <div
         className={`absolute ${isMobile ? "bottom-4 right-4" : "bottom-6 right-6"}`}
       >
         <Button
@@ -434,7 +434,7 @@ export default function ImprovedCalendar({
         >
           <Plus className={`${isMobile ? "h-7 w-7" : "h-6 w-6"}`} />
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 }
