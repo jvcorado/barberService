@@ -9,15 +9,27 @@ import {
   Calendar as CalendarIcon,
   ArrowLeft,
   Check,
+  ChevronLeft,
+  X,
 } from "lucide-react";
-import { format, addDays, startOfDay, endOfDay, isSameDay } from "date-fns";
+import {
+  format,
+  addDays,
+  startOfDay,
+  endOfDay,
+  isSameDay,
+  addDays as addDaysFn,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+} from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { createBooking } from "../../../../actions/create-booking";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar } from "@/components/ui/calendar";
 
 interface Service {
   id: string;
@@ -50,34 +62,107 @@ export default function BookPage() {
 
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [selectedDate, setSelectedDate] = useState<Date>(
+    addDaysFn(new Date(), 1),
+  );
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingBarbershop, setIsLoadingBarbershop] = useState(true);
-  const [step, setStep] = useState(1);
+  const [showFullCalendar, setShowFullCalendar] = useState(false);
 
-  // Horários disponíveis (9h às 18h)
+  // Horários disponíveis (8h às 18h)
   const timeSlots = [
+    "08:00",
+    "08:10",
+    "08:20",
+    "08:30",
+    "08:40",
+    "08:50",
     "09:00",
+    "09:10",
+    "09:20",
     "09:30",
+    "09:40",
+    "09:50",
     "10:00",
+    "10:10",
+    "10:20",
     "10:30",
+    "10:40",
+    "10:50",
     "11:00",
+    "11:10",
+    "11:20",
     "11:30",
+    "11:40",
+    "11:50",
     "12:00",
+    "12:10",
+    "12:20",
     "12:30",
+    "12:40",
+    "12:50",
     "13:00",
+    "13:10",
+    "13:20",
     "13:30",
+    "13:40",
+    "13:50",
     "14:00",
+    "14:10",
+    "14:20",
     "14:30",
+    "14:40",
+    "14:50",
     "15:00",
+    "15:10",
+    "15:20",
     "15:30",
+    "15:40",
+    "15:50",
     "16:00",
+    "16:10",
+    "16:20",
     "16:30",
+    "16:40",
+    "16:50",
     "17:00",
+    "17:10",
+    "17:20",
     "17:30",
+    "17:40",
+    "17:50",
   ];
+
+  // Datas para a próxima semana
+  const getNextWeekDates = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 1; i <= 7; i++) {
+      dates.push(addDaysFn(today, i));
+    }
+    return dates;
+  };
+
+  // Gerar calendário completo para 12 meses
+  const getFullCalendarMonths = () => {
+    const months = [];
+    const today = new Date();
+
+    for (let i = 0; i < 12; i++) {
+      const monthStart = startOfMonth(addDaysFn(today, i * 30));
+      const monthEnd = endOfMonth(monthStart);
+      const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+
+      months.push({
+        month: monthStart,
+        days: days,
+      });
+    }
+
+    return months;
+  };
 
   useEffect(() => {
     if (barbershopId) {
@@ -89,9 +174,6 @@ export default function BookPage() {
     if (serviceId && barbershop?.services) {
       const service = barbershop.services.find((s) => s.id === serviceId);
       setSelectedService(service || null);
-    } else if (barbershop?.services && barbershop.services.length > 0) {
-      // Se não há serviceId, seleciona o primeiro serviço
-      setSelectedService(barbershop.services[0]);
     }
   }, [serviceId, barbershop]);
 
@@ -142,14 +224,13 @@ export default function BookPage() {
     setSelectedTime("");
   };
 
-  const handleDateSelect = (date: Date | undefined) => {
+  const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    setStep(3);
+    setShowFullCalendar(false);
   };
 
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time);
-    setStep(4);
   };
 
   const handleConfirmBooking = async () => {
@@ -201,23 +282,10 @@ export default function BookPage() {
     }
   };
 
-  const goBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
-      if (step === 2) {
-        setSelectedDate(undefined);
-      } else if (step === 3) {
-        setSelectedTime("");
-      }
-    } else {
-      router.back();
-    }
-  };
-
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -229,309 +297,276 @@ export default function BookPage() {
 
   if (isLoadingBarbershop) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (!barbershop) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Barbearia não encontrada
-          </h2>
-          <p className="text-gray-600 mb-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Barbearia não encontrada</h2>
+          <p className="text-gray-300 mb-6">
             Não foi possível carregar as informações da barbearia
           </p>
-          <Button onClick={() => router.back()}>Voltar</Button>
+          <Button
+            onClick={() => router.back()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+          >
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!selectedService) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Serviço não selecionado</h2>
+          <p className="text-gray-300 mb-6">
+            Por favor, selecione um serviço primeiro
+          </p>
+          <Button
+            onClick={() => router.back()}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+          >
+            Voltar
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  // Calendário completo
+  if (showFullCalendar) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
+        {/* Header */}
+        <div className="sticky top-0 z-10">
+          <div className="flex items-center justify-between p-6">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowFullCalendar(false)}
+              className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
+            >
+              <ChevronLeft className="h-6 w-6" />
+            </Button>
+
+            <div className="w-12"></div>
+          </div>
+        </div>
+
+        {/* Calendário Completo - Iniciando do topo */}
+        <div className="p-6 space-y-12">
+          {getFullCalendarMonths().map((monthData, monthIndex) => (
+            <div key={monthIndex} className="space-y-6">
+              <h2 className="text-2xl font-bold text-white text-center bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent">
+                {format(monthData.month, "MMMM yyyy", {
+                  locale: ptBR,
+                }).toUpperCase()}
+              </h2>
+
+              {/* Dias da semana */}
+              <div className="grid grid-cols-7 gap-2 mb-4">
+                {["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"].map(
+                  (day) => (
+                    <div
+                      key={day}
+                      className="text-center text-sm font-semibold text-gray-400 py-3"
+                    >
+                      {day}
+                    </div>
+                  ),
+                )}
+              </div>
+
+              {/* Grid de datas */}
+              <div className="grid grid-cols-7 gap-2">
+                {monthData.days.map((day, dayIndex) => {
+                  const isSelected = isSameDay(day, selectedDate);
+                  const isToday = isSameDay(day, new Date());
+                  const isPast = day < startOfDay(new Date());
+
+                  return (
+                    <div
+                      key={dayIndex}
+                      className={`aspect-square flex items-center justify-center text-sm font-semibold rounded-xl cursor-pointer transition-all duration-200 ${
+                        isSelected
+                          ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25"
+                          : isToday
+                            ? "bg-white/20 text-white ring-2 ring-white/40"
+                            : isPast
+                              ? "text-gray-600 cursor-not-allowed"
+                              : "text-white hover:bg-white/10 hover:scale-105"
+                      }`}
+                      onClick={() => !isPast && handleDateSelect(day)}
+                    >
+                      {format(day, "d")}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="min-h-screen p-4"
-      style={{
-        backgroundColor: barbershop.backgroundColor || "#f9fafb",
-        color: barbershop.textColor || "#111827",
-      }}
-    >
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={goBack}
-          style={{
-            color: barbershop.primaryColor || "#000000",
-          }}
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Button>
-        <div>
-          <h1 className="text-xl font-bold text-gray-900">Agendar Serviço</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      {/* Header Moderno */}
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b border-white/10">
+        <div className="flex items-center justify-between p-6">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.back()}
+            className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
+          >
+            <ChevronLeft className="h-6 w-6" />
+          </Button>
+
+          <h1 className="text-xl font-bold text-white">
+            {format(selectedDate, "MMMM yyyy", { locale: ptBR }).toUpperCase()}
+          </h1>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
+            onClick={() => setShowFullCalendar(true)}
+          >
+            <CalendarIcon className="h-6 w-6" />
+          </Button>
         </div>
       </div>
 
-      {/* Progress Steps */}
-      <div className="flex items-center justify-center mb-8">
-        <div className="flex items-center space-x-2">
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step >= 1 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            1
-          </div>
-          <div
-            className={`w-16 h-1 ${step >= 2 ? "bg-blue-600" : "bg-gray-200"}`}
-          ></div>
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step >= 2 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            2
-          </div>
-          <div
-            className={`w-16 h-1 ${step >= 3 ? "bg-blue-600" : "bg-gray-200"}`}
-          ></div>
-          <div
-            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-              step >= 3 ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-600"
-            }`}
-          >
-            3
-          </div>
-        </div>
-      </div>
-
-      {/* Step 1: Seleção de Serviço */}
-      {step === 1 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Escolha o Serviço
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {barbershop.services.length === 0 ? (
-              <div className="text-center py-8">
-                <p className="text-gray-600 mb-4">
-                  Nenhum serviço disponível nesta barbearia
-                </p>
-                <Button onClick={() => router.back()}>Voltar</Button>
-              </div>
-            ) : (
-              barbershop.services.map((service) => (
-                <div
-                  key={service.id}
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
-                    selectedService?.id === service.id
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:border-gray-300"
-                  }`}
-                  onClick={() => setSelectedService(service)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="font-semibold text-gray-900">
-                        {service.name}
-                      </h3>
-                      {service.description && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          {service.description}
-                        </p>
-                      )}
-                      <div className="flex items-center gap-4 mt-2">
-                        <Badge variant="outline" className="gap-1">
-                          <Clock className="h-3 w-3" />
-                          {service.duration || 30} min
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-gray-900">
-                        {new Intl.NumberFormat("pt-BR", {
-                          style: "currency",
-                          currency: "BRL",
-                        }).format(Number(service.price))}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-
-            {selectedService && (
-              <Button
-                className="w-full mt-6"
-                onClick={() => setStep(2)}
-                style={{
-                  backgroundColor: barbershop.primaryColor || "#000000",
-                  color: barbershop.secondaryColor || "#ffffff",
-                }}
+      {/* Seleção de Datas Moderna */}
+      <div className="px-6 py-8">
+        <div className="flex space-x-3 overflow-x-auto pb-4">
+          {getNextWeekDates().map((date, index) => (
+            <div
+              key={index}
+              className={`flex flex-col items-center min-w-[70px] cursor-pointer transition-all duration-200 ${
+                isSameDay(date, selectedDate)
+                  ? "text-blue-400"
+                  : "text-gray-400"
+              }`}
+              onClick={() => handleDateSelect(date)}
+            >
+              <span className="text-xs font-medium mb-2 text-gray-500">
+                {format(date, "EEE", { locale: ptBR })
+                  .substring(0, 3)
+                  .toUpperCase()}
+              </span>
+              <div
+                className={`w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold transition-all duration-200 ${
+                  isSameDay(date, selectedDate)
+                    ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/25 scale-110"
+                    : "bg-white/5 text-white hover:bg-white/10 hover:scale-105"
+                }`}
               >
-                Continuar
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Step 2: Seleção de Data */}
-      {step === 2 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CalendarIcon className="h-5 w-5" />
-              Escolha a Data
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Calendar
-              mode="single"
-              selected={selectedDate}
-              onSelect={handleDateSelect}
-              disabled={(date) => {
-                const today = new Date();
-                const tomorrow = addDays(today, 1);
-                return date < startOfDay(tomorrow);
-              }}
-              className="rounded-md border"
-            />
-
-            <div className="mt-4 text-sm text-gray-600">
-              <p>• Selecione uma data para continuar</p>
-              <p>• Não é possível agendar para hoje</p>
+                {format(date, "d")}
+              </div>
             </div>
-          </CardContent>
-        </Card>
-      )}
+          ))}
+        </div>
+      </div>
 
-      {/* Step 3: Seleção de Horário */}
-      {step === 3 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              Escolha o Horário
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-3 gap-3">
+      <div className="px-6 space-y-8">
+        {/* Card do Serviço Moderno */}
+        <div className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm rounded-3xl p-6 border border-white/10 shadow-xl">
+          <div className="flex items-center justify-between">
+            <div className="space-y-3">
+              <h3 className="text-2xl font-bold text-white">
+                {selectedService.name}
+              </h3>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-3 py-1 rounded-full">
+                  <Clock className="h-4 w-4 mr-2" />
+                  {selectedService.duration || 30} min
+                </Badge>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                {new Intl.NumberFormat("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                }).format(Number(selectedService.price))}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Horários Disponíveis - Só aparece após seleção de data */}
+        {selectedDate && (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-white mb-2">
+                Horários disponíveis
+              </h3>
+              <p className="text-gray-400">
+                {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })
+                  .replace(/^\w/, (c) => c.toUpperCase())
+                  .replace(/\s+\w/, (c) => c.toUpperCase())}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
               {availableTimes.map((time) => (
                 <Button
                   key={time}
                   variant={selectedTime === time ? "default" : "outline"}
-                  className="h-12"
+                  className={`h-16 rounded-2xl text-lg font-semibold transition-all duration-200 ${
+                    selectedTime === time
+                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg shadow-blue-500/25 scale-105"
+                      : "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:scale-105 hover:border-white/40"
+                  }`}
                   onClick={() => handleTimeSelect(time)}
-                  style={{
-                    backgroundColor:
-                      selectedTime === time
-                        ? barbershop.primaryColor || "#000000"
-                        : "transparent",
-                    color:
-                      selectedTime === time
-                        ? barbershop.secondaryColor || "#ffffff"
-                        : barbershop.primaryColor || "#000000",
-                    borderColor: barbershop.primaryColor || "#000000",
-                  }}
                 >
                   {time}
                 </Button>
               ))}
             </div>
+          </div>
+        )}
 
-            {selectedTime && (
-              <Button
-                className="w-full mt-6"
-                onClick={() => setStep(4)}
-                style={{
-                  backgroundColor: barbershop.primaryColor || "#000000",
-                  color: barbershop.secondaryColor || "#ffffff",
-                }}
-              >
-                Continuar
-              </Button>
-            )}
-          </CardContent>
-        </Card>
-      )}
+        {/* Botão de Confirmação Moderno */}
+        {selectedDate && selectedTime && (
+          <div className="pt-8 pb-24">
+            {/* Espaçamento para o botão flutuante */}
+          </div>
+        )}
+      </div>
 
-      {/* Step 4: Confirmação */}
-      {step === 4 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Check className="h-5 w-5" />
-              Confirme o Agendamento
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="p-4 bg-gray-50 rounded-lg">
-              <h3 className="font-semibold text-gray-900 mb-2">
-                Resumo do Agendamento
-              </h3>
-
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Serviço:</span>
-                  <span className="font-medium">{selectedService?.name}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Data:</span>
-                  <span className="font-medium">
-                    {selectedDate &&
-                      format(selectedDate, "EEEE, dd 'de' MMMM", {
-                        locale: ptBR,
-                      })}
-                  </span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Horário:</span>
-                  <span className="font-medium">{selectedTime}</span>
-                </div>
-
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Duração:</span>
-                  <span className="font-medium">
-                    {selectedService?.duration || 30} min
-                  </span>
-                </div>
-
-                <div className="flex justify-between pt-2 border-t">
-                  <span className="text-gray-600 font-medium">Valor:</span>
-                  <span className="text-lg font-bold text-gray-900">
-                    {selectedService &&
-                      new Intl.NumberFormat("pt-BR", {
-                        style: "currency",
-                        currency: "BRL",
-                      }).format(Number(selectedService.price))}
-                  </span>
-                </div>
+      {/* Botão Flutuante de Confirmação */}
+      {selectedDate && selectedTime && (
+        <div className="fixed bottom-6 left-6 right-6 z-50">
+          <Button
+            className="w-full h-16 text-xl font-bold rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl shadow-blue-500/25 transition-all duration-200 hover:scale-105 border-2 border-white/20"
+            onClick={handleConfirmBooking}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                Confirmando...
               </div>
-            </div>
-
-            <Button
-              className="w-full"
-              onClick={handleConfirmBooking}
-              disabled={isLoading}
-              style={{
-                backgroundColor: barbershop.primaryColor || "#000000",
-                color: barbershop.secondaryColor || "#ffffff",
-              }}
-            >
-              {isLoading ? "Confirmando..." : "Confirmar Agendamento"}
-            </Button>
-          </CardContent>
-        </Card>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Check className="h-6 w-6" />
+                Confirmar Agendamento
+              </div>
+            )}
+          </Button>
+        </div>
       )}
     </div>
   );

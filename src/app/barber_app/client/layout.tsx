@@ -3,7 +3,7 @@ import { ClientLayoutProvider } from "./components/client-layout-provider";
 
 // Metadata estática
 export const metadata: Metadata = {
-  title: "App do Cliente - BarberApp",
+  title: "Cliente - BarberApp",
   description:
     "Aplicativo mobile para clientes agendarem serviços na barbearia",
   manifest: "/manifest-client.json",

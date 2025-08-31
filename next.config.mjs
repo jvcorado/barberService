@@ -17,6 +17,18 @@ const nextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
   headers: async () => {
@@ -43,7 +55,27 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: "/.well-known/appspecific/com.chrome.devtools.json",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600",
+          },
+          {
+            key: "Content-Type",
+            value: "application/json",
+          },
+        ],
+      },
     ];
+  },
+  // Adicionar configuração para evitar erros de build
+  typescript: {
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    ignoreDuringBuilds: false,
   },
 };
 

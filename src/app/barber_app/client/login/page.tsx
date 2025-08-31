@@ -12,8 +12,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 
 export default function ClientLoginPage() {
   const { data: session, status } = useSession();
@@ -21,10 +24,28 @@ export default function ClientLoginPage() {
   const searchParams = useSearchParams();
   const barbershopId = searchParams.get("id");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [activeTab, setActiveTab] = useState("login");
+
+  // Estados para login
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  // Estados para registro
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  // Estados para mensagens
+  const [message, setMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
 
   useEffect(() => {
     if (status === "authenticated" && session?.user && barbershopId) {
-      // Redirecionar para o app do cliente após login
       router.push(`/barber_app/client?id=${barbershopId}`);
     }
   }, [session, status, barbershopId, router]);
@@ -37,6 +58,84 @@ export default function ClientLoginPage() {
       });
     } catch (error) {
       console.error("Erro no login:", error);
+      setMessage({ type: "error", text: "Erro ao fazer login com Google" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleEmailLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const result = await signIn("credentials", {
+        email: loginEmail,
+        password: loginPassword,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setMessage({ type: "error", text: "Email ou senha incorretos" });
+      } else if (result?.ok) {
+        setMessage({ type: "success", text: "Login realizado com sucesso!" });
+        setTimeout(() => {
+          router.push(`/barber_app/client?id=${barbershopId}`);
+        }, 1000);
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Erro interno do servidor" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage(null);
+
+    if (registerPassword !== confirmPassword) {
+      setMessage({ type: "error", text: "As senhas não coincidem" });
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: registerName,
+          email: registerEmail,
+          password: registerPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage({
+          type: "success",
+          text: "Conta criada com sucesso! Faça login para continuar.",
+        });
+        setActiveTab("login");
+        setLoginEmail(registerEmail);
+        setRegisterName("");
+        setRegisterEmail("");
+        setRegisterPassword("");
+        setConfirmPassword("");
+      } else {
+        setMessage({
+          type: "error",
+          text: data.error || "Erro ao criar conta",
+        });
+      }
+    } catch (error) {
+      setMessage({ type: "error", text: "Erro interno do servidor" });
     } finally {
       setLoading(false);
     }
@@ -52,70 +151,249 @@ export default function ClientLoginPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-black">
         <div className="text-center">
-          <Loader2 className="h-8 w-8 animate-spin mx-auto mb-4 text-gray-600" />
-          <p className="text-gray-600">Carregando...</p>
+          <div className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4 border-yellow-500"></div>
+          <p className="text-white">Carregando...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b px-4 py-3">
+      <div className="bg-black border-b border-gray-800 px-4 py-3">
         <div className="flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleBackToBarbershop}
-            className="h-8 w-8"
+            className="h-8 w-8 text-white hover:bg-gray-800"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-semibold">Login do Cliente</h1>
+          <h1 className="text-lg font-semibold text-white">Login do Cliente</h1>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
+        <Card className="w-full max-w-md bg-black border-gray-800 text-white">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-2xl">✂️</span>
+            <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg">
+              <div className="text-center text-yellow-800 font-bold text-xs leading-tight">
+                <div className="font-serif">BARBERAPP</div>
+                <div className="text-[10px] mt-1">SUA RENOMARDA</div>
+              </div>
             </div>
-            <CardTitle className="text-xl">
+            <CardTitle className="text-xl text-white">
               Bem-vindo ao App do Cliente
             </CardTitle>
-            <CardDescription>
-              Faça login para acessar seus agendamentos e serviços
+            <CardDescription className="text-gray-300">
+              Faça login ou crie uma conta para acessar seus agendamentos
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <Button
-              onClick={handleGoogleLogin}
-              disabled={loading}
-              className="w-full h-12 text-base"
-              variant="outline"
+          <CardContent>
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
             >
-              {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin mr-2" />
-              ) : (
-                <Image
-                  src="/google.svg"
-                  alt="Google"
-                  width={20}
-                  height={20}
-                  className="mr-2"
-                />
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="login">Entrar</TabsTrigger>
+                <TabsTrigger value="register">Criar Conta</TabsTrigger>
+              </TabsList>
+
+              {/* Mensagens */}
+              {message && (
+                <div
+                  className={`mt-4 p-3 rounded-xl text-sm ${
+                    message.type === "success"
+                      ? "bg-green-100 text-green-800 border border-green-200"
+                      : "bg-red-100 text-red-800 border border-red-200"
+                  }`}
+                >
+                  {message.text}
+                </div>
               )}
-              {loading ? "Entrando..." : "Entrar com Google"}
-            </Button>
 
-            <Separator />
+              {/* Tab de Login */}
+              <TabsContent value="login" className="space-y-4 mt-4">
+                <form onSubmit={handleEmailLogin} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="login-email">Email</Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={loginEmail}
+                      onChange={(e) => setLoginEmail(e.target.value)}
+                      required
+                      className="rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="login-password">Senha</Label>
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Sua senha"
+                        value={loginPassword}
+                        onChange={(e) => setLoginPassword(e.target.value)}
+                        required
+                        className="rounded-xl pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-12 text-base rounded-xl"
+                  >
+                    {loading ? (
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    ) : null}
+                    {loading ? "Entrando..." : "Entrar"}
+                  </Button>
+                </form>
 
-            <div className="text-center text-sm text-gray-600">
+                <Separator />
+
+                <Button
+                  onClick={handleGoogleLogin}
+                  disabled={loading}
+                  className="w-full h-12 text-base rounded-xl"
+                  variant="outline"
+                >
+                  {loading ? (
+                    <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  ) : (
+                    <Image
+                      src="/google.svg"
+                      alt="Google"
+                      width={20}
+                      height={20}
+                      className="mr-2"
+                    />
+                  )}
+                  {loading ? "Entrando..." : "Entrar com Google"}
+                </Button>
+              </TabsContent>
+
+              {/* Tab de Registro */}
+              <TabsContent value="register" className="space-y-4 mt-4">
+                <form onSubmit={handleRegister} className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="register-name">Nome Completo</Label>
+                    <Input
+                      id="register-name"
+                      type="text"
+                      placeholder="Seu nome completo"
+                      value={registerName}
+                      onChange={(e) => setRegisterName(e.target.value)}
+                      required
+                      className="rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-email">Email</Label>
+                    <Input
+                      id="register-email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={registerEmail}
+                      onChange={(e) => setRegisterEmail(e.target.value)}
+                      required
+                      className="rounded-xl"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="register-password">Senha</Label>
+                    <div className="relative">
+                      <Input
+                        id="register-password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Mínimo 6 caracteres"
+                        value={registerPassword}
+                        onChange={(e) => setRegisterPassword(e.target.value)}
+                        required
+                        minLength={6}
+                        className="rounded-xl pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirmar Senha</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirme sua senha"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        className="rounded-xl pr-10"
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-0 top-0 h-full px-3"
+                        onClick={() =>
+                          setShowConfirmPassword(!showConfirmPassword)
+                        }
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                  <Button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full h-12 text-base rounded-xl"
+                  >
+                    {loading ? (
+                      <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                    ) : null}
+                    {loading ? "Criando conta..." : "Criar Conta"}
+                  </Button>
+                </form>
+              </TabsContent>
+            </Tabs>
+
+            <div className="mt-6 text-center text-sm text-gray-600">
               <p>
                 Ao fazer login, você concorda com nossos{" "}
                 <a href="#" className="text-blue-600 hover:underline">
@@ -129,11 +407,6 @@ export default function ClientLoginPage() {
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Footer */}
-      <div className="bg-white border-t px-4 py-3 text-center text-sm text-gray-600">
-        <p>App do Cliente v1.0.0</p>
       </div>
     </div>
   );
