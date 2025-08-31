@@ -37,9 +37,9 @@ export default function RootLayout({
     <html lang="pt-br" className="!dark ">
       <body className={inter.className}>
         <AuthProvider>
-          <div className="flex h-full flex-col">
+          <div className="flex h-full flex-col overflow-x-hidden">
             <div className="flex-1">{children}</div>
-            <Footer />
+            {/* <Footer /> */}
           </div>
         </AuthProvider>
         <Toaster />

@@ -47,24 +47,54 @@ export function useCalendarData({
         return;
       }
 
-      console.log("🔄 Buscando dados do calendário para:", date);
+      // Get the week range
+      const start = startOfWeek(date, { weekStartsOn: 0 });
+      const end = endOfWeek(date, { weekStartsOn: 0 });
+
+      console.log("🔄 Buscando dados do calendário para semana:", {
+        start: format(start, "yyyy-MM-dd"),
+        end: format(end, "yyyy-MM-dd"),
+      });
+
       setLoading(true);
       setError(null);
 
       try {
-        const formattedDate = format(date, "yyyy-MM-dd");
-        const url = `/api/bookings/calendar?date=${formattedDate}&barbershopId=${barbershopId}`;
-        console.log("🌐 URL da API:", url);
-
-        const response = await fetch(url);
-
-        if (!response.ok) {
-          throw new Error("Erro ao buscar dados do calendário");
+        // Fetch data for each day of the week
+        const weekPromises = [];
+        for (let i = 0; i < 7; i++) {
+          const currentDay = addDays(start, i);
+          const formattedDate = format(currentDay, "yyyy-MM-dd");
+          const url = `/api/bookings/calendar?date=${formattedDate}&barbershopId=${barbershopId}`;
+          weekPromises.push(
+            fetch(url).then((response) => {
+              if (!response.ok) {
+                throw new Error(`Erro ao buscar dados para ${formattedDate}`);
+              }
+              return response.json();
+            }),
+          );
         }
 
-        const data = await response.json();
-        console.log("✅ Dados recebidos:", data);
-        setCalendarData(data);
+        const weekData = await Promise.all(weekPromises);
+
+        // Combine all bookings from the week
+        const allBookings = weekData.reduce((acc, dayData) => {
+          return [...acc, ...(dayData.bookings || [])];
+        }, []);
+
+        // Use the services from the first day's data
+        const combinedData = {
+          bookings: allBookings,
+          services: weekData[0]?.services || [],
+          dateRange: {
+            start: format(start, "yyyy-MM-dd"),
+            end: format(end, "yyyy-MM-dd"),
+          },
+        };
+
+        console.log("✅ Dados da semana recebidos:", combinedData);
+        setCalendarData(combinedData);
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "Erro desconhecido";
