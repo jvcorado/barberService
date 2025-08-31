@@ -32,14 +32,25 @@ export const DashboardRevenueCards = ({
         animate="animate"
         transition={{ duration: 0.6 }}
       >
-        <Card className="bg-green-100 dark:bg-green-900 border-none shadow-md">
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardContent className="flex flex-col gap-2 p-6">
-            <div className="flex items-center gap-2 text-green-800 dark:text-green-300">
-              <Banknote className="w-6 h-6" />
-              <span className="text-lg font-semibold">Lucro Realizado</span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Faturamento Realizado
+                </span>
+              </div>
+              <span className="text-xs text-green-600 font-medium">+R$</span>
             </div>
-            <p className="text-3xl font-bold text-green-700 dark:text-green-200">
+            <p className="text-3xl font-bold text-gray-900">
               {formatCurrency(totalPast)}
+            </p>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <span>Lucro acumulado</span>
+              <span className="text-green-600">📈</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              Somatória dos agendamentos anteriores a hoje
             </p>
           </CardContent>
         </Card>
@@ -51,16 +62,25 @@ export const DashboardRevenueCards = ({
         animate="animate"
         transition={{ duration: 0.6, delay: 0.2 }}
       >
-        <Card className="bg-blue-100 dark:bg-blue-900 border-none shadow-md">
+        <Card className="bg-white border border-gray-200 shadow-sm">
           <CardContent className="flex flex-col gap-2 p-6">
-            <div className="flex items-center gap-2 text-blue-800 dark:text-blue-300">
-              <CalendarClock className="w-6 h-6" />
-              <span className="text-lg font-semibold">
-                Previsão de Faturamento
-              </span>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-medium text-gray-600">
+                  Previsão de Faturamento
+                </span>
+              </div>
+              <span className="text-xs text-blue-600 font-medium">Prev.</span>
             </div>
-            <p className="text-3xl font-bold text-blue-700 dark:text-blue-200">
+            <p className="text-3xl font-bold text-gray-900">
               {formatCurrency(totalFuture)}
+            </p>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <span>Agendamentos futuros</span>
+              <span className="text-blue-600">📈</span>
+            </div>
+            <p className="text-xs text-gray-500">
+              Baseado nos serviços agendados após hoje
             </p>
           </CardContent>
         </Card>

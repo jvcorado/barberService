@@ -6,15 +6,26 @@ const SW_CONFIG = {
   urlsToCache: [
     "/",
     "/barber_app",
+    "/barber_app/services",
+    "/barber_app/invoices",
+    "/barber_app/clients",
     "/barber_app/client",
     "/api/barbershops/me",
     "/api/bookings/user",
+    "/api/bookings/calendar",
     "/logo.png",
     "/manifest.json",
+    "/barber_app/manifest.json",
     "/sw.js",
   ],
   externalDomains: ["storage.googleapis.com", "utfs.io"],
-  apiCache: ["/api/barbershops/me", "/api/bookings/user"],
+  apiCache: [
+    "/api/barbershops/me",
+    "/api/bookings/user",
+    "/api/bookings/calendar",
+    "/api/register-barbershop",
+    "/api/upload",
+  ],
   staticAssets: ["/logo.png", "/manifest.json"],
 };
 
