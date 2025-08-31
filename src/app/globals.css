@@ -156,3 +156,56 @@
     transform: translate(24px, 0);
   }
 }
+
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-friendly button styles */
+.touch-button {
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+}
+
+/* Mobile responsive utilities */
+@media (max-width: 768px) {
+  .mobile-full {
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .mobile-scroll {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .mobile-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Calendar specific mobile styles */
+@media (max-width: 768px) {
+  .calendar-mobile-day {
+    min-width: 64px;
+    flex-shrink: 0;
+  }
+
+  .calendar-mobile-time {
+    width: 48px;
+  }
+
+  .calendar-mobile-slot {
+    min-height: 50px;
+    min-width: 44px;
+  }
+}
