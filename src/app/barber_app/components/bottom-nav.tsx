@@ -8,9 +8,9 @@ export default function BottomNav() {
   const router = useRouter();
   const { colors } = useBarbershopColors();
   return (
-    <div className="p-2 bg-white flex justify-center">
+    <div className="p-4 pb-6 bg-white flex justify-center">
       <div
-        className="rounded-2xl p-4 backdrop-blur-xl  w-full max-w-md"
+        className="rounded-2xl p-4 backdrop-blur-xl w-full max-w-md"
         style={{
           backgroundColor: `${colors.secondaryColor}80`,
           borderColor: `${colors.primaryColor}30`,

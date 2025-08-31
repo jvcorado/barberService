@@ -76,7 +76,7 @@ export default function BarberAppRootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
       </Head>
       <BarberAppLayout barbershop={barbershop}>
-        <div className="flex-1 flex flex-col overflow-hidden mb-32">
+        <div className="flex-1 flex flex-col overflow-hidden mb-28">
           {children}
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-10">
