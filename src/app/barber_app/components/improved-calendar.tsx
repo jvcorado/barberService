@@ -136,10 +136,10 @@ export default function ImprovedCalendar({
   };
 
   return (
-    <div className="flex flex-col h-full bg-white overflow-hidden">
+    <div className="flex flex-col h-full bg-white overflow-hidden relative">
       {/* Header */}
       <div
-        className={`${isMobile ? "p-3" : "p-4"} border-b bg-gray-50 flex-shrink-0`}
+        className={`${isMobile ? "p-3" : "p-4"} border-b bg-white shadow-sm flex-shrink-0 fixed top-0 left-0 right-0 z-30`}
       >
         {isMobile ? (
           // Mobile Header - Only date navigation
@@ -159,7 +159,7 @@ export default function ImprovedCalendar({
               <div className="text-sm text-gray-600">
                 {format(selectedDate, "EEEE", { locale: ptBR })}
               </div>
-              <div className="text-xs text-gray-400 mt-1">
+              <div className="text-xs text-gray-500 mt-1">
                 ← Deslize para navegar →
               </div>
             </div>
@@ -201,7 +201,7 @@ export default function ImprovedCalendar({
               <div className="flex items-center gap-1 ml-4">
                 <button
                   onClick={handlePreviousDay}
-                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400  rounded-lg transition-colors"
                   title="Dia anterior"
                 >
                   ← Anterior
@@ -214,7 +214,7 @@ export default function ImprovedCalendar({
                 </button>
                 <button
                   onClick={handleNextDay}
-                  className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded-lg transition-colors"
+                  className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400 rounded-lg transition-colors"
                   title="Próximo dia"
                 >
                   Próximo →
@@ -235,7 +235,10 @@ export default function ImprovedCalendar({
       {/* Days Header */}
       {!isMobile && (
         // Desktop: Full week grid
-        <div className="flex bg-white border-b flex-shrink-0">
+        <div
+          className="flex bg-white border-b flex-shrink-0 fixed left-0 right-0 z-20"
+          style={{ top: "65px" }}
+        >
           <div className="w-16 flex-shrink-0"></div>
           {getWeekDays().map((day: any, index: number) => (
             <div
@@ -267,7 +270,7 @@ export default function ImprovedCalendar({
         // Mobile: Swipeable single day view
         <div
           className="flex-1 overflow-hidden w-full"
-          style={{ touchAction: "pan-y" }}
+          style={{ touchAction: "pan-y", marginTop: "120px" }}
           onTouchStart={(e) => {
             const touch = e.touches[0];
             e.currentTarget.setAttribute(
@@ -360,7 +363,7 @@ export default function ImprovedCalendar({
                     {/* Day column */}
                     <div
                       className={`flex-1 relative transition-colors cursor-pointer min-h-[44px] ${
-                        bookingAtThisTime ? "bg-blue-50" : "hover:bg-gray-50"
+                        bookingAtThisTime ? "" : "hover:bg-gray-50"
                       }`}
                       onClick={() => onAddBooking && onAddBooking()}
                     >
@@ -368,8 +371,8 @@ export default function ImprovedCalendar({
                         <div
                           className="absolute inset-1 rounded-lg p-2 text-xs shadow-sm"
                           style={{
-                            backgroundColor: colors.primaryColor + "20",
-                            borderLeft: `3px solid ${colors.primaryColor}`,
+                            backgroundColor: "#5B9BF5" + "20",
+                            borderLeft: `3px solid #5B60F5`,
                             height: `${Math.max((bookingAtThisTime.service.duration || 60) / 30, 1) * 60 - 8}px`,
                             zIndex: 10,
                           }}
@@ -403,7 +406,7 @@ export default function ImprovedCalendar({
         </div>
       ) : (
         // Desktop: Full week view
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto mt-40">
           <div className="relative">
             {/* Current time indicator */}
             <div className="absolute left-0 right-0 top-0 z-10">
@@ -456,7 +459,7 @@ export default function ImprovedCalendar({
                     <div
                       key={dayIndex}
                       className={`flex-1 min-w-0 border-l border-gray-200 relative transition-colors cursor-pointer ${
-                        bookingAtThisTime ? "bg-blue-50" : "hover:bg-gray-50"
+                        bookingAtThisTime ? "" : "hover:bg-gray-50"
                       }`}
                       onClick={() => onAddBooking && onAddBooking()}
                     >
@@ -464,8 +467,8 @@ export default function ImprovedCalendar({
                         <div
                           className="absolute inset-1 rounded-lg p-2 text-xs shadow-sm"
                           style={{
-                            backgroundColor: colors.primaryColor + "20",
-                            borderLeft: `3px solid ${colors.primaryColor}`,
+                            backgroundColor: "#5B9BF5" + "20",
+                            borderLeft: `3px solid #5B60F5`,
                             height: `${Math.max((bookingAtThisTime.service.duration || 60) / 30, 1) * 60 - 8}px`,
                             zIndex: 10,
                           }}
