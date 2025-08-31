@@ -39,6 +39,9 @@ export default function ServicesPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredServices, setFilteredServices] = useState<Service[]>([]);
+  const [activeTab, setActiveTab] = useState<"servicos" | "produtos">(
+    "servicos",
+  );
 
   useEffect(() => {
     if (status === "loading") return;
@@ -190,6 +193,32 @@ export default function ServicesPage() {
         </div>
       </div>
 
+      {/* Abas de Navegação */}
+      <div className="px-6 mb-6">
+        <div className="flex border-b border-white/20">
+          <button
+            onClick={() => setActiveTab("servicos")}
+            className={`flex-1 py-3 text-center text-white font-medium transition-colors ${
+              activeTab === "servicos"
+                ? "border-b-2 border-blue-500 text-blue-400"
+                : "text-white/60 hover:text-white/80"
+            }`}
+          >
+            SERVIÇOS
+          </button>
+          <button
+            onClick={() => setActiveTab("produtos")}
+            className={`flex-1 py-3 text-center text-white font-medium transition-colors ${
+              activeTab === "produtos"
+                ? "border-b-2 border-blue-500 text-blue-400"
+                : "text-white/60 hover:text-white/80"
+            }`}
+          >
+            PRODUTOS
+          </button>
+        </div>
+      </div>
+
       {/* Barra de Pesquisa */}
       <div className="px-6 py-4">
         <div className="relative">
@@ -204,71 +233,87 @@ export default function ServicesPage() {
         </div>
       </div>
 
-      {/* Lista de Serviços */}
-      <div className="px-6 space-y-3 pb-24">
-        {filteredServices.map((service) => (
-          <div
-            key={service.id}
-            className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01]"
-          >
-            <div className="flex items-center justify-between">
-              <div className="space-y-2 flex-1">
-                <h3 className="text-xl font-bold text-white">{service.name}</h3>
-                {service.description && (
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    {service.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-2 py-1 rounded-full text-xs">
-                    <Clock className="h-3 w-3 mr-1" />
-                    {service.duration || 30} min
-                  </Badge>
+      {/* Conteúdo das Tabs */}
+      {activeTab === "servicos" && (
+        <>
+          {/* Lista de Serviços */}
+          <div className="px-6 space-y-3 pb-24">
+            {filteredServices.map((service) => (
+              <div
+                key={service.id}
+                className="bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-[1.01]"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="space-y-2 flex-1">
+                    <h3 className="text-xl font-bold text-white">
+                      {service.name}
+                    </h3>
+                    {service.description && (
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        {service.description}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 px-2 py-1 rounded-full text-xs">
+                        <Clock className="h-3 w-3 mr-1" />
+                        {service.duration || 30} min
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <div className="text-right ml-4">
+                    <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
+                      {new Intl.NumberFormat("pt-BR", {
+                        style: "currency",
+                        currency: "BRL",
+                      }).format(Number(service.price))}
+                    </p>
+
+                    <Button
+                      className="px-6 py-2 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105 border border-white/20"
+                      onClick={() => {
+                        router.push(
+                          `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
+                        );
+                      }}
+                    >
+                      Agendar
+                    </Button>
+                  </div>
                 </div>
               </div>
+            ))}
 
-              <div className="text-right ml-4">
-                <p className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-                  {new Intl.NumberFormat("pt-BR", {
-                    style: "currency",
-                    currency: "BRL",
-                  }).format(Number(service.price))}
-                </p>
-
-                <Button
-                  className="px-6 py-2 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105 border border-white/20"
-                  onClick={() => {
-                    router.push(
-                      `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
-                    );
-                  }}
-                >
-                  Agendar
-                </Button>
+            {filteredServices.length === 0 && (
+              <div className="text-center py-16">
+                <div className="text-gray-400 text-lg mb-4">
+                  {searchTerm
+                    ? "Nenhum serviço encontrado"
+                    : "Nenhum serviço disponível"}
+                </div>
+                {searchTerm && (
+                  <Button
+                    variant="outline"
+                    onClick={() => setSearchTerm("")}
+                    className="text-white border-white/20 hover:bg-white/10"
+                  >
+                    Limpar pesquisa
+                  </Button>
+                )}
               </div>
-            </div>
-          </div>
-        ))}
-
-        {filteredServices.length === 0 && (
-          <div className="text-center py-16">
-            <div className="text-gray-400 text-lg mb-4">
-              {searchTerm
-                ? "Nenhum serviço encontrado"
-                : "Nenhum serviço disponível"}
-            </div>
-            {searchTerm && (
-              <Button
-                variant="outline"
-                onClick={() => setSearchTerm("")}
-                className="text-white border-white/20 hover:bg-white/10"
-              >
-                Limpar pesquisa
-              </Button>
             )}
           </div>
-        )}
-      </div>
+        </>
+      )}
+
+      {activeTab === "produtos" && (
+        <div className="px-6 py-16 text-center">
+          <div className="text-gray-400 text-lg mb-4">Produtos em breve...</div>
+          <p className="text-gray-500 text-sm">
+            Em breve você poderá comprar produtos diretamente pelo app
+          </p>
+        </div>
+      )}
     </div>
   );
 }
