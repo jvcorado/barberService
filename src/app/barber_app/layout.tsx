@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import BarberAppLayout from "./components/barber-app-layout";
 import BottomNav from "./components/bottom-nav";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
@@ -23,8 +23,12 @@ export default function BarberAppRootLayout({
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
-  const { isInstallable, installApp } = usePWA();
+  const { isInstallable } = usePWA();
+
+  // Check if current path is client area
+  const isClientArea = pathname?.startsWith("/barber_app/client");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -62,6 +66,11 @@ export default function BarberAppRootLayout({
   // mostrar loading simples enquanto busca barbershop
   if (status === "loading" || !barbershop) {
     return <div className="min-h-screen" />;
+  }
+
+  // If in client area, just return children without barber layout
+  if (isClientArea) {
+    return children;
   }
 
   return (
