@@ -101,7 +101,7 @@ export default function BottomNav() {
           </div>
 
           {/* Loja */}
-          <div
+          {/* <div
             className="flex flex-col items-center group cursor-pointer transition-all duration-200 hover:scale-110"
             onClick={() => router.push("/barber_app/store")}
           >
@@ -120,7 +120,7 @@ export default function BottomNav() {
             >
               Loja
             </span>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

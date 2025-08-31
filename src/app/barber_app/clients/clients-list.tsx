@@ -27,7 +27,7 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
   });
 
   return (
-    <div className="flex flex-col gap-6 p-6  min-h-screen">
+    <div className="flex flex-col gap-6 px-4  min-h-screen">
       {/* Header */}
       {/* <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-900">Clients</h1>
@@ -66,7 +66,7 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
         <TabsContent value="senders" />
         <TabsContent value="receivers" />
       </Tabs> */}
-      <div className="flex flex-col gap-4 bg-white pt-6 pb-4 px-6 border-b border-gray-100 fixed top-0 left-0 right-0 z-20">
+      <div className="flex flex-col gap-4 bg-white pt-6 pb-4 px-4 border-b border-gray-100 fixed top-0 left-0 right-0 z-20">
         <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
