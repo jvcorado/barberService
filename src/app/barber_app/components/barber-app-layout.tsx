@@ -57,10 +57,7 @@ export default function BarberAppLayout({
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: colors.backgroundColor }}
-    >
+    <div className="min-h-screen flex flex-col bg-white text-black">
       {/* PWA Components */}
       <OfflineIndicator />
       <PWAClientInstallBanner />

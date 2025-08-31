@@ -167,6 +167,17 @@
   display: none;
 }
 
+/* Hide scrollbars globally */
+@layer base {
+  * {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE & Edge */
+  }
+  *::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
+
 /* Touch-friendly button styles */
 .touch-button {
   min-width: 44px;
