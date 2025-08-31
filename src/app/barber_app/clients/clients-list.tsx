@@ -80,7 +80,7 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
       </div>
 
       {/* Clients Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-32">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-32 pb-6">
         {filtered.map((client) => (
           <Card
             key={client.id}
