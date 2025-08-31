@@ -513,7 +513,9 @@ export default function BookPage() {
                 Horários disponíveis
               </h3>
               <p className="text-gray-400">
-                {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })}
+                {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })
+                  .replace(/^\w/, (c) => c.toUpperCase())
+                  .replace(/\s+\w/, (c) => c.toUpperCase())}
               </p>
             </div>
 
@@ -538,27 +540,34 @@ export default function BookPage() {
 
         {/* Botão de Confirmação Moderno */}
         {selectedDate && selectedTime && (
-          <div className="pt-8 pb-8">
-            <Button
-              className="w-full h-16 text-xl font-bold rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl shadow-blue-500/25 transition-all duration-200 hover:scale-105"
-              onClick={handleConfirmBooking}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-3">
-                  <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
-                  Confirmando...
-                </div>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <Check className="h-6 w-6" />
-                  Confirmar Agendamento
-                </div>
-              )}
-            </Button>
+          <div className="pt-8 pb-24">
+            {/* Espaçamento para o botão flutuante */}
           </div>
         )}
       </div>
+
+      {/* Botão Flutuante de Confirmação */}
+      {selectedDate && selectedTime && (
+        <div className="fixed bottom-6 left-6 right-6 z-50">
+          <Button
+            className="w-full h-16 text-xl font-bold rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-2xl shadow-blue-500/25 transition-all duration-200 hover:scale-105 border-2 border-white/20"
+            onClick={handleConfirmBooking}
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-3">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-white border-t-transparent"></div>
+                Confirmando...
+              </div>
+            ) : (
+              <div className="flex items-center gap-3">
+                <Check className="h-6 w-6" />
+                Confirmar Agendamento
+              </div>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
