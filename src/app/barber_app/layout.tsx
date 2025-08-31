@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import BarberAppLayout from "./components/barber-app-layout";
 import BottomNav from "./components/bottom-nav";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
@@ -23,8 +23,12 @@ export default function BarberAppRootLayout({
 }) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const pathname = usePathname();
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
-  const { isInstallable, installApp } = usePWA();
+  const { isInstallable } = usePWA();
+
+  // Check if current path is client area
+  const isClientArea = pathname?.startsWith("/barber_app/client");
 
   useEffect(() => {
     if (status === "loading") return;
@@ -64,6 +68,11 @@ export default function BarberAppRootLayout({
     return <div className="min-h-screen" />;
   }
 
+  // If in client area, just return children without barber layout
+  if (isClientArea) {
+    return children;
+  }
+
   return (
     <>
       <Head>
@@ -76,7 +85,7 @@ export default function BarberAppRootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
       </Head>
       <BarberAppLayout barbershop={barbershop}>
-        <div className="flex-1 flex flex-col overflow-hidden mb-32">
+        <div className="flex-1 flex flex-col overflow-hidden mb-28">
           {children}
         </div>
         <div className="fixed bottom-0 left-0 right-0 z-10">
