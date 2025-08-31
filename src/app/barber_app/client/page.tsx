@@ -284,10 +284,7 @@ export default function ClientPage() {
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-base mb-1 text-gray-900">
-                      {barbershop.name}
-                    </h3>
-                    <p className="text-sm text-gray-600 mb-1">
+                    <p className="text-sm text-gray-600 mb-1 font-semibold">
                       {booking.service?.name || "Serviço"}
                     </p>
                     <div className="flex items-center gap-2">

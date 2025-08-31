@@ -346,7 +346,7 @@ export default function BookPage() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white">
         {/* Header */}
-        <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-white/10">
+        <div className="sticky top-0 z-10">
           <div className="flex items-center justify-between p-6">
             <Button
               variant="ghost"
@@ -354,18 +354,14 @@ export default function BookPage() {
               onClick={() => setShowFullCalendar(false)}
               className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all"
             >
-              <X className="h-6 w-6" />
+              <ChevronLeft className="h-6 w-6" />
             </Button>
-
-            <h1 className="text-xl font-bold text-white">
-              Calendário Completo
-            </h1>
 
             <div className="w-12"></div>
           </div>
         </div>
 
-        {/* Calendário Completo */}
+        {/* Calendário Completo - Iniciando do topo */}
         <div className="p-6 space-y-12">
           {getFullCalendarMonths().map((monthData, monthIndex) => (
             <div key={monthIndex} className="space-y-6">
@@ -425,7 +421,7 @@ export default function BookPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
       {/* Header Moderno */}
-      <div className="sticky top-0 z-10 bg-black/80 backdrop-blur-md border-b border-white/10">
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b border-white/10">
         <div className="flex items-center justify-between p-6">
           <Button
             variant="ghost"
@@ -496,11 +492,6 @@ export default function BookPage() {
                   <Clock className="h-4 w-4 mr-2" />
                   {selectedService.duration || 30} min
                 </Badge>
-                {selectedService.description && (
-                  <p className="text-gray-300 text-sm max-w-xs">
-                    {selectedService.description}
-                  </p>
-                )}
               </div>
             </div>
             <div className="text-right">
