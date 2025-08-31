@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { PWAInstallBanner } from "@/components/pwa-install-banner";
+import { PWAClientInstallBanner } from "@/src/components/pwa-client-install-banner";
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { BackgroundSync } from "@/components/background-sync";
 import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
@@ -63,7 +63,7 @@ export default function BarberAppLayout({
     >
       {/* PWA Components */}
       <OfflineIndicator />
-      <PWAInstallBanner />
+      <PWAClientInstallBanner />
       <BackgroundSync />
 
       {/* Main Content */}
