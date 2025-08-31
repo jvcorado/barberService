@@ -138,24 +138,14 @@ export default function ImprovedCalendar({
   return (
     <div className="flex flex-col h-full bg-white overflow-hidden relative">
       {/* Header */}
-      <div
-        className={`${isMobile ? "p-3" : "p-4"} border-b bg-white shadow-sm flex-shrink-0 fixed top-0 left-0 right-0 z-30`}
-      >
+      <div className="flex flex-col gap-4 bg-white pt-6 pb-4 px-6 border-b border-gray-100 fixed top-0 left-0 right-0 z-30">
         {isMobile ? (
-          // Mobile Header - Only date navigation
-          <div className="flex items-center justify-between">
-            <button
-              onClick={handlePreviousDay}
-              className="p-2 hover:bg-gray-200 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-              title="Dia anterior"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </button>
-
+          // Mobile Header - Simple and clean like clients page
+          <div className="flex flex-col gap-4">
             <div className="text-center">
-              <h2 className="text-lg font-semibold text-gray-900">
+              <h1 className="text-2xl font-semibold text-gray-900">
                 {format(selectedDate, "dd/MM", { locale: ptBR })}
-              </h2>
+              </h1>
               <div className="text-sm text-gray-600">
                 {format(selectedDate, "EEEE", { locale: ptBR })}
               </div>
@@ -163,114 +153,53 @@ export default function ImprovedCalendar({
                 ← Deslize para navegar →
               </div>
             </div>
-
-            <button
-              onClick={handleNextDay}
-              className="p-2 hover:bg-gray-200 rounded-full transition-colors min-w-[44px] min-h-[44px] flex items-center justify-center"
-              title="Próximo dia"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </button>
           </div>
         ) : (
-          // Desktop Header
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              {/* Week Navigation */}
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handlePreviousWeek}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                  title="Semana anterior"
-                >
-                  <ChevronLeft className="h-4 w-4" />
-                </button>
-                <h2 className="text-lg font-semibold text-gray-900 min-w-[140px] text-center">
-                  {getMonthName(selectedDate)}
-                </h2>
-                <button
-                  onClick={handleNextWeek}
-                  className="p-2 hover:bg-gray-200 rounded-full transition-colors"
-                  title="Próxima semana"
-                >
-                  <ChevronRight className="h-4 w-4" />
-                </button>
-              </div>
-
-              {/* Day Navigation */}
-              <div className="flex items-center gap-1 ml-4">
-                <button
-                  onClick={handlePreviousDay}
-                  className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400  rounded-lg transition-colors"
-                  title="Dia anterior"
-                >
-                  ← Anterior
-                </button>
-                <button
-                  onClick={goToToday}
-                  className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
-                >
-                  Hoje
-                </button>
-                <button
-                  onClick={handleNextDay}
-                  className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400 rounded-lg transition-colors"
-                  title="Próximo dia"
-                >
-                  Próximo →
-                </button>
+          // Desktop Header - Clean like clients page
+          <div className="flex flex-col gap-4">
+            <div className="text-center">
+              <h1 className="text-2xl font-semibold text-gray-900">
+                {getMonthName(selectedDate)}
+              </h1>
+              <div className="text-sm text-gray-600">
+                {format(selectedDate, "dd/MM", { locale: ptBR })} -{" "}
+                {format(selectedDate, "EEEE", { locale: ptBR })}
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">
-                {format(selectedDate, "dd/MM", { locale: ptBR })}
-              </span>
-              <div className="text-sm text-gray-600">10:00-19:00</div>
+            {/* Navigation */}
+            <div className="flex items-center justify-center gap-2">
+              <button
+                onClick={handlePreviousDay}
+                className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400 text-white rounded-lg transition-colors"
+                title="Dia anterior"
+              >
+                ← Anterior
+              </button>
+              <button
+                onClick={goToToday}
+                className="px-3 py-1 text-sm bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors"
+              >
+                Hoje
+              </button>
+              <button
+                onClick={handleNextDay}
+                className="px-3 py-1 text-sm bg-gray-500 hover:bg-gray-400 text-white rounded-lg transition-colors"
+                title="Próximo dia"
+              >
+                Próximo →
+              </button>
             </div>
           </div>
         )}
       </div>
-
-      {/* Days Header */}
-      {!isMobile && (
-        // Desktop: Full week grid
-        <div
-          className="flex bg-white border-b flex-shrink-0 fixed left-0 right-0 z-20"
-          style={{ top: "65px" }}
-        >
-          <div className="w-16 flex-shrink-0"></div>
-          {getWeekDays().map((day: any, index: number) => (
-            <div
-              key={index}
-              className="flex-1 min-w-0 p-3 text-center border-l border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors"
-              onClick={() => selectDay(day.date)}
-            >
-              <div className="text-xs font-medium text-gray-600 mb-1">
-                {day.dayName}
-              </div>
-              <div
-                className={`text-lg font-semibold rounded-full w-8 h-8 flex items-center justify-center mx-auto transition-all ${
-                  day.isSelected
-                    ? "bg-blue-500 text-white"
-                    : day.isToday
-                      ? "bg-blue-100 text-blue-600"
-                      : "text-gray-900 hover:bg-gray-200"
-                }`}
-              >
-                {day.dayNumber}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
 
       {/* Calendar Grid */}
       {isMobile ? (
         // Mobile: Swipeable single day view
         <div
           className="flex-1 overflow-hidden w-full"
-          style={{ touchAction: "pan-y", marginTop: "120px" }}
+          style={{ touchAction: "pan-y", marginTop: "140px" }}
           onTouchStart={(e) => {
             const touch = e.touches[0];
             e.currentTarget.setAttribute(
@@ -405,99 +334,88 @@ export default function ImprovedCalendar({
           </div>
         </div>
       ) : (
-        // Desktop: Full week view
-        <div className="flex-1 overflow-auto mt-40">
+        // Desktop: Single day view like mobile (cleaner)
+        <div className="flex-1 overflow-auto mt-36">
           <div className="relative">
-            {/* Current time indicator */}
-            <div className="absolute left-0 right-0 top-0 z-10">
-              {/* Current time line would be calculated here */}
-            </div>
+            {/* Time slots for selected day */}
+            {timeSlots.map((time, timeIndex) => {
+              const dayBookings = getBookingsByDate(selectedDate);
+              const [hour, minute] = time.split(":").map(Number);
+              const currentTimeInMinutes = hour * 60 + minute;
 
-            {/* Time slots */}
-            {timeSlots.map((time, timeIndex) => (
-              <div
-                key={time}
-                className="flex border-b border-gray-100 min-h-[60px]"
-              >
-                {/* Time column */}
-                <div className="w-16 flex-shrink-0 p-2 text-xs text-gray-500 text-right border-r border-gray-200">
-                  {time}
-                </div>
+              const bookingAtThisTime = dayBookings.find((booking: Booking) => {
+                const bookingDate = new Date(booking.date);
+                const bookingStartTime =
+                  bookingDate.getHours() * 60 + bookingDate.getMinutes();
+                const bookingDuration = booking.service.duration || 60;
+                const bookingEndTime = bookingStartTime + bookingDuration;
+                const slotEndTime = currentTimeInMinutes + 30;
+                const overlaps =
+                  currentTimeInMinutes < bookingEndTime &&
+                  slotEndTime > bookingStartTime;
+                return overlaps;
+              });
 
-                {/* Days columns */}
-                {getWeekDays().map((day: any, dayIndex: number) => {
-                  const dayBookings = getBookingsByDate(day.date);
-                  const [hour, minute] = time.split(":").map(Number);
-                  const currentTimeInMinutes = hour * 60 + minute;
-
-                  const bookingAtThisTime = dayBookings.find(
-                    (booking: Booking) => {
-                      const bookingDate = new Date(booking.date);
-                      const bookingStartTime =
-                        bookingDate.getHours() * 60 + bookingDate.getMinutes();
-                      const bookingDuration = booking.service.duration || 60;
-                      const bookingEndTime = bookingStartTime + bookingDuration;
-                      const slotEndTime = currentTimeInMinutes + 30;
-                      const overlaps =
-                        currentTimeInMinutes < bookingEndTime &&
-                        slotEndTime > bookingStartTime;
-                      return overlaps;
-                    },
-                  );
-
-                  const isStartSlot =
-                    bookingAtThisTime &&
-                    (() => {
-                      const bookingDate = new Date(bookingAtThisTime.date);
-                      return (
-                        bookingDate.getHours() === hour &&
-                        bookingDate.getMinutes() === minute
-                      );
-                    })();
-
+              const isStartSlot =
+                bookingAtThisTime &&
+                (() => {
+                  const bookingDate = new Date(bookingAtThisTime.date);
                   return (
-                    <div
-                      key={dayIndex}
-                      className={`flex-1 min-w-0 border-l border-gray-200 relative transition-colors cursor-pointer ${
-                        bookingAtThisTime ? "" : "hover:bg-gray-50"
-                      }`}
-                      onClick={() => onAddBooking && onAddBooking()}
-                    >
-                      {isStartSlot && (
-                        <div
-                          className="absolute inset-1 rounded-lg p-2 text-xs shadow-sm"
-                          style={{
-                            backgroundColor: "#5B9BF5" + "20",
-                            borderLeft: `3px solid #5B60F5`,
-                            height: `${Math.max((bookingAtThisTime.service.duration || 60) / 30, 1) * 60 - 8}px`,
-                            zIndex: 10,
-                          }}
-                        >
-                          <div className="font-medium text-gray-900">
-                            {bookingAtThisTime.user.name}
-                          </div>
-                          <div className="text-gray-600 text-xs">
-                            {bookingAtThisTime.service.name}
-                          </div>
-                          <div className="text-gray-500 text-xs">
-                            {format(new Date(bookingAtThisTime.date), "HH:mm")}{" "}
-                            -{" "}
-                            {format(
-                              new Date(
-                                new Date(bookingAtThisTime.date).getTime() +
-                                  (bookingAtThisTime.service.duration || 60) *
-                                    60000,
-                              ),
-                              "HH:mm",
-                            )}
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                    bookingDate.getHours() === hour &&
+                    bookingDate.getMinutes() === minute
                   );
-                })}
-              </div>
-            ))}
+                })();
+
+              return (
+                <div
+                  key={time}
+                  className="flex border-b border-gray-100 min-h-[60px]"
+                >
+                  {/* Time column */}
+                  <div className="w-16 flex-shrink-0 p-2 text-xs text-gray-500 text-right border-r border-gray-200">
+                    {time}
+                  </div>
+
+                  {/* Day column */}
+                  <div
+                    className={`flex-1 relative transition-colors cursor-pointer min-h-[44px] ${
+                      bookingAtThisTime ? "" : "hover:bg-gray-50"
+                    }`}
+                    onClick={() => onAddBooking && onAddBooking()}
+                  >
+                    {isStartSlot && (
+                      <div
+                        className="absolute inset-1 rounded-lg p-2 text-xs shadow-sm"
+                        style={{
+                          backgroundColor: "#5B9BF5" + "20",
+                          borderLeft: `3px solid #5B60F5`,
+                          height: `${Math.max((bookingAtThisTime.service.duration || 60) / 30, 1) * 60 - 8}px`,
+                          zIndex: 10,
+                        }}
+                      >
+                        <div className="font-medium text-gray-900 text-sm">
+                          {bookingAtThisTime.user.name}
+                        </div>
+                        <div className="text-gray-600 text-xs">
+                          {bookingAtThisTime.service.name}
+                        </div>
+                        <div className="text-gray-500 text-xs">
+                          {format(new Date(bookingAtThisTime.date), "HH:mm")} -{" "}
+                          {format(
+                            new Date(
+                              new Date(bookingAtThisTime.date).getTime() +
+                                (bookingAtThisTime.service.duration || 60) *
+                                  60000,
+                            ),
+                            "HH:mm",
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
