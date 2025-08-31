@@ -3,31 +3,22 @@
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import ClientLayout from "./components/client-layout";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import {
-  Star,
-  ThumbsUp,
   Calendar,
+  ChevronRight,
+  Menu,
+  Clock,
   MapPin,
   Phone,
   MessageCircle,
-  Clock,
-  ChevronRight,
-  Plus,
-  Minus,
-  Download,
-  Bell,
-  Wifi,
-  WifiOff,
-  Instagram,
-  Bookmark,
+  Star,
+  ThumbsUp,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { usePWAClient } from "@/src/hooks/use-pwa-client";
-import { useBarbershopColorsById } from "@/hooks/use-barbershop-colors-by-id";
 
 interface Service {
   id: string;
@@ -121,21 +112,8 @@ export default function ClientPage() {
   // Loading state
   if (loading || status === "loading") {
     return (
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: barbershop?.backgroundColor || "#f9fafb" }}
-      >
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4"
-              style={{ borderColor: barbershop?.primaryColor || "#000000" }}
-            ></div>
-            <p style={{ color: barbershop?.textColor || "#111827" }}>
-              Carregando...
-            </p>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -143,394 +121,216 @@ export default function ClientPage() {
   // No session state
   if (status === "unauthenticated" || !barbershop) {
     return (
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: barbershop?.backgroundColor || "#f9fafb" }}
-      >
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p
-              className="mb-4"
-              style={{ color: barbershop?.textColor || "#111827" }}
-            >
-              Você precisa estar logado para acessar o app
-            </p>
-            <Button
-              onClick={() => router.push("/api/auth/signin")}
-              style={{
-                backgroundColor: barbershop?.primaryColor || "#000000",
-                color: barbershop?.secondaryColor || "#ffffff",
-              }}
-            >
-              Entrar
-            </Button>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Acesso Negado</h2>
+          <p className="text-gray-300 mb-6">
+            Você precisa estar logado para acessar o app
+          </p>
+          <Button
+            onClick={() =>
+              router.push(`/barber_app/client/login?id=${barbershopId}`)
+            }
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+          >
+            Entrar
+          </Button>
         </div>
       </div>
     );
   }
 
-  // Função para agendar notificação de lembrete
-  const scheduleReminder = async (bookingDate: Date, serviceName: string) => {
-    if (!pwaStatus.hasNotifications) {
-      const granted = await pwaStatus.requestNotificationPermission();
-      if (!granted) return;
-    }
-
-    // Calcular tempo para o lembrete (1 hora antes)
-    const reminderTime = new Date(bookingDate.getTime() - 60 * 60 * 1000);
-    const now = new Date();
-
-    if (reminderTime > now) {
-      const timeUntilReminder = reminderTime.getTime() - now.getTime();
-
-      setTimeout(() => {
-        pwaStatus.sendNotification(`Lembrete: ${serviceName}`, {
-          body: `Seu agendamento está marcado para daqui a 1 hora!`,
-          tag: `reminder-${serviceName}`,
-          requireInteraction: true,
-        });
-      }, timeUntilReminder);
-    }
-  };
-
   return (
-    <ClientLayout barbershop={barbershop}>
-      <div
-        className="min-h-screen"
-        style={{
-          backgroundColor: barbershop.backgroundColor || "#f9fafb",
-        }}
-      >
-        {/* Cabeçalho com Saudação e Data */}
-        <div
-          className="px-6 py-6"
-          style={{
-            backgroundColor: barbershop.backgroundColor || "#1f2937",
-          }}
-        >
-          <div className="mb-2">
-            <h1 className="text-2xl font-semibold mb-1 text-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900">
+      {/* Cabeçalho com Saudação e Data */}
+      <div className="px-6 pt-6">
+        <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-4">
+          <div>
+            <h1 className="text-2xl font-semibold text-white mb-1">
               Olá{" "}
-              <span
-                style={{
-                  color: barbershop.accentColor || "#60a5fa",
-                }}
-              >
+              <span className="text-blue-400">
                 {session?.user?.name?.split(" ")[0]}
               </span>
             </h1>
-            <p className="text-sm text-gray-200">
-              {format(new Date(), "EEEE", { locale: ptBR })},{" "}
-              {format(new Date(), "dd 'de' MMM yyyy", { locale: ptBR })}
+            <p className="text-gray-300 text-sm">
+              {format(new Date(), "EEEE, dd 'de' MMM yyyy", { locale: ptBR })}
             </p>
           </div>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
+          >
+            <Menu className="h-6 w-6" />
+          </Button>
         </div>
+      </div>
 
-        {/* Linha separadora */}
-        <div
-          className="w-full h-0.5 mx-6"
-          style={{
-            backgroundColor: barbershop.backgroundColor
-              ? `${barbershop.backgroundColor}40` // 25% de opacidade para ser mais sutil
-              : "#4B5563", // Cor padrão mais visível
-          }}
-        />
-
-        {/* Meus Agendamentos - Se houver agendamentos */}
-        {userBookings.length > 0 && (
-          <div className="px-6 py-4">
-            <h2
-              className="text-lg font-semibold mb-4 section-title"
-              style={{
-                color: "#ffffff",
-                fontWeight: "600",
-                fontSize: "1.125rem",
-                lineHeight: "1.75rem",
-                marginBottom: "1rem",
-              }}
-            >
-              Meus agendamentos
-            </h2>
-
-            <div className="space-y-3">
-              {userBookings.slice(0, 3).map((booking, index) => (
-                <div
-                  key={booking.id}
-                  className="w-full rounded-2xl p-4 flex items-center bg-white border border-gray-200"
-                >
-                  <div className="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
-                    {barbershop.imageUrl ? (
-                      <Image
-                        src={barbershop.imageUrl}
-                        alt={barbershop.name}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <div
-                        className="w-full h-full flex items-center justify-center"
-                        style={{
-                          backgroundColor: barbershop.accentColor || "#60a5fa",
-                          color: "#ffffff",
-                        }}
-                      >
-                        <span className="text-lg font-bold">
-                          {barbershop.name.charAt(0).toUpperCase()}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm text-gray-600 mb-1 font-semibold">
-                      {booking.service?.name || "Serviço"}
-                    </p>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-3 w-3 text-gray-500" />
-                      <span className="text-xs text-gray-500">
-                        {format(
-                          new Date(booking.date),
-                          "dd/MM/yyyy 'às' HH:mm",
-                          { locale: ptBR },
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div
-                    className="w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: barbershop.accentColor || "#60a5fa",
-                      color: "#ffffff",
-                    }}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Último Agendamento - Se não houver agendamentos */}
-        {userBookings.length === 0 && (
-          <div className="px-6 py-4">
-            <h2 className="text-lg font-semibold mb-4 text-white">
-              Último agendamento
-            </h2>
-
-            <div className="w-full rounded-2xl p-4 flex items-center bg-white border border-gray-200">
-              <div className="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0">
-                {barbershop.imageUrl ? (
-                  <Image
-                    src={barbershop.imageUrl}
-                    alt={barbershop.name}
-                    width={48}
-                    height={48}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div
-                    className="w-full h-full flex items-center justify-center"
-                    style={{
-                      backgroundColor: barbershop.accentColor || "#60a5fa",
-                      color: "#ffffff",
-                    }}
-                  >
-                    <span className="text-lg font-bold">
-                      {barbershop.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 min-w-0">
-                <h3 className="font-semibold text-base mb-1 text-gray-900">
-                  {barbershop.name}
-                </h3>
-                <p className="text-sm text-gray-600">
-                  Nenhum agendamento ainda
-                </p>
-              </div>
-
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center"
-                style={{
-                  backgroundColor: barbershop.accentColor || "#60a5fa",
-                  color: "#ffffff",
-                }}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Imagem da Barbearia */}
+      {/* Seção "Meus agendamentos" */}
+      {userBookings.length > 0 && (
         <div className="px-6 py-4">
-          <div className="w-full h-48 rounded-2xl overflow-hidden relative bg-gray-800">
-            {barbershop.imageUrl ? (
-              <Image
-                src={barbershop.imageUrl}
-                alt="Barbearia"
-                width={400}
-                height={200}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center">
-                <div className="text-center">
-                  <div
-                    className="w-16 h-16 rounded-2xl mx-auto mb-3 flex items-center justify-center"
-                    style={{
-                      backgroundColor:
-                        (barbershop.accentColor || "#60a5fa") + "30",
-                    }}
-                  >
-                    <span className="text-2xl text-gray-400">✂️</span>
-                  </div>
-                  <p className="text-gray-400">Imagem da Barbearia</p>
-                </div>
-              </div>
-            )}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
-            <div className="absolute bottom-4 left-4 right-4">
-              <p className="text-sm font-medium leading-tight text-white">
-                Agende compromissos rapidamente pelo app, sem filas ou ligações
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Serviços Disponíveis - Carrossel */}
-        <div className="px-6 py-4">
-          <h2 className="text-lg font-semibold mb-4 text-white">
-            Serviços disponíveis
+          <h2 className="text-lg font-semibold text-white mb-4">
+            Meus agendamentos
           </h2>
 
-          <div className="flex gap-4 overflow-x-auto pb-2">
-            {barbershop.services.slice(0, 3).map((service) => (
+          <div className="space-y-3">
+            {userBookings.slice(0, 3).map((booking, index) => (
               <div
-                key={service.id}
-                className="flex-shrink-0 w-64 bg-white rounded-2xl p-4 shadow-lg border border-gray-200 flex flex-col"
+                key={booking.id}
+                className="w-full rounded-2xl p-4 flex items-center bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 shadow-lg hover:shadow-xl transition-all duration-200"
               >
-                {/* Imagem do Serviço */}
-                <div
-                  className="w-full h-32 rounded-xl overflow-hidden relative mb-3"
-                  style={{
-                    backgroundColor:
-                      (barbershop.accentColor || "#60a5fa") + "20",
-                  }}
-                >
-                  {service.imageUrl ? (
+                {/* Logo da Barbearia */}
+                <div className="w-12 h-12 rounded-full overflow-hidden mr-4 flex-shrink-0 bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
+                  {barbershop.imageUrl ? (
                     <Image
-                      src={service.imageUrl}
-                      alt={service.name}
-                      width={256}
-                      height={128}
+                      src={barbershop.imageUrl}
+                      alt={barbershop.name}
+                      width={48}
+                      height={48}
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div
-                      className="w-full h-full flex items-center justify-center"
-                      style={{
-                        backgroundColor:
-                          (barbershop.accentColor || "#60a5fa") + "30",
-                      }}
-                    >
-                      <span className="text-2xl">✂️</span>
-                    </div>
+                    <span className="text-white text-lg font-bold">
+                      {barbershop.name.charAt(0).toUpperCase()}
+                    </span>
                   )}
-
-                  {/* Badge de Preço */}
-                  <div className="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-lg">
-                    {new Intl.NumberFormat("pt-BR", {
-                      style: "currency",
-                      currency: "BRL",
-                    }).format(Number(service.price))}
-                  </div>
                 </div>
 
-                {/* Informações do Serviço */}
-                <div className="flex-1 space-y-2 mb-3">
-                  <h4 className="font-bold text-lg text-gray-900">
-                    {service.name}
-                  </h4>
-
-                  <div className="flex items-center gap-2 text-sm">
-                    <Clock className="h-4 w-4 text-blue-500" />
-                    <span className="text-gray-600">
-                      {service.duration || 30} min
+                {/* Informações do Agendamento */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-semibold mb-1">
+                    {booking.service?.name || "Serviço"}
+                  </p>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="h-3 w-3 text-gray-400" />
+                    <span className="text-xs text-gray-400">
+                      {format(new Date(booking.date), "dd/MM/yyyy 'às' HH:mm", {
+                        locale: ptBR,
+                      })}
                     </span>
                   </div>
-
-                  <p className="text-sm text-gray-600 line-clamp-2 min-h-[2.5rem]">
-                    {service.description ||
-                      "Descrição do serviço não disponível"}
-                  </p>
                 </div>
 
-                {/* Botões de Ação */}
-                <div className="flex items-center gap-2 mt-auto">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-10 w-10 p-0 rounded-xl flex-shrink-0"
-                    style={{
-                      borderColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.primaryColor || "#000000",
-                      backgroundColor: barbershop.secondaryColor || "#ffffff",
-                    }}
-                  >
-                    <Bookmark className="h-4 w-4" />
-                  </Button>
-
-                  <Button
-                    size="sm"
-                    className="flex-1 h-10 rounded-xl font-bold"
-                    style={{
-                      backgroundColor: barbershop.accentColor || "#60a5fa",
-                      color: barbershop.secondaryColor || "#ffffff",
-                    }}
-                    onClick={() => {
-                      router.push(
-                        `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
-                      );
-                    }}
-                  >
-                    AGENDAR AGORA
-                  </Button>
+                {/* Botão de Ação */}
+                <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
+                  <ChevronRight className="h-4 w-4 text-white" />
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      )}
 
-          {/* Botão Outros Serviços */}
-          {barbershop.services.length > 3 && (
-            <div className="mt-4 text-center">
+      {/* Banner Promocional */}
+      <div className="px-6 py-4">
+        <div className="w-full h-48 rounded-2xl overflow-hidden relative bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10">
+          {/* Imagem de fundo ou ícone */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center">
+              <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
+                <div className="text-4xl">✂️</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Overlay gradiente */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+
+          {/* Texto promocional */}
+          <div className="absolute bottom-4 left-4 right-4">
+            <p className="text-sm font-medium leading-tight text-white">
+              Agende compromissos rapidamente pelo app, sem filas ou ligações
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Seção "Serviços disponíveis" */}
+      <div className="px-6 py-4 pb-24">
+        <h2 className="text-lg font-semibold text-white mb-4">
+          Serviços disponíveis
+        </h2>
+
+        <div className="flex gap-4 overflow-x-auto pb-2">
+          {barbershop.services.slice(0, 3).map((service) => (
+            <div
+              key={service.id}
+              className="flex-shrink-0 w-64 bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/10 shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              {/* Imagem do Serviço */}
+              <div className="w-full h-32 rounded-xl overflow-hidden relative mb-3 bg-gray-800">
+                {service.imageUrl ? (
+                  <Image
+                    src={service.imageUrl}
+                    alt={service.name}
+                    width={256}
+                    height={128}
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <span className="text-2xl">✂️</span>
+                  </div>
+                )}
+
+                {/* Badge de Preço */}
+                <div className="absolute top-2 right-2 bg-yellow-400 text-black text-xs font-bold px-2 py-1 rounded-lg">
+                  {new Intl.NumberFormat("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  }).format(Number(service.price))}
+                </div>
+              </div>
+
+              {/* Informações do Serviço */}
+              <div className="flex-1 space-y-2 mb-3">
+                <h4 className="font-bold text-lg text-white">{service.name}</h4>
+
+                <div className="flex items-center gap-2 text-sm">
+                  <Clock className="h-4 w-4 text-blue-400" />
+                  <span className="text-gray-300">
+                    {service.duration || 30} min
+                  </span>
+                </div>
+
+                <p className="text-sm text-gray-300 line-clamp-2 min-h-[2.5rem]">
+                  {service.description || "Descrição do serviço não disponível"}
+                </p>
+              </div>
+
+              {/* Botão de Agendamento */}
               <Button
-                variant="outline"
-                className="px-6 py-2 rounded-xl"
-                style={{
-                  borderColor: barbershop.accentColor || "#60a5fa",
-                  color: barbershop.accentColor || "#60a5fa",
-                  backgroundColor: "transparent",
-                }}
+                className="w-full h-10 rounded-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
                 onClick={() => {
-                  // Aqui você pode implementar a navegação para uma página de todos os serviços
                   router.push(
-                    `/barber_app/client/services?barbershopId=${barbershop.id}`,
+                    `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
                   );
                 }}
               >
-                Ver outros serviços ({barbershop.services.length - 3})
+                AGENDAR AGORA
               </Button>
             </div>
-          )}
+          ))}
         </div>
+
+        {/* Botão Outros Serviços */}
+        {barbershop.services.length > 3 && (
+          <div className="mt-4 text-center">
+            <Button
+              variant="outline"
+              className="px-6 py-2 rounded-xl text-white border-white/20 hover:bg-white/10"
+              onClick={() => {
+                router.push(
+                  `/barber_app/client/services?barbershopId=${barbershop.id}`,
+                );
+              }}
+            >
+              Ver outros serviços ({barbershop.services.length - 3})
+            </Button>
+          </div>
+        )}
       </div>
-    </ClientLayout>
+    </div>
   );
 }
