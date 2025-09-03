@@ -462,6 +462,22 @@ export default function BookPage() {
             >
               <span className="text-xs font-medium mb-2 text-gray-500">
                 {format(date, "EEE", { locale: ptBR })
+                  .replace(/^\w/, (c) => c.toUpperCase())
+                  .replace(
+                    /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+                    (match) => {
+                      const dayMap: { [key: string]: string } = {
+                        "segunda-feira": "Segunda",
+                        "terça-feira": "Terça",
+                        "quarta-feira": "Quarta",
+                        "quinta-feira": "Quinta",
+                        "sexta-feira": "Sexta",
+                        sábado: "Sábado",
+                        domingo: "Domingo",
+                      };
+                      return dayMap[match.toLowerCase()] || match;
+                    },
+                  )
                   .substring(0, 3)
                   .toUpperCase()}
               </span>
@@ -515,7 +531,21 @@ export default function BookPage() {
               <p className="text-gray-400">
                 {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })
                   .replace(/^\w/, (c) => c.toUpperCase())
-                  .replace(/\s+\w/, (c) => c.toUpperCase())}
+                  .replace(
+                    /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+                    (match) => {
+                      const dayMap: { [key: string]: string } = {
+                        "segunda-feira": "Segunda",
+                        "terça-feira": "Terça",
+                        "quarta-feira": "Quarta",
+                        "quinta-feira": "Quinta",
+                        "sexta-feira": "Sexta",
+                        sábado: "Sábado",
+                        domingo: "Domingo",
+                      };
+                      return dayMap[match.toLowerCase()] || match;
+                    },
+                  )}
               </p>
             </div>
 

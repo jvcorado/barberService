@@ -151,9 +151,9 @@ export default function ClientLoginPage() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="text-center">
-          <div className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4 border-yellow-500"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
           <p className="text-white">Carregando...</p>
         </div>
       </div>
@@ -161,33 +161,33 @@ export default function ClientLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 flex flex-col">
       {/* Header */}
-      <div className="bg-black border-b border-gray-800 px-4 py-3">
-        <div className="flex items-center gap-3">
+      <div className="sticky top-0 z-10 backdrop-blur-md border-b border-white/10">
+        <div className="flex items-center gap-3 px-6 py-4">
           <Button
             variant="ghost"
             size="icon"
             onClick={handleBackToBarbershop}
-            className="h-8 w-8 text-white hover:bg-gray-800"
+            className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-6 w-6" />
           </Button>
-          <h1 className="text-lg font-semibold text-white">Login do Cliente</h1>
+          <h1 className="text-xl font-bold text-white">Login do Cliente</h1>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-black border-gray-800 text-white">
+      <div className="flex-1 flex items-center justify-center p-6">
+        <Card className="w-full max-w-md bg-gradient-to-r from-white/5 to-white/10 backdrop-blur-sm border border-white/10 shadow-xl">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 w-20 h-20 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-2xl flex items-center justify-center shadow-lg">
-              <div className="text-center text-yellow-800 font-bold text-xs leading-tight">
+            <div className="mx-auto mb-6 w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/25">
+              <div className="text-center text-white font-bold text-xs leading-tight">
                 <div className="font-serif">BARBERAPP</div>
                 <div className="text-[10px] mt-1">SUA RENOMARDA</div>
               </div>
             </div>
-            <CardTitle className="text-xl text-white">
+            <CardTitle className="text-2xl font-bold text-white mb-2">
               Bem-vindo ao App do Cliente
             </CardTitle>
             <CardDescription className="text-gray-300">
@@ -200,18 +200,28 @@ export default function ClientLoginPage() {
               onValueChange={setActiveTab}
               className="w-full"
             >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger value="login">Entrar</TabsTrigger>
-                <TabsTrigger value="register">Criar Conta</TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10 rounded-xl p-1">
+                <TabsTrigger
+                  value="login"
+                  className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-gray-300 transition-all duration-200"
+                >
+                  Entrar
+                </TabsTrigger>
+                <TabsTrigger
+                  value="register"
+                  className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-gray-300 transition-all duration-200"
+                >
+                  Criar Conta
+                </TabsTrigger>
               </TabsList>
 
               {/* Mensagens */}
               {message && (
                 <div
-                  className={`mt-4 p-3 rounded-xl text-sm ${
+                  className={`mt-4 p-4 rounded-xl text-sm backdrop-blur-sm border ${
                     message.type === "success"
-                      ? "bg-green-100 text-green-800 border border-green-200"
-                      : "bg-red-100 text-red-800 border border-red-200"
+                      ? "bg-green-500/20 text-green-400 border-green-500/30"
+                      : "bg-red-500/20 text-red-400 border-red-500/30"
                   }`}
                 >
                   {message.text}
@@ -219,10 +229,15 @@ export default function ClientLoginPage() {
               )}
 
               {/* Tab de Login */}
-              <TabsContent value="login" className="space-y-4 mt-4">
-                <form onSubmit={handleEmailLogin} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email">Email</Label>
+              <TabsContent value="login" className="space-y-6 mt-6">
+                <form onSubmit={handleEmailLogin} className="space-y-6">
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="login-email"
+                      className="text-white font-medium"
+                    >
+                      Email
+                    </Label>
                     <Input
                       id="login-email"
                       type="email"
@@ -230,11 +245,16 @@ export default function ClientLoginPage() {
                       value={loginEmail}
                       onChange={(e) => setLoginEmail(e.target.value)}
                       required
-                      className="rounded-xl"
+                      className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password">Senha</Label>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="login-password"
+                      className="text-white font-medium"
+                    >
+                      Senha
+                    </Label>
                     <div className="relative">
                       <Input
                         id="login-password"
@@ -243,13 +263,13 @@ export default function ClientLoginPage() {
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         required
-                        className="rounded-xl pr-10"
+                        className="h-12 rounded-xl pr-12 bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-0 top-0 h-full px-3"
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -263,7 +283,7 @@ export default function ClientLoginPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-12 text-base rounded-xl"
+                    className="w-full h-12 text-lg font-bold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
                   >
                     {loading ? (
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />
@@ -272,12 +292,21 @@ export default function ClientLoginPage() {
                   </Button>
                 </form>
 
-                <Separator />
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-white/10"></div>
+                  </div>
+                  <div className="relative flex justify-center text-sm">
+                    <span className="px-2 bg-transparent text-gray-400">
+                      ou
+                    </span>
+                  </div>
+                </div>
 
                 <Button
                   onClick={handleGoogleLogin}
                   disabled={loading}
-                  className="w-full h-12 text-base rounded-xl"
+                  className="w-full h-12 text-base rounded-xl bg-white/5 border border-white/20 text-white hover:bg-white/10 transition-all duration-200"
                   variant="outline"
                 >
                   {loading ? (
@@ -296,10 +325,15 @@ export default function ClientLoginPage() {
               </TabsContent>
 
               {/* Tab de Registro */}
-              <TabsContent value="register" className="space-y-4 mt-4">
-                <form onSubmit={handleRegister} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-name">Nome Completo</Label>
+              <TabsContent value="register" className="space-y-6 mt-6">
+                <form onSubmit={handleRegister} className="space-y-6">
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="register-name"
+                      className="text-white font-medium"
+                    >
+                      Nome Completo
+                    </Label>
                     <Input
                       id="register-name"
                       type="text"
@@ -307,11 +341,16 @@ export default function ClientLoginPage() {
                       value={registerName}
                       onChange={(e) => setRegisterName(e.target.value)}
                       required
-                      className="rounded-xl"
+                      className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email">Email</Label>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="register-email"
+                      className="text-white font-medium"
+                    >
+                      Email
+                    </Label>
                     <Input
                       id="register-email"
                       type="email"
@@ -319,11 +358,16 @@ export default function ClientLoginPage() {
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
                       required
-                      className="rounded-xl"
+                      className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password">Senha</Label>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="register-password"
+                      className="text-white font-medium"
+                    >
+                      Senha
+                    </Label>
                     <div className="relative">
                       <Input
                         id="register-password"
@@ -333,13 +377,13 @@ export default function ClientLoginPage() {
                         onChange={(e) => setRegisterPassword(e.target.value)}
                         required
                         minLength={6}
-                        className="rounded-xl pr-10"
+                        className="h-12 rounded-xl pr-12 bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-0 top-0 h-full px-3"
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
                         onClick={() => setShowPassword(!showPassword)}
                       >
                         {showPassword ? (
@@ -350,8 +394,13 @@ export default function ClientLoginPage() {
                       </Button>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirmar Senha</Label>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="confirm-password"
+                      className="text-white font-medium"
+                    >
+                      Confirmar Senha
+                    </Label>
                     <div className="relative">
                       <Input
                         id="confirm-password"
@@ -360,13 +409,13 @@ export default function ClientLoginPage() {
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         required
-                        className="rounded-xl pr-10"
+                        className="h-12 rounded-xl pr-12 bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                       />
                       <Button
                         type="button"
                         variant="ghost"
                         size="icon"
-                        className="absolute right-0 top-0 h-full px-3"
+                        className="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-white"
                         onClick={() =>
                           setShowConfirmPassword(!showConfirmPassword)
                         }
@@ -382,7 +431,7 @@ export default function ClientLoginPage() {
                   <Button
                     type="submit"
                     disabled={loading}
-                    className="w-full h-12 text-base rounded-xl"
+                    className="w-full h-12 text-lg font-bold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
                   >
                     {loading ? (
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />
@@ -393,14 +442,20 @@ export default function ClientLoginPage() {
               </TabsContent>
             </Tabs>
 
-            <div className="mt-6 text-center text-sm text-gray-600">
+            <div className="mt-8 text-center text-sm text-gray-400">
               <p>
                 Ao fazer login, você concorda com nossos{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a
+                  href="#"
+                  className="text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                >
                   Termos de Serviço
                 </a>{" "}
                 e{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a
+                  href="#"
+                  className="text-blue-400 hover:text-blue-300 hover:underline transition-colors"
+                >
                   Política de Privacidade
                 </a>
               </p>
