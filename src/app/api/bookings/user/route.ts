@@ -27,15 +27,12 @@ export async function GET(request: NextRequest) {
         service: {
           barberShopId: barbershopId,
         },
-        date: {
-          gte: new Date(),
-        },
       },
       include: {
         service: true,
       },
       orderBy: {
-        date: "asc",
+        date: "desc",
       },
     });
 

@@ -74,7 +74,23 @@ export default async function Home() {
             </h2>
             <p>
               <span className="capitalize">
-                {format(new Date(), "EEEE, dd", { locale: ptBR })}
+                {format(new Date(), "EEEE, dd", { locale: ptBR })
+                  .replace(/^\w/, (c) => c.toUpperCase())
+                  .replace(
+                    /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+                    (match) => {
+                      const dayMap: { [key: string]: string } = {
+                        "segunda-feira": "Segunda",
+                        "terça-feira": "Terça",
+                        "quarta-feira": "Quarta",
+                        "quinta-feira": "Quinta",
+                        "sexta-feira": "Sexta",
+                        sábado: "Sábado",
+                        domingo: "Domingo",
+                      };
+                      return dayMap[match.toLowerCase()] || match;
+                    },
+                  )}
               </span>
               <span>&nbsp;de&nbsp;</span>
               <span className="capitalize">

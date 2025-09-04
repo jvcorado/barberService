@@ -59,6 +59,7 @@ export const createBooking = async (params: CreateBookingParams) => {
         date: params.date,
         userId: userId,
         barberShopId: params.barberShopId,
+        status: "PENDING",
       },
     });
 
