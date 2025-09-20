@@ -21,70 +21,34 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
   const router = useRouter();
   const [search, setSearch] = useState("");
 
+  console.log(clients, "clients");
+
   const filtered = clients.filter((c) => {
     const matchesSearch = c.name.toLowerCase().includes(search.toLowerCase());
     return matchesSearch;
   });
 
-  return (
-    <div className="flex flex-col gap-6 px-4  min-h-screen">
-      {/* Header */}
-      {/* <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-gray-900">Clients</h1>
-        <Button
-          className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-          onClick={() => router.push("/barber_app/clients/add")}
-        >
-          <Plus className="w-4 h-4" />
-          Add new client
-        </Button>
-      </div> */}
+  console.log(filtered, "filtered");
 
-      {/* Tabs */}
-      {/* <Tabs value={tab} onValueChange={(v) => setTab(v)} className="w-full">
-        <TabsList className="w-full bg-white rounded-lg p-1 shadow-sm">
-          <TabsTrigger
-            value="all"
-            className="flex-1 text-blue-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-md font-medium"
-          >
-            All Clients ({clients.length})
-          </TabsTrigger>
-          <TabsTrigger
-            value="senders"
-            className="flex-1 text-gray-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-md font-medium"
-          >
-            Senders ({countSenders})
-          </TabsTrigger>
-          <TabsTrigger
-            value="receivers"
-            className="flex-1 text-gray-600 data-[state=active]:bg-blue-600 data-[state=active]:text-white rounded-md font-medium"
-          >
-            Receivers ({countReceivers})
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="all" />
-        <TabsContent value="senders" />
-        <TabsContent value="receivers" />
-      </Tabs> */}
-      <div className="flex flex-col gap-4 bg-white pt-6 pb-4 px-4 border-b border-gray-100 fixed top-0 left-0 right-0 z-20">
-        <h1 className="text-2xl font-semibold text-gray-900">Clientes</h1>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input
-            placeholder="Pesquise aqui"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-10 py-3 bg-white border border-gray-200 placeholder:text-gray-400 rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
-          />
-        </div>
+  return (
+    <div className="flex flex-col gap-6 px-6">
+      {/* Search */}
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+        <Input
+          placeholder="Pesquisar clientes..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="pl-10 py-3 bg-white/10 border border-white/20 placeholder:text-gray-400 text-white rounded-lg focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+        />
       </div>
 
       {/* Clients Grid */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mt-32 pb-6">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 py-6">
         {filtered.map((client) => (
           <Card
             key={client.id}
-            className="bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 rounded-xl p-6"
+            className="bg-gradient-to-r from-white/10 to-white/5 backdrop-blur-sm border border-white/20 shadow-lg hover:shadow-xl transition-all duration-200 rounded-xl p-6"
           >
             <div className="flex flex-col space-y-4">
               {/* Client Info */}
@@ -104,14 +68,14 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
                   )}
                 </Avatar>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-lg">
+                  <h3 className="font-semibold text-white text-lg">
                     {client.name}
                   </h3>
                   <Badge
                     className={`mt-1 text-xs px-2 py-1 rounded-full ${
                       client.role === "sender"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-blue-100 text-blue-700"
+                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
+                        : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
                     }`}
                     variant="secondary"
                   >
@@ -120,28 +84,10 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
                 </div>
               </div>
 
-              {/* ID Number */}
-              {/* <div className="flex justify-between items-center text-sm">
-                <span className="text-gray-500">Id number:</span>
-                <span className="font-semibold text-gray-900">
-                  {client.code}
-                </span>
-              </div> */}
-
               {/* Action Buttons */}
               <div className="flex gap-3 pt-2">
-                {/* <Button
-                  variant="outline"
-                  className="flex-1 border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg py-2 px-3 text-sm font-medium flex items-center justify-center gap-2"
-                  onClick={() =>
-                    router.push(`/barber_app/clients/${client.id}`)
-                  }
-                >
-                  <User className="w-4 h-4" />
-                  Visit Profile
-                </Button> */}
                 <Button
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 px-3 text-sm font-medium flex items-center justify-center gap-2"
+                  className="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white rounded-lg py-2 px-3 text-sm font-medium flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
                   onClick={() =>
                     router.push(`/barber_app/messages/${client.id}`)
                   }
@@ -156,7 +102,7 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
 
         {filtered.length === 0 && (
           <div className="col-span-full text-center py-12">
-            <p className="text-gray-500 text-sm">Nenhum cliente encontrado</p>
+            <p className="text-gray-300 text-sm">Nenhum cliente encontrado</p>
           </div>
         )}
       </div>

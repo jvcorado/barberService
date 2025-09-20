@@ -23,7 +23,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { PlusCircleIcon } from "lucide-react";
+import { Plus } from "lucide-react";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome obrigatório"),
@@ -105,16 +105,17 @@ export default function CreateServiceDrawer({
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
         <Button
-          variant="default"
-          className="bg-white text-black border hover:bg-gray-50"
+          variant="outline"
+          size="sm"
+          className="bg-white/10 text-white border-white/20 hover:bg-white/20"
         >
-          <PlusCircleIcon className="w-4 h-4 mr-2" />
-          Criar Serviço
+          <Plus className="w-4 h-4 mr-2" />
+          Novo Serviço
         </Button>
       </DrawerTrigger>
-      <DrawerContent className="bg-white text-black">
+      <DrawerContent className="bg-slate-900 text-white border-slate-700">
         <DrawerHeader>
-          <DrawerTitle className="text-xl font-bold text-black">
+          <DrawerTitle className="text-xl font-bold text-white">
             Cadastrar Novo Serviço
           </DrawerTitle>
         </DrawerHeader>
@@ -126,12 +127,12 @@ export default function CreateServiceDrawer({
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-black">Nome</FormLabel>
+                    <FormLabel className="text-white">Nome</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Corte masculino"
                         {...field}
-                        className="bg-white border-gray-300 text-black"
+                        className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
                       />
                     </FormControl>
                     <FormMessage />
@@ -144,12 +145,12 @@ export default function CreateServiceDrawer({
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-black">Descrição</FormLabel>
+                    <FormLabel className="text-white">Descrição</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Descrição do serviço"
                         {...field}
-                        className="bg-white border-gray-300 text-black"
+                        className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
                       />
                     </FormControl>
                     <FormMessage />
@@ -163,13 +164,13 @@ export default function CreateServiceDrawer({
                   name="price"
                   render={({ field }) => (
                     <FormItem className="w-1/2">
-                      <FormLabel className="text-black">Preço (R$)</FormLabel>
+                      <FormLabel className="text-white">Preço (R$)</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           step="0.01"
                           {...field}
-                          className="bg-white border-gray-300 text-black"
+                          className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
                         />
                       </FormControl>
                       <FormMessage />
@@ -182,14 +183,14 @@ export default function CreateServiceDrawer({
                   name="duration"
                   render={({ field }) => (
                     <FormItem className="w-1/2">
-                      <FormLabel className="text-black">
+                      <FormLabel className="text-white">
                         Duração (min)
                       </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
                           {...field}
-                          className="bg-white border-gray-300 text-black"
+                          className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
                         />
                       </FormControl>
                       <FormMessage />
@@ -199,7 +200,7 @@ export default function CreateServiceDrawer({
               </div>
 
               <div className="space-y-2">
-                <FormLabel className="text-black">Imagem do Serviço</FormLabel>
+                <FormLabel className="text-white">Imagem do Serviço</FormLabel>
                 <Input
                   type="file"
                   accept="image/*"
@@ -207,10 +208,10 @@ export default function CreateServiceDrawer({
                     const file = e.target.files?.[0];
                     setImageFile(file ?? null);
                   }}
-                  className="bg-white border-gray-300 text-black"
+                  className="bg-slate-800 border-slate-600 text-white file:bg-slate-700 file:text-white file:border-0 file:rounded file:px-3 file:py-1"
                 />
                 {imageFile && (
-                  <p className="text-sm text-gray-600">
+                  <p className="text-sm text-slate-300">
                     Selecionado: {imageFile.name}
                   </p>
                 )}
@@ -221,13 +222,13 @@ export default function CreateServiceDrawer({
                   type="button"
                   variant="outline"
                   onClick={() => setOpen(false)}
-                  className="flex-1 bg-white border-gray-300 text-black hover:bg-gray-50"
+                  className="flex-1 bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
                 >
                   Cancelar
                 </Button>
                 <Button
                   type="submit"
-                  className="flex-1 bg-black text-white hover:bg-gray-800"
+                  className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
                   disabled={isPending}
                 >
                   {isPending ? "Cadastrando..." : "Cadastrar"}

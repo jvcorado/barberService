@@ -9,6 +9,7 @@ import { PWAInstallBanner } from "@/components/pwa-install-banner";
 import { usePWA } from "@/hooks/use-pwa";
 import Head from "next/head";
 import OfflineIndicator from "./components/offline-indicator";
+import { DateProvider } from "./contexts/date-context";
 
 interface BarberShop {
   id: string;
@@ -16,11 +17,7 @@ interface BarberShop {
   // outras propriedades se necessário
 }
 
-export default function BarberAppRootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function BarberAppContent({ children }: { children: React.ReactNode }) {
   const { data: session, status } = useSession();
   const router = useRouter();
   const pathname = usePathname();
@@ -88,14 +85,22 @@ export default function BarberAppRootLayout({
         <div className="flex-1 flex flex-col overflow-hidden mb-28">
           {children}
         </div>
-        <div className="fixed bottom-0 left-0 right-0 z-10">
-          <BottomNav />
-        </div>
+        <BottomNav />
         {/* PWA Install Banner */}
         {isInstallable && <PWAInstallBanner />}
-        {/* Offline Indicator */}
-        <OfflineIndicator />
       </BarberAppLayout>
     </>
+  );
+}
+
+export default function BarberAppRootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <DateProvider>
+      <BarberAppContent>{children}</BarberAppContent>
+    </DateProvider>
   );
 }
