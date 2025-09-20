@@ -16,6 +16,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
+import { signOutClient } from "@/src/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
 import { OfflineIndicator } from "@/components/offline-indicator";
@@ -173,10 +174,7 @@ export default function ClientLayout({
                     variant="outline"
                     className="w-full gap-3 rounded-xl py-3 text-white border-white/20 hover:bg-white/10 transition-all duration-200"
                     onClick={async () => {
-                      await signOut({ redirect: false });
-                      router.push(
-                        `/barber_app/client/login?id=${barbershop.id}`,
-                      );
+                      await signOutClient(barbershop.id);
                     }}
                   >
                     <LogOut className="h-4 w-4" />
