@@ -8,6 +8,7 @@ import { redirect } from "next/navigation";
 import ServiceItem from "@/components/service-item";
 import CreateServiceDrawer from "./components/create-service-drawer";
 import ServicesPageClient from "./components/services-page-client";
+import { Plus } from "lucide-react";
 
 export default async function ServicesPage() {
   const session = await getServerSession(authOptions);
@@ -127,38 +128,64 @@ export default async function ServicesPage() {
       )} */}
 
       {/* Lista de serviços cadastrados */}
-      <div className="">
+      <div className="space-y-6">
         {services.length === 0 ? (
-          <p className="text-center text-gray-500">
-            Nenhum serviço cadastrado ainda.
-          </p>
+          <div className="text-center py-12">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <Plus className="w-8 h-8 text-white/50" />
+            </div>
+            <p className="text-white/70 text-lg mb-2">
+              Nenhum serviço cadastrado
+            </p>
+            <p className="text-white/50 text-sm">
+              Crie seu primeiro serviço para começar
+            </p>
+          </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid gap-4">
             {serviceStats.map((service) => (
-              <div key={service.id} className="border rounded-lg pb-2">
+              <div
+                key={service.id}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors"
+              >
                 <ServiceItem
                   barbershop={JSON.parse(JSON.stringify(barbershop))}
                   service={JSON.parse(JSON.stringify(service))}
                   showStats={false}
+                  className="!bg-transparent !p-0"
                 />
-                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div className="text-center">
-                    <p className="text-gray-500">Total Agendamentos</p>
-                    <p className="font-semibold">{service.totalBookings}</p>
+                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                      Total Agendamentos
+                    </p>
+                    <p className="font-semibold text-white text-lg">
+                      {service.totalBookings}
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-gray-500">Receita Total</p>
-                    <p className="font-semibold">
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                      Receita Total
+                    </p>
+                    <p className="font-semibold text-white text-lg">
                       R$ {service.totalRevenue.toFixed(2).replace(".", ",")}
                     </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-gray-500">Agendamentos Futuros</p>
-                    <p className="font-semibold">{service.futureBookings}</p>
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                      Futuros
+                    </p>
+                    <p className="font-semibold text-white text-lg">
+                      {service.futureBookings}
+                    </p>
                   </div>
-                  <div className="text-center">
-                    <p className="text-gray-500">Agendamentos Passados</p>
-                    <p className="font-semibold">{service.pastBookings}</p>
+                  <div className="text-center p-3 bg-white/5 rounded-lg">
+                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                      Passados
+                    </p>
+                    <p className="font-semibold text-white text-lg">
+                      {service.pastBookings}
+                    </p>
                   </div>
                 </div>
               </div>

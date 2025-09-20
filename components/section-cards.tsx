@@ -21,11 +21,11 @@ export function SectionCards({ totalPast, totalFuture }: SectionCardsProps) {
     }).format(value);
 
   return (
-    <div className="xl:grid-cols-2 5xl:grid-cols-4 grid grid-cols-1 gap-4  *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card lg:px-6">
+    <div className="xl:grid-cols-2 5xl:grid-cols-4  grid grid-cols-1 gap-4  *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card">
       {/* Faturamento Realizado */}
-      <Card className="@container/card bg-white text-black">
+      <Card className="@container/card bg-transparent text-white border border-white/10">
         <CardHeader className="relative">
-          <CardDescription className="text-gray-700">
+          <CardDescription className="text-white">
             Faturamento Realizado
           </CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
@@ -45,16 +45,16 @@ export function SectionCards({ totalPast, totalFuture }: SectionCardsProps) {
           <div className="line-clamp-1 flex gap-2 font-medium">
             Lucro acumulado <TrendingUpIcon className="size-4 text-green-500" />
           </div>
-          <div className="text-muted-foreground">
+          <div className="text-white">
             Somatória dos agendamentos anteriores a hoje
           </div>
         </CardFooter>
       </Card>
 
       {/* Previsão de Faturamento */}
-      <Card className="@container/card bg-white text-black">
+      <Card className="@container/card bg-transparent text-white border border-white/10">
         <CardHeader className="relative">
-          <CardDescription className="text-gray-700">
+          <CardDescription className="text-white">
             Previsão de Faturamento
           </CardDescription>
           <CardTitle className="@[250px]/card:text-3xl text-2xl font-semibold tabular-nums">
@@ -75,7 +75,7 @@ export function SectionCards({ totalPast, totalFuture }: SectionCardsProps) {
             Agendamentos futuros{" "}
             <TrendingUpIcon className="size-4 text-blue-500" />
           </div>
-          <div className="text-muted-foreground">
+          <div className="text-white">
             Baseado nos serviços agendados após hoje
           </div>
         </CardFooter>
