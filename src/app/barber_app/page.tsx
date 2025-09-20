@@ -1,27 +1,16 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import BarberAppLayout from "./components/barber-app-layout";
+import { format, addDays, subDays } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { usePWA } from "@/hooks/use-pwa";
-import { PWAToast } from "@/components/pwa-toast";
 import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import ImprovedCalendar from "./components/improved-calendar";
-import {
-  Plus,
-  Filter,
-  MoreVertical,
-  Bell,
-  Calendar,
-  Users,
-  FileText,
-  Zap,
-  ShoppingBag,
-} from "lucide-react";
+import { useDate } from "./contexts/date-context";
 
 interface Barbershop {
   id: string;
@@ -45,12 +34,29 @@ interface Barber {
 export default function BarberAppPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const {} = usePWA();
+  const { isInstallable } = usePWA();
   const { colors } = useBarbershopColors();
   const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
   const [barbers, setBarbers] = useState<Barber[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedDate] = useState(new Date());
+  const { selectedDate, setSelectedDate } = useDate();
+
+  const handlePreviousDay = useCallback(() => {
+    const newDate = subDays(selectedDate, 1);
+    setSelectedDate(newDate);
+  }, [selectedDate, setSelectedDate]);
+
+  const handleNextDay = useCallback(() => {
+    const newDate = addDays(selectedDate, 1);
+    setSelectedDate(newDate);
+  }, [selectedDate, setSelectedDate]);
+
+  const goToToday = useCallback(() => {
+    setSelectedDate(new Date());
+  }, [setSelectedDate]);
+
+  const isToday =
+    format(selectedDate, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd");
 
   // Debug: verificar dados do calendário
   useEffect(() => {
@@ -104,30 +110,11 @@ export default function BarberAppPage() {
     }
   };
 
-  const formatSelectedDate = () => {
-    const today = new Date();
-    if (format(selectedDate, "yyyy-MM-dd") === format(today, "yyyy-MM-dd")) {
-      return "Hoje";
-    }
-    return format(selectedDate, "dd/MM", { locale: ptBR });
-  };
-
   // Loading state
   if (loading || status === "loading") {
     return (
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: colors.backgroundColor }}
-      >
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div
-              className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-4"
-              style={{ borderColor: colors.primaryColor }}
-            ></div>
-            <p style={{ color: colors.textColor }}>Carregando...</p>
-          </div>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
       </div>
     );
   }
@@ -135,32 +122,25 @@ export default function BarberAppPage() {
   // No session state
   if (status === "unauthenticated" || !barbershop) {
     return (
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: colors.backgroundColor }}
-      >
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <p className="mb-4" style={{ color: colors.textColor }}>
-              Você precisa estar logado para acessar o app
-            </p>
-            <Button onClick={() => router.push("/api/auth/signin")}>
-              Entrar
-            </Button>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Acesso Negado</h2>
+          <p className="text-gray-300 mb-6">
+            Você precisa estar logado para acessar o app
+          </p>
+          <Button
+            onClick={() => router.push("/api/auth/signin")}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+          >
+            Entrar
+          </Button>
         </div>
       </div>
     );
   }
 
   return (
-    <div
-      className="h-full flex flex-col overflow-hidden"
-      style={{
-        backgroundColor: colors.backgroundColor || "#f9fafb",
-        color: colors.textColor || "#111827",
-      }}
-    >
+    <div className="pb-28">
       {/* Improved Calendar Component */}
       <div className="flex-1 overflow-hidden">
         <ImprovedCalendar
@@ -168,12 +148,9 @@ export default function BarberAppPage() {
           barbers={barbers}
           onAddBooking={() => {
             console.log("Adicionar agendamento");
-            // Add your booking logic here
           }}
         />
       </div>
-
-      {/* Toast PWA */}
     </div>
   );
 }

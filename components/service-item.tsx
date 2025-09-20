@@ -27,11 +27,13 @@ import { toast } from "sonner";
 import { getBookings } from "@/src/actions/get-bookings";
 import { createBooking } from "@/src/actions/create-booking";
 import { useMediaQuery } from "@react-hook/media-query";
+import { cn } from "@/lib/utils";
 
 interface ServiceItemProps {
   service: BarbershopService;
   barbershop: Pick<BarberShop, "id" | "name">;
   showStats?: boolean;
+  className?: string;
 }
 
 const TIME_LIST = [
@@ -89,6 +91,7 @@ const ServiceItem = ({
   service,
   barbershop,
   showStats = true,
+  className,
 }: ServiceItemProps) => {
   const { data } = useSession();
   const [signInDialogIsOpen, setSignInDialogIsOpen] = useState(false);
@@ -183,7 +186,9 @@ const ServiceItem = ({
   return (
     <>
       <Card>
-        <CardContent className="flex items-center gap-3 p-3 bg-background">
+        <CardContent
+          className={cn("flex items-center gap-3 p-3 bg-background", className)}
+        >
           {/* IMAGE */}
           <div className="relative max-h-[110px] min-h-[110px] min-w-[110px] max-w-[110px]">
             <Image
