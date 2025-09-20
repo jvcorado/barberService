@@ -62,11 +62,10 @@ export default function BookPage() {
 
   const [barbershop, setBarbershop] = useState<BarberShop | null>(null);
   const [selectedService, setSelectedService] = useState<Service | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    addDaysFn(new Date(), 1),
-  );
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [selectedTime, setSelectedTime] = useState<string>("");
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [existingBookings, setExistingBookings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingBarbershop, setIsLoadingBarbershop] = useState(true);
   const [showFullCalendar, setShowFullCalendar] = useState(false);
@@ -135,11 +134,11 @@ export default function BookPage() {
     "17:50",
   ];
 
-  // Datas para a próxima semana
+  // Datas para a próxima semana (incluindo hoje)
   const getNextWeekDates = () => {
     const dates = [];
     const today = new Date();
-    for (let i = 1; i <= 7; i++) {
+    for (let i = 0; i <= 6; i++) {
       dates.push(addDaysFn(today, i));
     }
     return dates;
@@ -180,6 +179,7 @@ export default function BookPage() {
   useEffect(() => {
     if (selectedDate) {
       generateAvailableTimes();
+      fetchExistingBookings();
     }
   }, [selectedDate]);
 
@@ -199,29 +199,58 @@ export default function BookPage() {
     }
   };
 
+  const fetchExistingBookings = async () => {
+    if (!selectedDate || !barbershopId) return;
+
+    try {
+      const dateStr = format(selectedDate, "yyyy-MM-dd");
+      const response = await fetch(
+        `/api/bookings/calendar?barbershopId=${barbershopId}&date=${dateStr}`,
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setExistingBookings(data.bookings || []);
+      }
+    } catch (error) {
+      console.error("Erro ao buscar agendamentos:", error);
+      setExistingBookings([]);
+    }
+  };
+
   const generateAvailableTimes = () => {
     if (!selectedDate) return;
 
+    // Sempre mostrar todos os horários
+    setAvailableTimes([...timeSlots]);
+    setSelectedTime("");
+  };
+
+  // Função para verificar se um horário está disponível
+  const isTimeAvailable = (time: string) => {
     const today = new Date();
     const isToday = isSameDay(selectedDate, today);
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-    let times = [...timeSlots];
-
+    // Verificar se é hoje e se o horário é muito próximo
     if (isToday) {
-      times = times.filter((time) => {
-        const [hour, minute] = time.split(":").map(Number);
-        return (
-          hour > currentHour ||
-          (hour === currentHour && minute > currentMinute + 30)
-        );
-      });
+      const [hour, minute] = time.split(":").map(Number);
+      const isTooSoon = !(
+        hour > currentHour + 1 ||
+        (hour === currentHour + 1 && minute > currentMinute)
+      );
+      if (isTooSoon) return false;
     }
 
-    setAvailableTimes(times);
-    setSelectedTime("");
+    // Verificar se já existe agendamento neste horário
+    const isBooked = existingBookings.some((booking) => {
+      const bookingTime = format(new Date(booking.date), "HH:mm");
+      return bookingTime === time && booking.status !== "CANCELLED";
+    });
+
+    return !isBooked;
   };
 
   const handleDateSelect = (date: Date) => {
@@ -230,7 +259,9 @@ export default function BookPage() {
   };
 
   const handleTimeSelect = (time: string) => {
-    setSelectedTime(time);
+    if (isTimeAvailable(time)) {
+      setSelectedTime(time);
+    }
   };
 
   const handleConfirmBooking = async () => {
@@ -462,6 +493,22 @@ export default function BookPage() {
             >
               <span className="text-xs font-medium mb-2 text-gray-500">
                 {format(date, "EEE", { locale: ptBR })
+                  .replace(/^\w/, (c) => c.toUpperCase())
+                  .replace(
+                    /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+                    (match) => {
+                      const dayMap: { [key: string]: string } = {
+                        "segunda-feira": "Segunda",
+                        "terça-feira": "Terça",
+                        "quarta-feira": "Quarta",
+                        "quinta-feira": "Quinta",
+                        "sexta-feira": "Sexta",
+                        sábado: "Sábado",
+                        domingo: "Domingo",
+                      };
+                      return dayMap[match.toLowerCase()] || match;
+                    },
+                  )
                   .substring(0, 3)
                   .toUpperCase()}
               </span>
@@ -515,25 +562,47 @@ export default function BookPage() {
               <p className="text-gray-400">
                 {format(selectedDate, "EEEE, dd 'de' MMMM", { locale: ptBR })
                   .replace(/^\w/, (c) => c.toUpperCase())
-                  .replace(/\s+\w/, (c) => c.toUpperCase())}
+                  .replace(
+                    /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+                    (match) => {
+                      const dayMap: { [key: string]: string } = {
+                        "segunda-feira": "Segunda",
+                        "terça-feira": "Terça",
+                        "quarta-feira": "Quarta",
+                        "quinta-feira": "Quinta",
+                        "sexta-feira": "Sexta",
+                        sábado: "Sábado",
+                        domingo: "Domingo",
+                      };
+                      return dayMap[match.toLowerCase()] || match;
+                    },
+                  )}
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-4">
-              {availableTimes.map((time) => (
-                <Button
-                  key={time}
-                  variant={selectedTime === time ? "default" : "outline"}
-                  className={`h-16 rounded-2xl text-lg font-semibold transition-all duration-200 ${
-                    selectedTime === time
-                      ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg shadow-blue-500/25 scale-105"
-                      : "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:scale-105 hover:border-white/40"
-                  }`}
-                  onClick={() => handleTimeSelect(time)}
-                >
-                  {time}
-                </Button>
-              ))}
+              {availableTimes.map((time) => {
+                const isAvailable = isTimeAvailable(time);
+                const isSelected = selectedTime === time;
+
+                return (
+                  <Button
+                    key={time}
+                    variant={isSelected ? "default" : "outline"}
+                    disabled={!isAvailable}
+                    className={`h-16 rounded-2xl text-lg font-semibold transition-all duration-200 ${
+                      isSelected
+                        ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white border-0 shadow-lg shadow-blue-500/25 scale-105"
+                        : isAvailable
+                          ? "bg-white/5 text-white border-white/20 hover:bg-white/10 hover:scale-105 hover:border-white/40 cursor-pointer"
+                          : "bg-gray-800/50 text-gray-500 border-gray-600/30 cursor-not-allowed opacity-60"
+                    }`}
+                    onClick={() => handleTimeSelect(time)}
+                  >
+                    {time}
+                  </Button>
+                );
+              })}
             </div>
           </div>
         )}

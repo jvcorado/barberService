@@ -12,11 +12,11 @@ import {
   Home,
   Calendar,
   ClipboardList,
-  Link,
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession, signOut } from "next-auth/react";
+import { signOutClient } from "@/src/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
 import { OfflineIndicator } from "@/components/offline-indicator";
@@ -39,19 +39,11 @@ export default function ClientLayout({
   // Loading state
   if (status === "loading") {
     return (
-      <div
-        className="min-h-screen flex flex-col"
-        style={{ backgroundColor: barbershop.backgroundColor || "#f9fafb" }}
-      >
+      <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-black to-gray-900">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div
-              className="animate-spin rounded-2xl h-8 w-8 border-b-2 mx-auto mb-4"
-              style={{ borderColor: barbershop.primaryColor || "#000000" }}
-            ></div>
-            <p style={{ color: barbershop.textColor || "#111827" }}>
-              Carregando...
-            </p>
+            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto mb-4"></div>
+            <p className="text-white">Carregando...</p>
           </div>
         </div>
       </div>
@@ -65,10 +57,7 @@ export default function ClientLayout({
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col"
-      style={{ backgroundColor: barbershop.backgroundColor || "#f9fafb" }}
-    >
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-900 via-black to-gray-900">
       {/* PWA Components */}
       <OfflineIndicator />
       <PWAInstallBanner />
@@ -81,77 +70,34 @@ export default function ClientLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="h-14 w-14 touch-button backdrop-blur shadow-xl rounded-2xl transition-all duration-200 hover:scale-105"
-              style={{
-                backgroundColor: `${barbershop.secondaryColor || "#ffffff"}98`,
-                color: barbershop.primaryColor || "#000000",
-                border: `2px solid ${barbershop.primaryColor || "#000000"}30`,
-                boxShadow: `0 8px 32px ${barbershop.primaryColor || "#000000"}20`,
-              }}
+              className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200 backdrop-blur-md border border-white/20"
             >
-              <Menu className="h-7 w-7" />
+              <Menu className="h-6 w-6" />
             </Button>
           </SheetTrigger>
           <SheetContent
             side="right"
-            className="w-[300px] sm:w-[400px]"
-            style={{
-              backgroundColor: barbershop.secondaryColor || "#ffffff",
-              color: barbershop.textColor || "#111827",
-            }}
+            className="w-[300px] sm:w-[400px] bg-gradient-to-br from-gray-900 via-black to-gray-900 border-white/10"
           >
             <div className="flex flex-col h-full">
               <div className="space-y-6 flex-1">
                 {/* Header do Sidebar */}
-                <div
-                  className="flex items-center justify-between border-b pb-4"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                  }}
-                >
-                  <h2
-                    className="text-xl font-bold"
-                    style={{
-                      color: barbershop.primaryColor || "#000000",
-                    }}
-                  >
-                    Menu
-                  </h2>
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <h2 className="text-xl font-bold text-white">Menu</h2>
                 </div>
 
                 {/* Perfil do Usuário */}
-                <div
-                  className="flex items-center gap-3 border-b pb-4"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                  }}
-                >
-                  <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center"
-                    style={{
-                      backgroundColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.secondaryColor || "#ffffff",
-                    }}
-                  >
+                <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+                  <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600 text-white">
                     <span className="text-lg font-semibold">
                       {session?.user?.name?.charAt(0) || "U"}
                     </span>
                   </div>
                   <div>
-                    <p
-                      className="font-medium"
-                      style={{
-                        color: barbershop.primaryColor || "#000000",
-                      }}
-                    >
+                    <p className="font-medium text-white">
                       {session?.user?.name}
                     </p>
-                    <p
-                      className="text-sm"
-                      style={{
-                        color: barbershop.textColor || "#111827",
-                      }}
-                    >
+                    <p className="text-sm text-gray-300">
                       {session?.user?.email}
                     </p>
                   </div>
@@ -161,14 +107,10 @@ export default function ClientLayout({
                 <nav className="space-y-3">
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700"
                     onClick={() => {
                       router.push(`/barber_app/client?id=${barbershop.id}`);
                       setIsOpen(false);
-                    }}
-                    style={{
-                      backgroundColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.secondaryColor || "#ffffff",
                     }}
                   >
                     <Home className="h-4 w-4" />
@@ -177,27 +119,12 @@ export default function ClientLayout({
 
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
                       router.push(
-                        `/barber_app/client/book?barbershopId=${barbershop.id}`,
+                        `/barber_app/client/services?barbershopId=${barbershop.id}`,
                       );
                       setIsOpen(false);
-                    }}
-                    style={{
-                      color: barbershop.textColor || "#111827",
-                      backgroundColor: "transparent",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        barbershop.primaryColor || "#000000";
-                      e.currentTarget.style.color =
-                        barbershop.secondaryColor || "#ffffff";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color =
-                        barbershop.textColor || "#111827";
                     }}
                   >
                     <Calendar className="h-4 w-4" />
@@ -206,71 +133,24 @@ export default function ClientLayout({
 
                   <Button
                     variant="ghost"
-                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
+                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
-                      router.push(`/barber_app/client?id=${barbershop.id}`);
+                      router.push(
+                        `/barber_app/client/bookings?barbershopId=${barbershop.id}`,
+                      );
                       setIsOpen(false);
-                    }}
-                    style={{
-                      color: barbershop.textColor || "#111827",
-                      backgroundColor: "transparent",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        barbershop.primaryColor || "#000000";
-                      e.currentTarget.style.color =
-                        barbershop.secondaryColor || "#ffffff";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color =
-                        barbershop.textColor || "#111827";
                     }}
                   >
                     <ClipboardList className="h-4 w-4" />
                     Meus Agendamentos
                   </Button>
-
-                  {/* Botão Vincular Conta */}
-                  <Button
-                    variant="ghost"
-                    className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors"
-                    onClick={() => {
-                      // Abrir o dialog de vincular contas
-                      setIsOpen(false);
-                      // Aqui você pode adicionar lógica para abrir o dialog
-                    }}
-                    style={{
-                      color: barbershop.textColor || "#111827",
-                      backgroundColor: "transparent",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.currentTarget.style.backgroundColor =
-                        barbershop.primaryColor || "#000000";
-                      e.currentTarget.style.color =
-                        barbershop.secondaryColor || "#ffffff";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.currentTarget.style.backgroundColor = "transparent";
-                      e.currentTarget.style.color =
-                        barbershop.textColor || "#111827";
-                    }}
-                  >
-                    <Link className="h-4 w-4" />
-                    Vincular Conta
-                  </Button>
                 </nav>
 
                 {/* Ações Rápidas */}
-                <div
-                  className="space-y-3 pt-4 border-t"
-                  style={{
-                    borderColor: barbershop.primaryColor || "#000000",
-                  }}
-                >
+                <div className="space-y-3 pt-4 border-t border-white/10">
                   <Button
                     variant="outline"
-                    className="w-full gap-3 rounded-xl py-3"
+                    className="w-full gap-3 rounded-xl py-3 text-white border-white/20 hover:bg-white/10 transition-all duration-200"
                     onClick={() => {
                       if (barbershop.phones && barbershop.phones.length > 0) {
                         window.open(
@@ -282,11 +162,6 @@ export default function ClientLayout({
                     disabled={
                       !barbershop.phones || barbershop.phones.length === 0
                     }
-                    style={{
-                      borderColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.primaryColor || "#000000",
-                      backgroundColor: barbershop.secondaryColor || "#ffffff",
-                    }}
                   >
                     <MessageCircle className="h-4 w-4" />
                     {barbershop.phones && barbershop.phones.length > 0
@@ -297,12 +172,9 @@ export default function ClientLayout({
                   {/* Botão de Sair */}
                   <Button
                     variant="outline"
-                    className="w-full gap-3 rounded-xl py-3"
-                    onClick={() => signOut()}
-                    style={{
-                      borderColor: barbershop.primaryColor || "#000000",
-                      color: barbershop.primaryColor || "#000000",
-                      backgroundColor: barbershop.secondaryColor || "#ffffff",
+                    className="w-full gap-3 rounded-xl py-3 text-white border-white/20 hover:bg-white/10 transition-all duration-200"
+                    onClick={async () => {
+                      await signOutClient(barbershop.id);
                     }}
                   >
                     <LogOut className="h-4 w-4" />

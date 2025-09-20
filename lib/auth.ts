@@ -52,6 +52,9 @@ export const authOptions: AuthOptions = {
       },
     }),
   ],
+  pages: {
+    error: "/barber_app/client/login",
+  },
   callbacks: {
     async session({ session, user }) {
       const dbUser = await db.user.findUnique({

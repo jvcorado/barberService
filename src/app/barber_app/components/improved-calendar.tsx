@@ -114,7 +114,25 @@ export default function ImprovedCalendar({
       const day = addDays(selectedDate, i);
       days.push({
         date: day,
-        dayName: format(day, "EEE", { locale: ptBR }).toUpperCase(),
+        dayName: format(day, "EEE", { locale: ptBR })
+          .replace(/^\w/, (c) => c.toUpperCase())
+          .replace(
+            /(segunda|terça|quarta|quinta|sexta|sábado|domingo)-feira/g,
+            (match) => {
+              const dayMap: { [key: string]: string } = {
+                "segunda-feira": "Segunda",
+                "terça-feira": "Terça",
+                "quarta-feira": "Quarta",
+                "quinta-feira": "Quinta",
+                "sexta-feira": "Sexta",
+                sábado: "Sábado",
+                domingo: "Domingo",
+              };
+              return dayMap[match.toLowerCase()] || match;
+            },
+          )
+          .substring(0, 3)
+          .toUpperCase(),
         dayNumber: format(day, "d"),
         isToday: format(day, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd"),
         isSelected: i === 0,

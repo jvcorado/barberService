@@ -11,6 +11,7 @@ model User {
   id            String      @id @default(cuid())
   name          String?
   email         String      @unique
+  phone         String?
   emailVerified DateTime?
   image         String?
   admin         Boolean     @default(false)
@@ -126,8 +127,16 @@ model Booking {
   userId       String
   user         User              @relation(fields: [userId], references: [id])
   date         DateTime
+  status       BookingStatus     @default(PENDING)
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
   BarberShop   BarberShop?       @relation(fields: [barberShopId], references: [id])
   barberShopId String?
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
 }
