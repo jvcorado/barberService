@@ -162,7 +162,7 @@ export function ChartAreaInteractive({
   });
 
   return (
-    <Card className="@container/card bg-white border border-gray-200 shadow-sm">
+    <Card className="@container/card bg-transparent border border-white/10 shadow-sm">
       <CardHeader className="relative">
         {/* <CardDescription className="text-gray-600">    <CardTitle className="text-gray-900">Gráfico de Faturamento</CardTitle>
           <span className="@[540px]/card:block hidden">Últimos 3 meses</span>
@@ -207,10 +207,10 @@ export function ChartAreaInteractive({
           </Select>
         </div> */}
       </CardHeader>
-      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 bg-white text-black">
+      <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6 bg-transparent text-white">
         <ChartContainer
           config={chartConfig}
-          className="aspect-auto h-[250px] w-full bg-white text-black"
+          className="aspect-auto h-[250px] w-full bg-transparent text-white"
         >
           <AreaChart data={filteredData}>
             <defs>
@@ -273,10 +273,10 @@ export function ChartAreaInteractive({
             <Area
               dataKey="valor"
               type="monotone"
-              fill="rgba(34,197,94,0.1)" // verde claro
+              fill="hsl(var(--chart-1))" // verde claro
               stroke="rgb(34,197,94)" // verde do Tailwind (emerald-500)
               strokeWidth={2}
-              dot={{ r: 3, fill: "rgb(34,197,94)" }}
+              dot={{ r: 3, fill: "hsl(var(--chart-1))" }}
             />
           </AreaChart>
         </ChartContainer>

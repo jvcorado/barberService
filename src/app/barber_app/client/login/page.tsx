@@ -35,6 +35,7 @@ export default function ClientLoginPage() {
   // Estados para registro
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPhone, setRegisterPhone] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -111,6 +112,7 @@ export default function ClientLoginPage() {
         body: JSON.stringify({
           name: registerName,
           email: registerEmail,
+          phone: registerPhone,
           password: registerPassword,
         }),
       });
@@ -126,6 +128,7 @@ export default function ClientLoginPage() {
         setLoginEmail(registerEmail);
         setRegisterName("");
         setRegisterEmail("");
+        setRegisterPhone("");
         setRegisterPassword("");
         setConfirmPassword("");
       } else {
@@ -357,6 +360,23 @@ export default function ClientLoginPage() {
                       placeholder="seu@email.com"
                       value={registerEmail}
                       onChange={(e) => setRegisterEmail(e.target.value)}
+                      required
+                      className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
+                    />
+                  </div>
+                  <div className="space-y-3">
+                    <Label
+                      htmlFor="register-phone"
+                      className="text-white font-medium"
+                    >
+                      Telefone
+                    </Label>
+                    <Input
+                      id="register-phone"
+                      type="tel"
+                      placeholder="(11) 99999-9999"
+                      value={registerPhone}
+                      onChange={(e) => setRegisterPhone(e.target.value)}
                       required
                       className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />

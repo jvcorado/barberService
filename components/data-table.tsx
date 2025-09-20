@@ -257,13 +257,13 @@ export function DataTable({
             id={sortableId}
           >
             <Table>
-              <TableHeader className="sticky top-0 z-10 bg-white text-black">
+              <TableHeader className="sticky top-0 z-10 bg-transparent text-white">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead
-                          className="text-black "
+                          className="text-white "
                           key={header.id}
                           colSpan={header.colSpan}
                         >

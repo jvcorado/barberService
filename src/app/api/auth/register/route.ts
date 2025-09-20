@@ -6,13 +6,14 @@ import { z } from "zod";
 const registerSchema = z.object({
   name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   email: z.string().email("Email inválido"),
+  phone: z.string().min(10, "Telefone deve ter pelo menos 10 caracteres"),
   password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, password } = registerSchema.parse(body);
+    const { name, email, phone, password } = registerSchema.parse(body);
 
     // Verificar se o usuário já existe
     const existingUser = await db.user.findUnique({
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
       data: {
         name,
         email,
+        phone,
         password: hashedPassword,
         isEmailVerified: false, // Será verificado posteriormente
       },
