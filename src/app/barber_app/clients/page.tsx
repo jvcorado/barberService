@@ -4,11 +4,11 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import ClientsList, { Client } from "./clients-list";
 import BottomNav from "../components/bottom-nav";
+import BarberAppLayout from "../components/barber-app-layout";
 
 export default function ClientsPage() {
   const { data: session, status } = useSession();
@@ -72,41 +72,11 @@ export default function ClientsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 mt-10">
-      {/* Header Fixo */}
-      <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-b border-white/10">
-        <div className="px-6 pt-6 pb-4">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-2xl font-semibold text-white mb-1">
-                Olá{" "}
-                <span className="text-blue-400">
-                  {session?.user?.name?.split(" ")[0]}
-                </span>
-              </h1>
-              <p className="text-gray-300 text-sm">
-                {format(new Date(), "EEEE, dd 'de' MMM yyyy", { locale: ptBR })}
-              </p>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <main className="pt-28 pb-32">
+    <BarberAppLayout barbershop={null}>
+      <div className="pb-32">
         <ClientsList clients={clients} />
-      </main>
-
-      {/* Bottom Navigation */}
+      </div>
       <BottomNav />
-    </div>
+    </BarberAppLayout>
   );
 }
