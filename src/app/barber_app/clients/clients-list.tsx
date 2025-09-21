@@ -7,14 +7,28 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Search, MessageSquare } from "lucide-react";
+import { Search, MessageSquare, Calendar, Phone, Mail } from "lucide-react";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 export interface Client {
   id: string;
   name: string;
   avatarUrl?: string | null;
-  role: "sender" | "receiver";
+  email: string;
+  phone?: string | null;
+  role: "sender" | "receiver" | "client";
   code: string;
+  totalBookings?: number;
+  lastBooking?: {
+    id: string;
+    date: Date;
+    status: string;
+    service: {
+      name: string;
+      price: number;
+    };
+  } | null;
 }
 
 export default function ClientsList({ clients }: { clients: Client[] }) {
@@ -52,7 +66,7 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
           >
             <div className="flex flex-col space-y-4">
               {/* Client Info */}
-              <div className="flex items-center space-x-4">
+              <div className="flex items-start space-x-4">
                 <Avatar className="h-12 w-12">
                   {client.avatarUrl ? (
                     <AvatarImage src={client.avatarUrl} alt={client.name} />
@@ -67,20 +81,48 @@ export default function ClientsList({ clients }: { clients: Client[] }) {
                     </AvatarFallback>
                   )}
                 </Avatar>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-white text-lg">
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-semibold text-white text-lg truncate">
                     {client.name}
                   </h3>
-                  <Badge
-                    className={`mt-1 text-xs px-2 py-1 rounded-full ${
-                      client.role === "sender"
-                        ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                        : "bg-blue-500/20 text-blue-400 border border-blue-500/30"
-                    }`}
-                    variant="secondary"
-                  >
-                    {client.role === "sender" ? "Cliente" : "Cliente"}
-                  </Badge>
+
+                  {/* Contact Info */}
+                  <div className="space-y-1 mt-2">
+                    {client.email && (
+                      <div className="flex items-center space-x-2 text-gray-300 text-sm">
+                        <Mail className="w-3 h-3" />
+                        <span className="truncate">{client.email}</span>
+                      </div>
+                    )}
+                    {client.phone && (
+                      <div className="flex items-center space-x-2 text-gray-300 text-sm">
+                        <Phone className="w-3 h-3" />
+                        <span>{client.phone}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Booking Stats */}
+                  <div className="flex items-center space-x-4 mt-3">
+                    <Badge
+                      className="bg-blue-500/20 text-blue-400 border border-blue-500/30 text-xs px-2 py-1"
+                      variant="secondary"
+                    >
+                      {client.totalBookings || 0} agendamentos
+                    </Badge>
+
+                    {client.lastBooking && (
+                      <div className="flex items-center space-x-1 text-gray-300 text-xs">
+                        <Calendar className="w-3 h-3" />
+                        <span>
+                          Último:{" "}
+                          {format(new Date(client.lastBooking.date), "dd/MM", {
+                            locale: ptBR,
+                          })}
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
