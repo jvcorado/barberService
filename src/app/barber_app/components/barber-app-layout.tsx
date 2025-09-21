@@ -7,11 +7,11 @@ import { PWAClientInstallBanner } from "@/src/components/pwa-client-install-bann
 import { OfflineIndicator } from "@/components/offline-indicator";
 import { BackgroundSync } from "@/components/background-sync";
 import { useBarbershopColors } from "@/hooks/use-barbershop-colors";
-import { Menu } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDate } from "../contexts/date-context";
+import BarberMenu from "./barber-menu";
 
 interface BarberAppLayoutProps {
   children: React.ReactNode;
@@ -26,6 +26,26 @@ export default function BarberAppLayout({
   const router = useRouter();
   const { colors } = useBarbershopColors();
   const { selectedDate, setSelectedDate } = useDate();
+  const [barbershopData, setBarbershopData] = useState<any>(null);
+
+  // Buscar dados da barberia
+  useEffect(() => {
+    const fetchBarbershop = async () => {
+      try {
+        const response = await fetch("/api/barbershops/me");
+        if (response.ok) {
+          const data = await response.json();
+          setBarbershopData(data.barbershop);
+        }
+      } catch (error) {
+        console.error("Erro ao buscar dados da barberia:", error);
+      }
+    };
+
+    if (session?.user) {
+      fetchBarbershop();
+    }
+  }, [session]);
 
   // Loading state
   if (status === "loading") {
@@ -74,13 +94,10 @@ export default function BarberAppLayout({
               </p>
             </div>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-12 h-12 rounded-full bg-white/10 text-white hover:bg-white/20 transition-all duration-200"
-            >
-              <Menu className="h-6 w-6" />
-            </Button>
+            <BarberMenu
+              barbershopId={barbershopData?.id}
+              barbershopName={barbershopData?.name}
+            />
           </div>
         </div>
       </div>
