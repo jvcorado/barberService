@@ -18,6 +18,14 @@ export default function ServicesPageClient({
     router.refresh();
   };
 
+  const handleServiceUpdated = () => {
+    router.refresh();
+  };
+
+  const handleServiceDeleted = () => {
+    router.refresh();
+  };
+
   return (
     <div className="flex flex-col h-full overflow-hidden">
       {/* Fixed Header */}

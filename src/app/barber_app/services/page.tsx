@@ -7,7 +7,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import ServiceItem from "@/components/service-item";
 import CreateServiceDrawer from "./components/create-service-drawer";
+import EditServiceDrawer from "./components/edit-service-drawer";
 import ServicesPageClient from "./components/services-page-client";
+import SafeImage from "@/components/safe-image";
 import { Plus } from "lucide-react";
 
 export default async function ServicesPage() {
@@ -148,13 +150,57 @@ export default async function ServicesPage() {
                 key={service.id}
                 className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors"
               >
-                <ServiceItem
-                  barbershop={JSON.parse(JSON.stringify(barbershop))}
-                  service={JSON.parse(JSON.stringify(service))}
-                  showStats={false}
-                  className="!bg-transparent !p-0"
-                />
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                {/* Header do serviço */}
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-white">
+                    {service.name}
+                  </h3>
+
+                  {/* Botões de ação */}
+                  <div className="flex gap-2">
+                    <EditServiceDrawer
+                      service={{
+                        id: service.id,
+                        name: service.name,
+                        description: service.description,
+                        price: Number(service.price),
+                        imageUrl: service.imageUrl,
+                        duration: service.duration,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Conteúdo principal do serviço */}
+                <div className="flex items-start gap-6 mb-6">
+                  {/* Imagem do serviço */}
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <SafeImage
+                      src={service.imageUrl}
+                      alt={service.name}
+                      className="w-full h-full rounded-lg"
+                      placeholder={
+                        <div className="w-full h-full flex items-center justify-center text-white/50 bg-white/10">
+                          <Plus className="w-10 h-10" />
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  {/* Informações do serviço */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-300 mb-3 leading-relaxed">
+                      {service.description || "Sem descrição"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-bold text-yellow-400">
+                        R$ {service.price.toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div className="text-center p-3 bg-white/5 rounded-lg">
                     <p className="text-white/60 text-xs uppercase tracking-wide">
                       Total Agendamentos

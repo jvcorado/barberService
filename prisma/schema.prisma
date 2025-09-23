@@ -101,6 +101,12 @@ model BarberShop {
   backgroundColor String? @default("#f9fafb")
   textColor       String? @default("#111827")
 
+  // HORÁRIOS DE FUNCIONAMENTO
+  workingDays        Int[]   @default([1, 2, 3, 4, 5]) // 1=Segunda, 2=Terça, etc.
+  openingTime        String? @default("08:00")
+  closingTime        String? @default("18:00")
+  appointmentInterval Int?   @default(30) // Intervalo em minutos
+
   // RELAÇÃO COM USER (ADMIN)
   ownerId String? @unique
   owner   User?   @relation("UserBarbershop", fields: [ownerId], references: [id])
