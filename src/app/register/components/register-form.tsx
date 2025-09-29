@@ -60,19 +60,36 @@ export function RegisterForm({
   });
 
   const uploadImage = async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("image", file);
+    try {
+      const formData = new FormData();
+      formData.append("image", file);
 
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formData,
-    });
+      console.log("Fazendo upload da imagem:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      });
 
-    if (res.ok) {
-      const data = await res.json();
-      return data.url;
-    } else {
-      alert("Erro ao fazer upload da imagem");
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        console.log("Upload bem-sucedido:", data.url);
+        return data.url;
+      } else {
+        const errorData = await res.json();
+        console.error("Erro no upload:", errorData);
+        alert(
+          `Erro ao fazer upload da imagem: ${errorData.error || "Erro desconhecido"}`,
+        );
+        return null;
+      }
+    } catch (error) {
+      console.error("Erro na requisição de upload:", error);
+      alert("Erro de conexão ao fazer upload da imagem");
       return null;
     }
   };

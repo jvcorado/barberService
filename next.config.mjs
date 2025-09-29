@@ -3,6 +3,12 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ["@prisma/client"],
   },
+  // Configuração para upload de arquivos
+  api: {
+    bodyParser: {
+      sizeLimit: "10mb",
+    },
+  },
   images: {
     remotePatterns: [
       {
