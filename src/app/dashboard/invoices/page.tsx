@@ -1,6 +1,6 @@
 import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { DataTable } from "@/components/data-table";
-import { SectionCards } from "@/components/section-cards";
+import { FinancialMetrics } from "./components/financial-metrics";
+import { ExpensesSection } from "./components/expenses-section";
 
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
@@ -36,47 +36,33 @@ export default async function Page() {
     orderBy: {
       date: "desc",
     },
+    distinct: ["id"], // Evitar duplicações
   });
 
-  const formattedData = bookings.map((booking) => ({
-    id: booking.id,
-    cliente: booking.user?.name ?? "Usuário",
-    servico: booking.service.name,
-    data: new Date(booking.date).toLocaleDateString("pt-BR"),
-    hora: new Date(booking.date).toLocaleTimeString("pt-BR", {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
-    preco: `R$ ${Number(booking.service.price).toFixed(2).replace(".", ",")}`,
-  }));
-
-  const futureBookings = await db.booking.findMany({
+  // Buscar despesas da barbearia
+  const expenses = await db.expense.findMany({
     where: {
-      service: {
-        barberShopId: barbershop.id,
-      },
-      date: {
-        gte: now,
-      },
+      barberShopId: barbershop.id,
     },
-    include: {
-      service: true,
+    orderBy: {
+      date: "desc",
     },
   });
 
-  const pastBookings = await db.booking.findMany({
-    where: {
-      service: {
-        barberShopId: barbershop.id,
-      },
-      date: {
-        lt: now,
-      },
-    },
-    include: {
-      service: true,
-    },
-  });
+  // Filtrar bookings únicos
+  const uniqueBookings = bookings.filter(
+    (booking, index, self) =>
+      index === self.findIndex((b) => b.id === booking.id),
+  );
+
+  // Usar os dados já filtrados para evitar duplicações
+  const futureBookings = uniqueBookings.filter(
+    (booking) => new Date(booking.date) >= now,
+  );
+
+  const pastBookings = uniqueBookings.filter(
+    (booking) => new Date(booking.date) < now,
+  );
 
   const totalFuture = futureBookings.reduce(
     (acc, booking) => acc + Number(booking.service.price),
@@ -86,6 +72,23 @@ export default async function Page() {
     (acc, booking) => acc + Number(booking.service.price),
     0,
   );
+
+  // Calcular métricas financeiras
+  const totalExpenses = expenses.reduce(
+    (acc, expense) => acc + Number(expense.amount),
+    0,
+  );
+  const grossRevenue = totalPast; // Faturamento bruto (receitas realizadas)
+  const netRevenue = grossRevenue - totalExpenses; // Faturamento líquido
+
+  // Transformar expenses para o formato esperado pelos componentes
+  const formattedExpenses = expenses.map((expense) => ({
+    id: expense.id,
+    description: expense.description,
+    amount: Number(expense.amount),
+    category: expense.category,
+    date: expense.date.toISOString().split("T")[0],
+  }));
 
   const dailyRevenue = bookings.reduce(
     (acc, booking) => {
@@ -106,17 +109,29 @@ export default async function Page() {
   return (
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6  md:py-6">
-          {/* Reaproveitamos os cards de resumo */}
-          <SectionCards totalPast={totalPast} totalFuture={totalFuture} />
+        <div className="flex flex-col gap-6 py-4 md:gap-8 md:py-6">
+          {/* Métricas Financeiras */}
+          <div className="px-4 lg:px-6">
+            <FinancialMetrics
+              totalRevenue={totalPast + totalFuture}
+              totalExpenses={totalExpenses}
+              grossRevenue={grossRevenue}
+              netRevenue={netRevenue}
+            />
+          </div>
 
           {/* Gráfico de faturamento diário */}
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive data={chartData} />
           </div>
 
-          {/* Tabela detalhada de faturas */}
-          <DataTable data={formattedData} />
+          {/* Seção de Despesas */}
+          <div className="px-4 lg:px-6">
+            <ExpensesSection
+              barberShopId={barbershop.id}
+              initialExpenses={formattedExpenses}
+            />
+          </div>
         </div>
       </div>
     </div>

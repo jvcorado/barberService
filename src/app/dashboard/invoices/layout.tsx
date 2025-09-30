@@ -23,6 +23,7 @@ export default async function Layout({
         <SiteHeader />
         {children}
       </SidebarInset>
+      image.png
     </SidebarProvider>
   );
 }

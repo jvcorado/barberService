@@ -48,6 +48,9 @@ interface BarberShop {
   imageUrl: string;
   primaryColor?: string | null;
   secondaryColor?: string | null;
+  openingTime: string;
+  closingTime: string;
+  appointmentInterval: number;
   backgroundColor?: string | null;
   textColor?: string | null;
   services: Service[];
@@ -70,69 +73,38 @@ export default function BookPage() {
   const [isLoadingBarbershop, setIsLoadingBarbershop] = useState(true);
   const [showFullCalendar, setShowFullCalendar] = useState(false);
 
-  // Horários disponíveis (8h às 18h)
-  const timeSlots = [
-    "08:00",
-    "08:10",
-    "08:20",
-    "08:30",
-    "08:40",
-    "08:50",
-    "09:00",
-    "09:10",
-    "09:20",
-    "09:30",
-    "09:40",
-    "09:50",
-    "10:00",
-    "10:10",
-    "10:20",
-    "10:30",
-    "10:40",
-    "10:50",
-    "11:00",
-    "11:10",
-    "11:20",
-    "11:30",
-    "11:40",
-    "11:50",
-    "12:00",
-    "12:10",
-    "12:20",
-    "12:30",
-    "12:40",
-    "12:50",
-    "13:00",
-    "13:10",
-    "13:20",
-    "13:30",
-    "13:40",
-    "13:50",
-    "14:00",
-    "14:10",
-    "14:20",
-    "14:30",
-    "14:40",
-    "14:50",
-    "15:00",
-    "15:10",
-    "15:20",
-    "15:30",
-    "15:40",
-    "15:50",
-    "16:00",
-    "16:10",
-    "16:20",
-    "16:30",
-    "16:40",
-    "16:50",
-    "17:00",
-    "17:10",
-    "17:20",
-    "17:30",
-    "17:40",
-    "17:50",
-  ];
+  // Gerar horários disponíveis baseados nas configurações da barbearia
+  const generateTimeSlots = () => {
+    if (!barbershop) return [];
+
+    const slots = [];
+    const [openingHour, openingMinute] = barbershop.openingTime
+      .split(":")
+      .map(Number);
+    const [closingHour, closingMinute] = barbershop.closingTime
+      .split(":")
+      .map(Number);
+    const interval = barbershop.appointmentInterval || 10; // Default 10 minutos
+
+    const openingMinutes = openingHour * 60 + openingMinute;
+    const closingMinutes = closingHour * 60 + closingMinute;
+
+    for (
+      let minutes = openingMinutes;
+      minutes < closingMinutes;
+      minutes += interval
+    ) {
+      const hour = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+      slots.push(
+        `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
+      );
+    }
+
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
 
   // Datas para a próxima semana (incluindo hoje)
   const getNextWeekDates = () => {
