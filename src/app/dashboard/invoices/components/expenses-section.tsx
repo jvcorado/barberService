@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AddExpenseDialog } from "./add-expense-dialog";
 import { ExpensesTable } from "./expenses-table";
 import { ExpensesChart } from "./expenses-chart";
@@ -13,32 +13,41 @@ interface Expense {
   date: string;
 }
 
+type ExpenseResponse = Omit<Expense, "amount"> & { amount: number | string };
+
 interface ExpensesSectionProps {
   barberShopId: string;
   initialExpenses: Expense[];
+  onExpensesUpdated?: (expenses: Expense[]) => void;
 }
 
 export function ExpensesSection({
   barberShopId,
   initialExpenses,
+  onExpensesUpdated,
 }: ExpensesSectionProps) {
   const [expenses, setExpenses] = useState<Expense[]>(initialExpenses);
-  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setExpenses(initialExpenses);
+  }, [initialExpenses]);
 
   const fetchExpenses = async () => {
-    setIsLoading(true);
     try {
       const response = await fetch(
         `/api/expenses?barberShopId=${barberShopId}`,
       );
       if (response.ok) {
-        const data = await response.json();
-        setExpenses(data);
+        const data: ExpenseResponse[] = await response.json();
+        const normalizedExpenses: Expense[] = data.map((expense) => ({
+          ...expense,
+          amount: Number(expense.amount),
+        }));
+        setExpenses(normalizedExpenses);
+        onExpensesUpdated?.(normalizedExpenses);
       }
     } catch (error) {
       console.error("Erro ao buscar despesas:", error);
-    } finally {
-      setIsLoading(false);
     }
   };
 

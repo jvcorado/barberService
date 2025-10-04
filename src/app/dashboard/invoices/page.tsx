@@ -1,6 +1,4 @@
-import { ChartAreaInteractive } from "@/components/chart-area-interactive";
-import { FinancialMetrics } from "./components/financial-metrics";
-import { ExpensesSection } from "./components/expenses-section";
+import { InvoicesDashboard } from "./components/invoices-dashboard";
 
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/prisma";
@@ -40,14 +38,22 @@ export default async function Page() {
   });
 
   // Buscar despesas da barbearia
-  const expenses = await db.expense.findMany({
-    where: {
-      barberShopId: barbershop.id,
-    },
-    orderBy: {
-      date: "desc",
-    },
-  });
+  const expenses = db.expense
+    ? await db.expense.findMany({
+        where: {
+          barberShopId: barbershop.id,
+        },
+        orderBy: {
+          date: "desc",
+        },
+      })
+    : [];
+
+  if (!db.expense) {
+    console.warn(
+      "Delegate `expense` não está disponível no Prisma Client. Rode `npx prisma generate` para sincronizar o schema ou verifique se o modelo Expense existe.",
+    );
+  }
 
   // Filtrar bookings únicos
   const uniqueBookings = bookings.filter(
@@ -74,12 +80,7 @@ export default async function Page() {
   );
 
   // Calcular métricas financeiras
-  const totalExpenses = expenses.reduce(
-    (acc, expense) => acc + Number(expense.amount),
-    0,
-  );
   const grossRevenue = totalPast; // Faturamento bruto (receitas realizadas)
-  const netRevenue = grossRevenue - totalExpenses; // Faturamento líquido
 
   // Transformar expenses para o formato esperado pelos componentes
   const formattedExpenses = expenses.map((expense) => ({
@@ -107,33 +108,12 @@ export default async function Page() {
   }));
 
   return (
-    <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-6 py-4 md:gap-8 md:py-6">
-          {/* Métricas Financeiras */}
-          <div className="px-4 lg:px-6">
-            <FinancialMetrics
-              totalRevenue={totalPast + totalFuture}
-              totalExpenses={totalExpenses}
-              grossRevenue={grossRevenue}
-              netRevenue={netRevenue}
-            />
-          </div>
-
-          {/* Gráfico de faturamento diário */}
-          <div className="px-4 lg:px-6">
-            <ChartAreaInteractive data={chartData} />
-          </div>
-
-          {/* Seção de Despesas */}
-          <div className="px-4 lg:px-6">
-            <ExpensesSection
-              barberShopId={barbershop.id}
-              initialExpenses={formattedExpenses}
-            />
-          </div>
-        </div>
-      </div>
-    </div>
+    <InvoicesDashboard
+      barberShopId={barbershop.id}
+      initialExpenses={formattedExpenses}
+      chartData={chartData}
+      totalRevenue={totalPast + totalFuture}
+      grossRevenue={grossRevenue}
+    />
   );
 }
