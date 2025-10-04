@@ -32,15 +32,25 @@ interface Booking {
   };
 }
 
+interface Barbershop {
+  id: string;
+  name: string;
+  openingTime: string;
+  closingTime: string;
+  appointmentInterval: number;
+}
+
 interface ImprovedCalendarProps {
   barbershopId: string;
   barbers: Barber[];
+  barbershop: Barbershop;
   onAddBooking?: () => void;
 }
 
 export default function ImprovedCalendar({
   barbershopId,
   barbers,
+  barbershop,
   onAddBooking,
 }: ImprovedCalendarProps) {
   const { colors } = useBarbershopColors();
@@ -61,12 +71,40 @@ export default function ImprovedCalendar({
     selectedDate,
   });
 
-  // Generate time slots from 8:00 to 20:00 with 30min intervals
-  const timeSlots = Array.from({ length: 25 }, (_, i) => {
-    const hour = Math.floor(i / 2) + 8;
-    const minute = i % 2 === 0 ? 0 : 30;
-    return `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-  });
+  // Generate time slots based on barbershop working hours
+  const generateTimeSlots = () => {
+    const slots = [];
+    const [openingHour, openingMinute] = barbershop.openingTime
+      .split(":")
+      .map(Number);
+    const [closingHour, closingMinute] = barbershop.closingTime
+      .split(":")
+      .map(Number);
+    const interval = barbershop.appointmentInterval || 30;
+
+    const openingMinutes = openingHour * 60 + openingMinute;
+    const closingMinutes = closingHour * 60 + closingMinute;
+
+    // Gerar slots até o horário de fechamento (inclusive)
+    for (
+      let minutes = openingMinutes;
+      minutes <= closingMinutes;
+      minutes += interval
+    ) {
+      const hour = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+      const timeString = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
+
+      // Adicionar o slot apenas se não exceder o horário de fechamento
+      if (minutes <= closingMinutes) {
+        slots.push(timeString);
+      }
+    }
+
+    return slots;
+  };
+
+  const timeSlots = generateTimeSlots();
 
   const handlePreviousWeek = useCallback(() => {
     const newDate = goToPreviousWeek();

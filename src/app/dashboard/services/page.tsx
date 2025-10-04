@@ -2,7 +2,7 @@ import { db } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
-import ServiceItem from "@/components/service-item";
+import DashboardServiceItem from "@/components/dashboard-service-item";
 import { PlusCircleIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -46,7 +46,7 @@ const ServicesPage = async () => {
         ) : (
           <ul className="space-y-4">
             {services.map((service) => (
-              <ServiceItem
+              <DashboardServiceItem
                 key={service.id}
                 barbershop={JSON.parse(JSON.stringify(barbershop))}
                 service={JSON.parse(JSON.stringify(service))}

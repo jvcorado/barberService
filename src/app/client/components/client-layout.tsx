@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Menu,
@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { signOutClient } from "@/src/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { PWAInstallBanner } from "@/components/pwa-install-banner";
@@ -36,6 +36,12 @@ export default function ClientLayout({
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
 
+  useEffect(() => {
+    if (status === "unauthenticated" && barbershop?.id) {
+      router.push(`/client/login?id=${barbershop.id}`);
+    }
+  }, [status, router, barbershop?.id]);
+
   // Loading state
   if (status === "loading") {
     return (
@@ -50,10 +56,18 @@ export default function ClientLayout({
     );
   }
 
-  // No session state
+  // No session state - mostrar loading enquanto redireciona
   if (status === "unauthenticated") {
-    router.push(`/barber_app/client/login?id=${barbershop.id}`);
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 to-black">
+        <div className="text-center text-white">
+          <h2 className="text-2xl font-bold mb-4">Redirecionando...</h2>
+          <p className="text-gray-300 mb-6">
+            Você será redirecionado para o login
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -109,7 +123,7 @@ export default function ClientLayout({
                     variant="ghost"
                     className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700"
                     onClick={() => {
-                      router.push(`/barber_app/client?id=${barbershop.id}`);
+                      router.push(`/client?id=${barbershop.id}`);
                       setIsOpen(false);
                     }}
                   >
@@ -122,7 +136,7 @@ export default function ClientLayout({
                     className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
                       router.push(
-                        `/barber_app/client/services?barbershopId=${barbershop.id}`,
+                        `/clientservices?barbershopId=${barbershop.id}`,
                       );
                       setIsOpen(false);
                     }}
@@ -136,7 +150,7 @@ export default function ClientLayout({
                     className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
                       router.push(
-                        `/barber_app/client/bookings?barbershopId=${barbershop.id}`,
+                        `/clientbookings?barbershopId=${barbershop.id}`,
                       );
                       setIsOpen(false);
                     }}

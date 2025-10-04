@@ -47,7 +47,7 @@ export default function ClientLoginPage() {
 
   useEffect(() => {
     if (status === "authenticated" && session?.user && barbershopId) {
-      router.push(`/barber_app/client?id=${barbershopId}`);
+      router.push(`/client?id=${barbershopId}`);
     }
   }, [session, status, barbershopId, router]);
 
@@ -55,7 +55,7 @@ export default function ClientLoginPage() {
     setLoading(true);
     try {
       await signIn("google", {
-        callbackUrl: `/barber_app/client?id=${barbershopId}`,
+        callbackUrl: `/client?id=${barbershopId}`,
       });
     } catch (error) {
       console.error("Erro no login:", error);
@@ -82,7 +82,7 @@ export default function ClientLoginPage() {
       } else if (result?.ok) {
         setMessage({ type: "success", text: "Login realizado com sucesso!" });
         setTimeout(() => {
-          router.push(`/barber_app/client?id=${barbershopId}`);
+          router.push(`/client?id=${barbershopId}`);
         }, 1000);
       }
     } catch (error) {

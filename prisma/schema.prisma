@@ -90,6 +90,7 @@ model BarberShop {
   updatedAt   DateTime            @updatedAt
   services    BarbershopService[]
   Booking     Booking[]
+  expenses    Expense[]
   instagram   String?
   facebook    String?
   tiktok      String?
@@ -138,6 +139,18 @@ model Booking {
   updatedAt    DateTime          @updatedAt
   BarberShop   BarberShop?       @relation(fields: [barberShopId], references: [id])
   barberShopId String?
+}
+
+model Expense {
+  id           String     @id @default(cuid())
+  description  String
+  amount       Decimal    @db.Decimal(10, 2)
+  category     String
+  date         DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  barberShopId String
+  barberShop   BarberShop @relation(fields: [barberShopId], references: [id], onDelete: Cascade)
 }
 
 enum BookingStatus {
