@@ -123,7 +123,7 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
           name: values.name,
           description: values.description,
           price: values.price,
-          imageUrl: imageUrl,
+          imageUrl: imageUrl || undefined,
           duration: values.duration,
         })
           .then(() => {

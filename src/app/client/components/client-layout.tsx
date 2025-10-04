@@ -136,7 +136,7 @@ export default function ClientLayout({
                     className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
                       router.push(
-                        `/barber_app/client/services?barbershopId=${barbershop.id}`,
+                        `/clientservices?barbershopId=${barbershop.id}`,
                       );
                       setIsOpen(false);
                     }}
@@ -150,7 +150,7 @@ export default function ClientLayout({
                     className="w-full justify-start gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 text-white hover:bg-white/10"
                     onClick={() => {
                       router.push(
-                        `/barber_app/client/bookings?barbershopId=${barbershop.id}`,
+                        `/clientbookings?barbershopId=${barbershop.id}`,
                       );
                       setIsOpen(false);
                     }}

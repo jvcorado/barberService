@@ -15,7 +15,7 @@ interface Expense {
   description: string;
   amount: number;
   category: string;
-  date: Date;
+  date: string;
 }
 
 interface ExpensesChartProps {

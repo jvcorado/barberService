@@ -119,9 +119,7 @@ export default function BookingDetailsPage() {
             setBooking(foundBooking);
           } else {
             toast.error("Agendamento não encontrado");
-            router.push(
-              `/barber_app/client/bookings?barbershopId=${barbershopId}`,
-            );
+            router.push(`/clientbookings?barbershopId=${barbershopId}`);
           }
         }
       } else {

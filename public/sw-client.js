@@ -5,7 +5,7 @@ const DYNAMIC_CACHE = "barber-app-client-dynamic-v1";
 // URLs para cache estático
 const STATIC_URLS = [
   "/barber_app/client",
-  "/barber_app/client/book",
+  "/client/book",
   "/logo.png",
   "/manifest-client.json",
 ];

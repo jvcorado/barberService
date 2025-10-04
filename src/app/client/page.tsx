@@ -288,12 +288,12 @@ export default function ClientPage() {
                       if (activeBookings.length === 0 && lastBooking) {
                         // Se é o último agendamento, navegar para reagendamento
                         router.push(
-                          `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${booking.service.id}&rebook=true`,
+                          `/client/book?barbershopId=${barbershop.id}&serviceId=${booking.service.id}&rebook=true`,
                         );
                       } else {
                         // Se é agendamento ativo, navegar para detalhes
                         router.push(
-                          `/barber_app/client/booking-details?bookingId=${booking.id}&barbershopId=${barbershop.id}`,
+                          `/clientbooking-details?bookingId=${booking.id}&barbershopId=${barbershop.id}`,
                         );
                       }
                     }}
@@ -312,7 +312,7 @@ export default function ClientPage() {
                   className="px-4 py-2 rounded-xl text-white border-white/20 hover:bg-white/10"
                   onClick={() => {
                     router.push(
-                      `/barber_app/client/bookings?barbershopId=${barbershop.id}`,
+                      `/clientbookings?barbershopId=${barbershop.id}`,
                     );
                   }}
                 >
@@ -408,7 +408,7 @@ export default function ClientPage() {
                   className="w-full h-10 rounded-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
                   onClick={() => {
                     router.push(
-                      `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
+                      `/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
                     );
                   }}
                 >
@@ -425,9 +425,7 @@ export default function ClientPage() {
                 variant="outline"
                 className="px-6 py-2 rounded-xl text-white border-white/20 hover:bg-white/10"
                 onClick={() => {
-                  router.push(
-                    `/barber_app/client/services?barbershopId=${barbershop.id}`,
-                  );
+                  router.push(`/clientservices?barbershopId=${barbershop.id}`);
                 }}
               >
                 Ver outros serviços ({barbershop.services.length - 3})

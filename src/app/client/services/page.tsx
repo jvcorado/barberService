@@ -271,7 +271,7 @@ export default function ServicesPage() {
                       className="px-6 py-2 text-base font-semibold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105 border border-white/20"
                       onClick={() => {
                         router.push(
-                          `/barber_app/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
+                          `/client/book?barbershopId=${barbershop.id}&serviceId=${service.id}`,
                         );
                       }}
                     >

@@ -50,7 +50,7 @@ module.exports = {
         name: "Agendar Serviço",
         short_name: "Agendar",
         description: "Agendar um novo serviço",
-        url: "/barber_app/client/book",
+        url: "/client/book",
         icons: [
           {
             src: "/logo.png",
