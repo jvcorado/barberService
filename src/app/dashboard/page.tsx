@@ -109,12 +109,17 @@ export default async function Page() {
     <div className="flex flex-1 flex-col">
       <div className="@container/main flex flex-1 flex-col gap-2">
         <div className="flex flex-col gap-4 py-4 md:gap-6  md:py-6">
-          <SectionCards totalPast={totalPast} totalFuture={totalFuture} />
+          <div className="px-4 lg:px-6">
+            <SectionCards totalPast={totalPast} totalFuture={totalFuture} />
+          </div>
 
           <div className="px-4 lg:px-6">
             <ChartAreaInteractive data={chartData} />
           </div>
-          <DataTable data={formattedData} />
+
+          <div className="px-4 lg:px-6">
+            <DataTable data={formattedData} />
+          </div>
         </div>
       </div>
     </div>

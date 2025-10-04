@@ -53,7 +53,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   pages: {
-    error: "/barber_app/client/login",
+    error: "/clientlogin",
   },
   callbacks: {
     async session({ session, user }) {

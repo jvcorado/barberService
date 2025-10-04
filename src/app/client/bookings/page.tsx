@@ -81,7 +81,7 @@ export default function BookingsPage() {
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
-      router.push(`/barber_app/client/login?id=${barbershopId}`);
+      router.push(`/client/login?id=${barbershopId}`);
       return;
     }
 
@@ -239,9 +239,7 @@ export default function BookingsPage() {
             Você precisa estar logado para acessar o app
           </p>
           <Button
-            onClick={() =>
-              router.push(`/barber_app/client/login?id=${barbershopId}`)
-            }
+            onClick={() => router.push(`/client/login?id=${barbershopId}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
           >
             Entrar
@@ -382,7 +380,7 @@ export default function BookingsPage() {
                   variant="outline"
                   onClick={() =>
                     router.push(
-                      `/barber_app/client/booking-details?bookingId=${booking.id}&barbershopId=${barbershopId}`,
+                      `/clientbooking-details?bookingId=${booking.id}&barbershopId=${barbershopId}`,
                     )
                   }
                   className="h-8 px-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10 text-xs font-medium rounded-lg flex-1"
@@ -518,9 +516,7 @@ export default function BookingsPage() {
               </p>
               <Button
                 onClick={() =>
-                  router.push(
-                    `/barber_app/client/services?barbershopId=${barbershop.id}`,
-                  )
+                  router.push(`/clientservices?barbershopId=${barbershop.id}`)
                 }
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl"
               >

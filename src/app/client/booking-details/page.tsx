@@ -82,7 +82,7 @@ export default function BookingDetailsPage() {
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
-      router.push(`/barber_app/client/login?id=${barbershopId}`);
+      router.push(`/client/login?id=${barbershopId}`);
       return;
     }
 
@@ -119,9 +119,7 @@ export default function BookingDetailsPage() {
             setBooking(foundBooking);
           } else {
             toast.error("Agendamento não encontrado");
-            router.push(
-              `/barber_app/client/bookings?barbershopId=${barbershopId}`,
-            );
+            router.push(`/clientbookings?barbershopId=${barbershopId}`);
           }
         }
       } else {
@@ -230,9 +228,7 @@ export default function BookingDetailsPage() {
             Você precisa estar logado para acessar o app
           </p>
           <Button
-            onClick={() =>
-              router.push(`/barber_app/client/login?id=${barbershopId}`)
-            }
+            onClick={() => router.push(`/client/login?id=${barbershopId}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
           >
             Entrar

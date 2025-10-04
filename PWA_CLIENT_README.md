@@ -44,7 +44,7 @@ O app do cliente do BarberApp é um **Progressive Web App (PWA)** que permite ao
 ## Estrutura de Arquivos
 
 ```
-src/app/barber_app/client/
+src/app/client
 ├── layout.tsx              # Layout PWA com meta tags
 ├── page.tsx                # Página principal do cliente
 └── book/
@@ -77,7 +77,7 @@ src/hooks/
   "shortcuts": [
     {
       "name": "Agendar Serviço",
-      "url": "/barber_app/client/book"
+      "url": "/client/book"
     }
   ]
 }
@@ -94,7 +94,7 @@ src/hooks/
 
 ### 1. **Acesso Inicial**
 
-- Acesse `/barber_app/client?id={barbershopId}`
+- Acesse `/client?id={barbershopId}`
 - Faça login com sua conta
 - O banner de instalação aparecerá automaticamente
 

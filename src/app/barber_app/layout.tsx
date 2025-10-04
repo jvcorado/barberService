@@ -29,6 +29,12 @@ function BarberAppContent({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (status === "loading") return;
+
+    // Se estiver na área do cliente, não redirecionar automaticamente
+    if (isClientArea) {
+      return;
+    }
+
     if (status === "unauthenticated") {
       router.push("/");
       return;
@@ -36,7 +42,7 @@ function BarberAppContent({ children }: { children: React.ReactNode }) {
     if (session?.user) {
       fetchBarbershopData();
     }
-  }, [status, session]);
+  }, [status, session, isClientArea]);
 
   // Registra service worker para PWA
   useEffect(() => {

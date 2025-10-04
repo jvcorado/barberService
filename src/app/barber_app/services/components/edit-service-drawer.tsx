@@ -23,26 +23,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Edit, Trash2 } from "lucide-react";
-import { deleteService } from "@/src/actions/delete-service";
+import { Edit } from "lucide-react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 const formSchema = z.object({
   name: z.string().min(3, "Nome obrigatório"),
   description: z.string().optional(),
   price: z.coerce.number().min(1, "Preço deve ser maior que 0"),
-  imageUrl: z.string().url("URL inválida").optional(),
+  imageUrl: z.string().optional().or(z.literal("")),
   duration: z.coerce.number().min(1, "Duração deve ser positiva").optional(),
 });
 
@@ -61,7 +49,6 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -104,49 +91,58 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    let imageUrl = values.imageUrl;
+    try {
+      console.log("Iniciando atualização do serviço...", values);
 
-    // Se uma nova imagem foi selecionada, fazer upload
-    if (imageFile) {
-      const uploadedUrl = await uploadImage(imageFile);
-      if (!uploadedUrl) return;
-      imageUrl = uploadedUrl;
-    }
+      let imageUrl = values.imageUrl || service.imageUrl;
 
-    startTransition(() => {
-      updateService({
+      // Se uma nova imagem foi selecionada, fazer upload
+      if (imageFile) {
+        console.log("Fazendo upload da nova imagem...");
+        const uploadedUrl = await uploadImage(imageFile);
+        if (!uploadedUrl) {
+          toast.error("Erro ao fazer upload da imagem");
+          return;
+        }
+        imageUrl = uploadedUrl;
+        console.log("Upload concluído:", imageUrl);
+      }
+
+      console.log("Dados para atualização:", {
         serviceId: service.id,
         name: values.name,
         description: values.description,
         price: values.price,
         imageUrl: imageUrl,
         duration: values.duration,
-      })
-        .then(() => {
-          setOpen(false);
-          setImageFile(null);
-          toast.success("Serviço atualizado com sucesso!");
-        })
-        .catch((error) => {
-          console.error("Erro ao atualizar serviço", error);
-          toast.error("Erro ao atualizar serviço");
-        });
-    });
-  };
+      });
 
-  const handleDelete = async () => {
-    startTransition(() => {
-      deleteService(service.id)
-        .then(() => {
-          setShowDeleteDialog(false);
-          setOpen(false);
-          toast.success("Serviço deletado com sucesso!");
+      startTransition(() => {
+        updateService({
+          serviceId: service.id,
+          name: values.name,
+          description: values.description,
+          price: values.price,
+          imageUrl: imageUrl || undefined,
+          duration: values.duration,
         })
-        .catch((error) => {
-          console.error("Erro ao deletar serviço", error);
-          toast.error("Erro ao deletar serviço");
-        });
-    });
+          .then(() => {
+            console.log("Serviço atualizado com sucesso!");
+            setOpen(false);
+            setImageFile(null);
+            toast.success("Serviço atualizado com sucesso!");
+          })
+          .catch((error) => {
+            console.error("Erro ao atualizar serviço:", error);
+            toast.error(
+              `Erro ao atualizar serviço: ${error.message || "Erro desconhecido"}`,
+            );
+          });
+      });
+    } catch (error) {
+      console.error("Erro na função onSubmit:", error);
+      toast.error("Erro ao processar formulário");
+    }
   };
 
   return (
@@ -161,13 +157,13 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
             <Edit className="w-4 h-4" />
           </Button>
         </DrawerTrigger>
-        <DrawerContent className="bg-slate-900 text-white border-slate-700">
-          <DrawerHeader>
-            <DrawerTitle className="text-xl font-bold text-white">
+        <DrawerContent className="bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white border-white/10">
+          <DrawerHeader className="border-b border-white/10">
+            <DrawerTitle className="text-xl font-bold text-white text-center">
               Editar Serviço
             </DrawerTitle>
           </DrawerHeader>
-          <div className="px-4 pb-4 max-h-[80vh] overflow-y-auto">
+          <div className="px-6 pb-6 max-h-[80vh] overflow-y-auto">
             <Form {...form}>
               <form
                 onSubmit={form.handleSubmit(onSubmit)}
@@ -183,7 +179,7 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
                         <Input
                           placeholder="Corte masculino"
                           {...field}
-                          className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
+                          className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-white/20"
                         />
                       </FormControl>
                       <FormMessage />
@@ -201,7 +197,7 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
                         <Textarea
                           placeholder="Descrição do serviço"
                           {...field}
-                          className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
+                          className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-white/20"
                         />
                       </FormControl>
                       <FormMessage />
@@ -221,7 +217,7 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
                             type="number"
                             step="0.01"
                             {...field}
-                            className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-white/20"
                           />
                         </FormControl>
                         <FormMessage />
@@ -241,7 +237,7 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
                           <Input
                             type="number"
                             {...field}
-                            className="bg-slate-800 border-slate-600 text-white placeholder:text-slate-400"
+                            className="bg-white/5 border-white/10 text-white placeholder:text-white/50 focus:border-white/20"
                           />
                         </FormControl>
                         <FormMessage />
@@ -341,13 +337,13 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
                     type="button"
                     variant="outline"
                     onClick={() => setOpen(false)}
-                    className="flex-1 bg-slate-800 border-slate-600 text-white hover:bg-slate-700"
+                    className="flex-1 bg-white/5 border-white/10 text-white hover:bg-white/10"
                   >
                     Cancelar
                   </Button>
                   <Button
                     type="submit"
-                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                    className="flex-1 bg-blue-600 text-white hover:bg-blue-700 rounded-xl"
                     disabled={isPending}
                   >
                     {isPending ? "Salvando..." : "Salvar"}
@@ -358,42 +354,6 @@ export default function EditServiceDrawer({ service }: EditServiceDrawerProps) {
           </div>
         </DrawerContent>
       </Drawer>
-
-      {/* Dialog de confirmação para deletar */}
-      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
-        <AlertDialogTrigger asChild>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-red-400 hover:text-red-300 hover:bg-red-500/20"
-          >
-            <Trash2 className="w-4 h-4" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent className="bg-slate-900 text-white border-slate-700">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-white">
-              Deletar Serviço
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-slate-300">
-              Tem certeza que deseja deletar o serviço "{service.name}"? Esta
-              ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel className="bg-slate-800 border-slate-600 text-white hover:bg-slate-700">
-              Cancelar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDelete}
-              className="bg-red-600 text-white hover:bg-red-700"
-              disabled={isPending}
-            >
-              {isPending ? "Deletando..." : "Deletar"}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }

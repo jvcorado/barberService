@@ -200,38 +200,46 @@ export default async function ServicesPage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                {/* Cards de métricas organizados */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Total de Agendamentos */}
+                  <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/30 rounded-xl p-4 text-center hover:bg-blue-500/30 transition-all duration-200">
+                    <div className="text-blue-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Total Agendamentos
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.totalBookings}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Receita Total */}
+                  <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30 rounded-xl p-4 text-center hover:bg-green-500/30 transition-all duration-200">
+                    <div className="text-green-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Receita Total
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       R$ {service.totalRevenue.toFixed(2).replace(".", ",")}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Agendamentos Futuros */}
+                  <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30 rounded-xl p-4 text-center hover:bg-yellow-500/30 transition-all duration-200">
+                    <div className="text-yellow-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Futuros
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.futureBookings}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Agendamentos Passados */}
+                  <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-400/30 rounded-xl p-4 text-center hover:bg-purple-500/30 transition-all duration-200">
+                    <div className="text-purple-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Passados
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.pastBookings}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>
