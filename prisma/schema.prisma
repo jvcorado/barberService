@@ -90,6 +90,7 @@ model BarberShop {
   updatedAt   DateTime            @updatedAt
   services    BarbershopService[]
   Booking     Booking[]
+  expenses    Expense[]
   instagram   String?
   facebook    String?
   tiktok      String?
@@ -100,6 +101,12 @@ model BarberShop {
   accentColor     String? @default("#3b82f6")
   backgroundColor String? @default("#f9fafb")
   textColor       String? @default("#111827")
+
+  // HORÁRIOS DE FUNCIONAMENTO
+  workingDays        Int[]   @default([1, 2, 3, 4, 5]) // 1=Segunda, 2=Terça, etc.
+  openingTime        String? @default("08:00")
+  closingTime        String? @default("18:00")
+  appointmentInterval Int?   @default(30) // Intervalo em minutos
 
   // RELAÇÃO COM USER (ADMIN)
   ownerId String? @unique
@@ -132,6 +139,18 @@ model Booking {
   updatedAt    DateTime          @updatedAt
   BarberShop   BarberShop?       @relation(fields: [barberShopId], references: [id])
   barberShopId String?
+}
+
+model Expense {
+  id           String     @id @default(cuid())
+  description  String
+  amount       Decimal    @db.Decimal(10, 2)
+  category     String
+  date         DateTime
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  barberShopId String
+  barberShop   BarberShop @relation(fields: [barberShopId], references: [id], onDelete: Cascade)
 }
 
 enum BookingStatus {

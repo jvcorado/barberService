@@ -7,7 +7,9 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import ServiceItem from "@/components/service-item";
 import CreateServiceDrawer from "./components/create-service-drawer";
+import EditServiceDrawer from "./components/edit-service-drawer";
 import ServicesPageClient from "./components/services-page-client";
+import SafeImage from "@/components/safe-image";
 import { Plus } from "lucide-react";
 
 export default async function ServicesPage() {
@@ -148,44 +150,96 @@ export default async function ServicesPage() {
                 key={service.id}
                 className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-colors"
               >
-                <ServiceItem
-                  barbershop={JSON.parse(JSON.stringify(barbershop))}
-                  service={JSON.parse(JSON.stringify(service))}
-                  showStats={false}
-                  className="!bg-transparent !p-0"
-                />
-                <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+                {/* Header do serviço */}
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-white">
+                    {service.name}
+                  </h3>
+
+                  {/* Botões de ação */}
+                  <div className="flex gap-2">
+                    <EditServiceDrawer
+                      service={{
+                        id: service.id,
+                        name: service.name,
+                        description: service.description,
+                        price: Number(service.price),
+                        imageUrl: service.imageUrl,
+                        duration: service.duration,
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Conteúdo principal do serviço */}
+                <div className="flex items-start gap-6 mb-6">
+                  {/* Imagem do serviço */}
+                  <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                    <SafeImage
+                      src={service.imageUrl}
+                      alt={service.name}
+                      className="w-full h-full rounded-lg"
+                      placeholder={
+                        <div className="w-full h-full flex items-center justify-center text-white/50 bg-white/10">
+                          <Plus className="w-10 h-10" />
+                        </div>
+                      }
+                    />
+                  </div>
+
+                  {/* Informações do serviço */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-gray-300 mb-3 leading-relaxed">
+                      {service.description || "Sem descrição"}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl font-bold text-yellow-400">
+                        R$ {service.price.toFixed(2).replace(".", ",")}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Cards de métricas organizados */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+                  {/* Total de Agendamentos */}
+                  <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-400/30 rounded-xl p-4 text-center hover:bg-blue-500/30 transition-all duration-200">
+                    <div className="text-blue-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Total Agendamentos
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.totalBookings}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Receita Total */}
+                  <div className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-400/30 rounded-xl p-4 text-center hover:bg-green-500/30 transition-all duration-200">
+                    <div className="text-green-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Receita Total
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       R$ {service.totalRevenue.toFixed(2).replace(".", ",")}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Agendamentos Futuros */}
+                  <div className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-400/30 rounded-xl p-4 text-center hover:bg-yellow-500/30 transition-all duration-200">
+                    <div className="text-yellow-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Futuros
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.futureBookings}
-                    </p>
+                    </div>
                   </div>
-                  <div className="text-center p-3 bg-white/5 rounded-lg">
-                    <p className="text-white/60 text-xs uppercase tracking-wide">
+
+                  {/* Agendamentos Passados */}
+                  <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-400/30 rounded-xl p-4 text-center hover:bg-purple-500/30 transition-all duration-200">
+                    <div className="text-purple-300 text-xs font-medium uppercase tracking-wide mb-1">
                       Passados
-                    </p>
-                    <p className="font-semibold text-white text-lg">
+                    </div>
+                    <div className="text-white text-2xl font-bold">
                       {service.pastBookings}
-                    </p>
+                    </div>
                   </div>
                 </div>
               </div>

@@ -22,6 +22,9 @@ interface Barbershop {
   backgroundColor?: string;
   textColor?: string;
   services: any[];
+  openingTime: string;
+  closingTime: string;
+  appointmentInterval: number;
 }
 
 interface Barber {
@@ -146,6 +149,7 @@ export default function BarberAppPage() {
         <ImprovedCalendar
           barbershopId={barbershop?.id || ""}
           barbers={barbers}
+          barbershop={barbershop}
           onAddBooking={() => {
             console.log("Adicionar agendamento");
           }}

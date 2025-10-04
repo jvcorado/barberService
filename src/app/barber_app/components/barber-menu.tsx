@@ -18,10 +18,14 @@ import {
   QrCode,
   ExternalLink,
   Download,
+  Settings,
+  ArrowLeft,
+  Clock,
 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import QRCode from "qrcode";
+import { useRouter } from "next/navigation";
 
 interface BarberMenuProps {
   barbershopId?: string;
@@ -33,6 +37,7 @@ export default function BarberMenu({
   barbershopName,
 }: BarberMenuProps) {
   const { data: session } = useSession();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
@@ -102,6 +107,16 @@ export default function BarberMenu({
     window.open(barberLink, "_blank");
   };
 
+  const handleGoToSettings = () => {
+    setIsOpen(false);
+    router.push("/barber_app/services");
+  };
+
+  const handleGoToSchedule = () => {
+    setIsOpen(false);
+    router.push("/barber_app/schedule");
+  };
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -116,9 +131,9 @@ export default function BarberMenu({
 
       <SheetContent
         side="right"
-        className="w-80 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-l border-white/10"
+        className="w-80 bg-gradient-to-br from-gray-900 via-black to-gray-900 border-l border-white/10 flex flex-col h-full"
       >
-        <SheetHeader className="space-y-4">
+        <SheetHeader className="space-y-4 flex-shrink-0">
           <SheetTitle className="text-white text-xl font-semibold">
             Menu da Barbearia
           </SheetTitle>
@@ -139,7 +154,7 @@ export default function BarberMenu({
           </div>
         </SheetHeader>
 
-        <div className="mt-8 space-y-6">
+        <div className="flex-1 overflow-y-auto mt-8 space-y-6 pr-2">
           {/* Seção do Link da Barbearia */}
           <div className="space-y-4">
             <h3 className="text-white font-semibold text-lg">
@@ -242,8 +257,10 @@ export default function BarberMenu({
             </div>
           </div>
 
+          {/* Seção de Configurações */}
+
           {/* Seção de Informações */}
-          <div className="space-y-4 pt-6 border-t border-white/10">
+          <div className="space-y-4 pt-6 border-t border-white/10 pb-6">
             <h3 className="text-white font-semibold text-lg">Informações</h3>
 
             <div className="text-xs text-gray-400 space-y-1">
