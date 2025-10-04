@@ -18,7 +18,7 @@ O Barber App é uma aplicação mobile desenvolvida em Next.js que oferece duas 
 - Acesso ao dashboard web
 - Configurações personalizáveis
 
-### App do Cliente (`/barber_app/client?id={barbershopId}`)
+### App do Cliente (`/client?id={barbershopId}`)
 
 - Visualização do perfil da barbearia
 - Lista de serviços disponíveis
@@ -41,7 +41,7 @@ O Barber App é uma aplicação mobile desenvolvida em Next.js que oferece duas 
 
 ### Para Clientes
 
-1. Acesse `/barber_app/client?id={ID_DA_BARBEARIA}`
+1. Acesse `/client?id={ID_DA_BARBEARIA}`
 2. Visualize serviços disponíveis
 3. Clique em "Agendar" no serviço desejado
 4. Siga o processo de 4 etapas:

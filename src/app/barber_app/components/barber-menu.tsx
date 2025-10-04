@@ -37,7 +37,7 @@ export default function BarberMenu({
   const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>("");
 
   // Gerar o link da barberia
-  const barberLink = `${window.location.origin}/barber_app/client?id=${barbershopId}`;
+  const barberLink = `${window.location.origin}/client?id=${barbershopId}`;
 
   // Gerar QR code
   const generateQRCode = async () => {
