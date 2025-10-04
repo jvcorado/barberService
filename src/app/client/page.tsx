@@ -91,7 +91,7 @@ export default function ClientPage() {
     if (status === "loading") return;
 
     if (status === "unauthenticated") {
-      router.push(`/barber_app/client/login?id=${barbershopId}`);
+      router.push(`/client/login?id=${barbershopId}`);
       return;
     }
 
@@ -153,9 +153,7 @@ export default function ClientPage() {
             Você precisa estar logado para acessar o app
           </p>
           <Button
-            onClick={() =>
-              router.push(`/barber_app/client/login?id=${barbershopId}`)
-            }
+            onClick={() => router.push(`/client/login?id=${barbershopId}`)}
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
           >
             Entrar

@@ -23,11 +23,11 @@ export async function signOutClient(barbershopId?: string): Promise<void> {
     await new Promise((resolve) => setTimeout(resolve, 100));
 
     // Redirecionar manualmente
-    const redirectUrl = `/barber_app/client/login?id=${barbershopId}`;
+    const redirectUrl = `/client/login?id=${barbershopId}`;
     window.location.replace(redirectUrl); // usar replace em vez de href
   } catch (error) {
     console.error("Erro no logout:", error);
     // Mesmo com erro, redirecionar
-    window.location.replace(`/barber_app/client/login?id=${barbershopId}`);
+    window.location.replace(`/client/login?id=${barbershopId}`);
   }
 }

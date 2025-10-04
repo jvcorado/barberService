@@ -94,7 +94,7 @@ src/hooks/
 
 ### 1. **Acesso Inicial**
 
-- Acesse `/barber_app/client?id={barbershopId}`
+- Acesse `/client?id={barbershopId}`
 - Faça login com sua conta
 - O banner de instalação aparecerá automaticamente
 

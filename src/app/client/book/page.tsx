@@ -25,7 +25,7 @@ import {
   isSameMonth,
 } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { createBooking } from "../../../../actions/create-booking";
+import { createBooking } from "../../../actions/create-booking";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -301,7 +301,7 @@ export default function BookPage() {
 
       if (result.success) {
         toast.success("Agendamento realizado com sucesso!");
-        router.push(`/barber_app/client?id=${barbershop.id}`);
+        router.push(`/client?id=${barbershop.id}`);
       } else {
         toast.error(result.error || "Erro ao realizar agendamento");
       }
@@ -322,7 +322,7 @@ export default function BookPage() {
   }
 
   if (status === "unauthenticated") {
-    router.push(`/barber_app/client/login?id=${barbershopId}`);
+    router.push(`/client/login?id=${barbershopId}`);
     return null;
   }
 
