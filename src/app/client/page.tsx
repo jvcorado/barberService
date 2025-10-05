@@ -312,7 +312,7 @@ export default function ClientPage() {
                   className="px-4 py-2 rounded-xl text-white border-white/20 hover:bg-white/10"
                   onClick={() => {
                     router.push(
-                      `/clientbookings?barbershopId=${barbershop.id}`,
+                      `/client/bookings?barbershopId=${barbershop.id}`,
                     );
                   }}
                 >
@@ -425,7 +425,7 @@ export default function ClientPage() {
                 variant="outline"
                 className="px-6 py-2 rounded-xl text-white border-white/20 hover:bg-white/10"
                 onClick={() => {
-                  router.push(`/clientservices?barbershopId=${barbershop.id}`);
+                  router.push(`/client/services?barbershopId=${barbershop.id}`);
                 }}
               >
                 Ver outros serviços ({barbershop.services.length - 3})

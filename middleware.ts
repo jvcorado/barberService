@@ -7,15 +7,12 @@ export default withAuth(
     const token = req.nextauth.token;
 
     // Permitir acesso às rotas do cliente sem autenticação obrigatória
-    if (pathname.startsWith("/barber_app/client")) {
+    if (pathname.startsWith("/client")) {
       return NextResponse.next();
     }
 
     // Para outras rotas do barber_app, exigir autenticação
-    if (
-      pathname.startsWith("/barber_app") &&
-      !pathname.startsWith("/barber_app/client")
-    ) {
+    if (pathname.startsWith("/barber_app") && !pathname.startsWith("/client")) {
       if (!token) {
         return NextResponse.redirect(new URL("/", req.url));
       }
@@ -29,14 +26,14 @@ export default withAuth(
         const { pathname } = req.nextUrl;
 
         // Permitir acesso às rotas do cliente sem token
-        if (pathname.startsWith("/barber_app/client")) {
+        if (pathname.startsWith("/client")) {
           return true;
         }
 
         // Para outras rotas protegidas, exigir token
         if (
           pathname.startsWith("/barber_app") &&
-          !pathname.startsWith("/barber_app/client")
+          !pathname.startsWith("/client")
         ) {
           return !!token;
         }
@@ -49,5 +46,10 @@ export default withAuth(
 );
 
 export const config = {
-  matcher: ["/barber_app/:path*", "/dashboard/:path*", "/api/protected/:path*"],
+  matcher: [
+    "/client/:path*",
+    "/barber_app/:path*",
+    "/dashboard/:path*",
+    "/api/protected/:path*",
+  ],
 };

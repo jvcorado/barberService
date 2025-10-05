@@ -4,14 +4,14 @@ const DYNAMIC_CACHE = "barber-app-client-dynamic-v1";
 
 // URLs para cache estático
 const STATIC_URLS = [
-  "/barber_app/client",
+  "/client",
   "/client/book",
   "/logo.png",
   "/manifest-client.json",
 ];
 
-// URLs para cache dinâmico
-const DYNAMIC_URLS = ["/api/barbershops/", "/api/bookings/user"];
+// Não faz precache de APIs; cache dinâmico será feito em runtime
+const DYNAMIC_URLS = [];
 
 // Instalação do Service Worker
 self.addEventListener("install", (event) => {
@@ -21,10 +21,8 @@ self.addEventListener("install", (event) => {
       caches.open(STATIC_CACHE).then((cache) => {
         return cache.addAll(STATIC_URLS);
       }),
-      // Cache dinâmico
-      caches.open(DYNAMIC_CACHE).then((cache) => {
-        return cache.addAll(DYNAMIC_URLS);
-      }),
+      // Pula precache dinâmico para evitar falhas em install
+      caches.open(DYNAMIC_CACHE),
     ]).then(() => {
       self.skipWaiting();
     }),
@@ -57,10 +55,7 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
 
   // Estratégia para páginas do app
-  if (
-    request.mode === "navigate" &&
-    url.pathname.startsWith("/barber_app/client")
-  ) {
+  if (request.mode === "navigate" && url.pathname.startsWith("/client")) {
     event.respondWith(
       caches.match(request).then((response) => {
         if (response) {
@@ -175,6 +170,6 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   if (event.action === "view") {
-    event.waitUntil(clients.openWindow("/barber_app/client"));
+    event.waitUntil(clients.openWindow("/client"));
   }
 });

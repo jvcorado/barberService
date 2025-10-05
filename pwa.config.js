@@ -36,12 +36,12 @@ module.exports = {
     short_name: "BarberApp",
     description:
       "Aplicativo mobile para clientes agendarem serviços na barbearia",
-    start_url: "/barber_app/client",
+    start_url: "/client",
     display: "standalone",
     background_color: "#000000",
     theme_color: "#000000",
     orientation: "portrait-primary",
-    scope: "/barber_app/client",
+    scope: "/client",
     lang: "pt-BR",
     categories: ["business", "productivity", "lifestyle"],
     prefer_related_applications: false,
@@ -62,7 +62,7 @@ module.exports = {
         name: "Meus Agendamentos",
         short_name: "Agendamentos",
         description: "Ver meus agendamentos",
-        url: "/barber_app/client",
+        url: "/client",
         icons: [
           {
             src: "/logo.png",

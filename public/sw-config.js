@@ -9,7 +9,7 @@ const SW_CONFIG = {
     "/barber_app/services",
     "/barber_app/invoices",
     "/barber_app/clients",
-    "/barber_app/client",
+    "/client",
     "/api/barbershops/me",
     "/api/bookings/user",
     "/api/bookings/calendar",
@@ -42,7 +42,12 @@ const CACHE_STRATEGIES = {
 // Exporta configurações
 if (typeof module !== "undefined" && module.exports) {
   module.exports = { SW_CONFIG, CACHE_STRATEGIES };
-} else {
+} else if (typeof self !== "undefined") {
+  // Ambiente de Service Worker
+  self.SW_CONFIG = SW_CONFIG;
+  self.CACHE_STRATEGIES = CACHE_STRATEGIES;
+} else if (typeof window !== "undefined") {
+  // Ambiente do navegador
   window.SW_CONFIG = SW_CONFIG;
   window.CACHE_STRATEGIES = CACHE_STRATEGIES;
 }

@@ -516,7 +516,7 @@ export default function BookingsPage() {
               </p>
               <Button
                 onClick={() =>
-                  router.push(`/clientservices?barbershopId=${barbershop.id}`)
+                  router.push(`/client/services?barbershopId=${barbershop.id}`)
                 }
                 className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl"
               >

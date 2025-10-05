@@ -67,7 +67,7 @@ export const createBooking = async (params: CreateBookingParams) => {
 
     revalidatePath("/barbershops/[id]");
     revalidatePath("/bookings");
-    revalidatePath("/barber_app/client");
+    revalidatePath("/client");
 
     return { success: true, booking };
   } catch (error) {

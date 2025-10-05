@@ -12,7 +12,7 @@ function ServiceWorkerRegistration() {
       // Registrar service worker
       navigator.serviceWorker
         .register("/sw-client.js", {
-          scope: "/barber_app/client",
+          scope: "/client",
         })
         .then((registration) => {
           console.log("Service Worker registrado com sucesso:", registration);

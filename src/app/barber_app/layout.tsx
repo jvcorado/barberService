@@ -25,7 +25,7 @@ function BarberAppContent({ children }: { children: React.ReactNode }) {
   const { isInstallable } = usePWA();
 
   // Check if current path is client area
-  const isClientArea = pathname?.startsWith("/barber_app/client");
+  const isClientArea = pathname?.startsWith("/client");
 
   useEffect(() => {
     if (status === "loading") return;

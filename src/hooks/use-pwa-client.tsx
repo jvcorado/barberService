@@ -16,7 +16,7 @@ export function usePWAClient() {
     isInstalled: false,
     isStandalone: false,
     canInstall: false,
-    isOnline: navigator.onLine,
+    isOnline: typeof window !== "undefined" ? navigator.onLine : true,
     hasServiceWorker: false,
     hasNotifications: false,
   });

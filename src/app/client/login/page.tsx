@@ -74,20 +74,16 @@ export default function ClientLoginPage() {
       const result = await signIn("credentials", {
         email: loginEmail,
         password: loginPassword,
-        redirect: false,
+        // deixa o NextAuth redirecionar automaticamente
+        callbackUrl: `/client?id=${barbershopId ?? ""}`,
       });
 
-      if (result?.error) {
+      if ((result as any)?.error) {
         setMessage({ type: "error", text: "Email ou senha incorretos" });
-      } else if (result?.ok) {
-        setMessage({ type: "success", text: "Login realizado com sucesso!" });
-        setTimeout(() => {
-          router.push(`/client?id=${barbershopId}`);
-        }, 1000);
+        setLoading(false);
       }
     } catch (error) {
       setMessage({ type: "error", text: "Erro interno do servidor" });
-    } finally {
       setLoading(false);
     }
   };
@@ -210,12 +206,12 @@ export default function ClientLoginPage() {
                 >
                   Entrar
                 </TabsTrigger>
-                <TabsTrigger
+                {/* <TabsTrigger
                   value="register"
                   className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-500 data-[state=active]:to-purple-600 data-[state=active]:text-white text-gray-300 transition-all duration-200"
                 >
                   Criar Conta
-                </TabsTrigger>
+                </TabsTrigger> */}
               </TabsList>
 
               {/* Mensagens */}
@@ -234,7 +230,7 @@ export default function ClientLoginPage() {
               {/* Tab de Login */}
               <TabsContent value="login" className="space-y-6 mt-6">
                 <form onSubmit={handleEmailLogin} className="space-y-6">
-                  <div className="space-y-3">
+                  {/* <div className="space-y-3">
                     <Label
                       htmlFor="login-email"
                       className="text-white font-medium"
@@ -250,8 +246,8 @@ export default function ClientLoginPage() {
                       required
                       className="h-12 rounded-xl bg-white/5 border-white/20 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
                     />
-                  </div>
-                  <div className="space-y-3">
+                  </div> */}
+                  {/* <div className="space-y-3">
                     <Label
                       htmlFor="login-password"
                       className="text-white font-medium"
@@ -282,8 +278,8 @@ export default function ClientLoginPage() {
                         )}
                       </Button>
                     </div>
-                  </div>
-                  <Button
+                  </div> */}
+                  {/* <Button
                     type="submit"
                     disabled={loading}
                     className="w-full h-12 text-lg font-bold rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25 transition-all duration-200 hover:scale-105"
@@ -292,10 +288,10 @@ export default function ClientLoginPage() {
                       <Loader2 className="h-5 w-5 animate-spin mr-2" />
                     ) : null}
                     {loading ? "Entrando..." : "Entrar"}
-                  </Button>
+                  </Button> */}
                 </form>
 
-                <div className="relative">
+                {/* <div className="relative">
                   <div className="absolute inset-0 flex items-center">
                     <div className="w-full border-t border-white/10"></div>
                   </div>
@@ -304,7 +300,7 @@ export default function ClientLoginPage() {
                       ou
                     </span>
                   </div>
-                </div>
+                </div> */}
 
                 <Button
                   onClick={handleGoogleLogin}
@@ -328,7 +324,7 @@ export default function ClientLoginPage() {
               </TabsContent>
 
               {/* Tab de Registro */}
-              <TabsContent value="register" className="space-y-6 mt-6">
+              {/* <TabsContent value="register" className="space-y-6 mt-6">
                 <form onSubmit={handleRegister} className="space-y-6">
                   <div className="space-y-3">
                     <Label
@@ -459,7 +455,7 @@ export default function ClientLoginPage() {
                     {loading ? "Criando conta..." : "Criar Conta"}
                   </Button>
                 </form>
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
 
             <div className="mt-8 text-center text-sm text-gray-400">

@@ -71,9 +71,9 @@ src/hooks/
 {
   "name": "BarberApp Cliente",
   "short_name": "BarberApp",
-  "start_url": "/barber_app/client",
+  "start_url": "/client",
   "display": "standalone",
-  "scope": "/barber_app/client",
+  "scope": "/client",
   "shortcuts": [
     {
       "name": "Agendar Serviço",

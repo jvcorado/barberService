@@ -53,7 +53,7 @@ export const authOptions: AuthOptions = {
     }),
   ],
   pages: {
-    error: "/clientlogin",
+    error: "/client/login",
   },
   callbacks: {
     async session({ session, user }) {
@@ -80,5 +80,5 @@ export const authOptions: AuthOptions = {
     },
   },
 
-  secret: process.env.NEXT_AUTH_SECRET,
+  secret: process.env.NEXTAUTH_SECRET,
 };
